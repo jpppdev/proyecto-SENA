@@ -82,7 +82,7 @@ export default function UserRegisterForm (){
 
             await showErrorAlert({
                 title: "Error al crear usuario",
-                text: "Por favor completa todos los campos correctamente",
+                text: "Ocurrió un problema al crear el usuario. Inténtalo nuevamente.",
                 timer: 3000,
             });
 

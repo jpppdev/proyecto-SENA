@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { inventorySchema } from "../schemas/InventorySchema";
 import { Input, Button, Select } from "@/shared";
 import { ArrowLeft, Box, ClipboardList, Store, FileText, Check, Plus, PackagePlus } from "lucide-react";
+import { showErrorAlert } from "@/shared/services/alertService";
 
 export default function InventoryCreateForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -56,13 +57,21 @@ export default function InventoryCreateForm() {
     // Zod validará directamente los strings con tus regex
     const result = inventorySchema.safeParse(formData);
 
-    if (!result.success) {
+        if (!result.success) {
       const fieldErrors = {};
+
       result.error.issues.forEach((issue) => {
         fieldErrors[issue.path[0]] = issue.message;
       });
+
       setErrors(fieldErrors);
-      console.log("Zod bloqueó el envío por estos errores:", fieldErrors);
+
+      await showErrorAlert({
+        title: "Error al crear producto",
+        text: "Ocurrió un problema al crear el producto. Inténtalo nuevamente.",
+        timer: 3000,
+      });
+
       return;
     }
 

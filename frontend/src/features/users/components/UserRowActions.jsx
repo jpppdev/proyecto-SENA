@@ -2,7 +2,7 @@
 
 import { Pencil, Eye, Trash } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { showDeleteAlert } from "@/shared/services/alertService";
+import { showDeleteAlert, showCancelDeleteAlert } from "@/shared/services/alertService";
 
 export default function UserRowActions({ user }) {
   const navigate = useNavigate();
@@ -27,9 +27,15 @@ export default function UserRowActions({ user }) {
       title: "¿Eliminar usuario?",
       text: `¿Deseas eliminar a ${user?.userName || "este usuario"}?`,
     });
+  
 
-    if (result.isConfirmed) {
+        if (result.isConfirmed) {
       console.log("Usuario eliminado:", user?.id);
+    } else if (result.dismiss) {
+      await showCancelDeleteAlert({
+        title: "Eliminación cancelada",
+        text: "El usuario no fue eliminado.",
+    })
     }
   };
 

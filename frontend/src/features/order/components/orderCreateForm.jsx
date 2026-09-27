@@ -14,6 +14,7 @@ import {
 
 import { Input, Button, Select } from "@/shared";
 import { orderSchema } from "../schema/orderSchema"; 
+import { showErrorAlert } from "@/shared/services/alertService";
 
 // =====================================================================
 // 1. CONSTANTES MOCK (Fuera del componente para evitar re-renderizados)
@@ -120,12 +121,21 @@ export default function OrderCreateForm() {
     // Validar el esquema base con Zod
     const result = orderSchema.safeParse(formData);
 
-    if (!result.success) {
+        if (!result.success) {
       const fieldErrors = {};
+
       result.error.issues.forEach((issue) => {
         fieldErrors[issue.path[0]] = issue.message;
       });
+
       setErrors(fieldErrors);
+
+      await showErrorAlert({
+        title: "Error al crear orden",
+        text: "Ocurrió un problema al crear la orden. Inténtalo nuevamente.",
+        timer: 3000,
+      });
+
       return;
     }
 

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { menuSchema } from "../schema/menuSchema";
 import { Input, Button, Select, FileInput } from "@/shared";
 import { Coffee, ArrowLeft, Check, UtensilsCrossed } from "lucide-react";
+import { showErrorAlert } from "@/shared/services/alertService";
 
 export default function MenuCreateForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -50,15 +51,23 @@ export default function MenuCreateForm() {
 
     const result = menuSchema.safeParse(dataToValidate);
 
-    if (!result.success) {
-      const fieldErrors = {};
-      result.error.issues.forEach((issue) => {
-        fieldErrors[issue.path[0]] = issue.message;
-      });
-      setErrors(fieldErrors);
-      console.log("Zod bloqueó el envío por estos errores:", fieldErrors);
-      return;
-    }
+          if (!result.success) {
+        const fieldErrors = {};
+
+        result.error.issues.forEach((issue) => {
+          fieldErrors[issue.path[0]] = issue.message;
+        });
+
+        setErrors(fieldErrors);
+
+        await showErrorAlert({
+          title: "Error al crear menú",
+          text: "Ocurrió un problema al crear el menú. Inténtalo nuevamente.",
+          timer: 3000,
+        });
+
+        return;
+      }
 
     setErrors({});
     setIsSubmitting(true);
