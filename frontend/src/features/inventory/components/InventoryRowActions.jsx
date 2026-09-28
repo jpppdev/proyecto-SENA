@@ -1,5 +1,7 @@
 import { Pencil, Eye, Trash } from "lucide-react";
+import { showDeleteAlert,showCancelDeleteAlert } from "../../../shared/service/alertService";
 import { useNavigate } from "react-router-dom";
+import { inventory } from "../data/inventory";
 
 export default function InventoryRowActions({ product }) {
   const navigate = useNavigate();
@@ -14,8 +16,21 @@ export default function InventoryRowActions({ product }) {
     navigate(`/dashboard/ViewInventory/${product.id}`);
   };
 
-  const handleDelete = () => {
-    console.log("Eliminar producto", product.id);
+  const handleDelete = async () => {
+       const result =  await showDeleteAlert ({
+              title: "Eliminar inventario",
+              text:`¿Estas seguro que deseas elimina a ${inventory.productName}? `,
+              
+            })
+            if (result.isConfirmed){
+              navigate(-1)
+            } else if (result.dismiss){
+                await showCancelDeleteAlert({
+                title: "Eliminación cancelada",
+                text: "El producto no fue eliminado.",
+            })
+        
+            }
   };
 
   return (

@@ -1,7 +1,7 @@
 // Iconos usados en los botones de acciones
 import { Pencil, Eye , Trash} from "lucide-react";
 
-import { showDeleteAlert } from "../../../shared/service/alertService";
+import { showDeleteAlert, showCancelDeleteAlert } from "../../../shared/service/alertService";
 // Hook de React Router para navegar programáticamente entre rutas
 import { useNavigate } from "react-router-dom";
 
@@ -35,14 +35,21 @@ export default function UserRowActions({ user }) {
   // Actualmente solo imprime en consola el id
   // En una aplicación real aquí se llamaría a la API
   const handleDelete = async () => {
-    const result = showDeleteAlert ({
-      title: "Delete",
-      text:"desesa eliminar este usuario",
-      timer:3000,
+    const result =  await showDeleteAlert ({
+      title: "Eliminar usario",
+      text:`¿EStas seguro que deseas elimina a ${user?.userName}? `,
+      
     })
     if (result.isConfirmed){
       navigate(-1)
+    } else if (result.dismiss){
+        await showCancelDeleteAlert({
+        title: "Eliminación cancelada",
+        text: "El usuario no fue eliminado.",
+    })
+
     }
+    
   };
 
 

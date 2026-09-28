@@ -1,4 +1,5 @@
 import { Pencil, Eye, Trash } from "lucide-react";
+import { showDeleteAlert, showCancelDeleteAlert } from "../../../shared/service/alertService";
 import { useNavigate } from "react-router-dom";
 
 export default function MenuRowActions({ product }) {
@@ -13,8 +14,21 @@ export default function MenuRowActions({ product }) {
     navigate(`/dashboard/menuEdit/${product.id}`);
   };
 
-  const handleDelete = () => {
-    console.log("Eliminar producto del menú:", product.id);
+  const handleDelete = async () => {
+        const result =  await showDeleteAlert ({
+              title: "Eliminar menu",
+              text:`¿EStas seguro que deseas elimina a ${menubar.menuName}? `,
+              
+            })
+            if (result.isConfirmed){
+              navigate(-1)
+            } else if (result.dismiss){
+                await showCancelDeleteAlert({
+                title: "Eliminación cancelada",
+                text: "El menu no fue eliminado.",
+            })
+        
+            }
   };
 
   return (
