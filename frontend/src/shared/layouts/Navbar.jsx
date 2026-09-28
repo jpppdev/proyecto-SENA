@@ -55,7 +55,9 @@ export default function Navbar(){
             {/* Links de navegación */}
           <ul className="hidden md:flex items-center gap-6">
             <li>
-              <Link to={"/auth"} className="hover:text-primary transition">
+              <Link  
+                to={"/auth"} 
+                className="text-[var(--color-text-primary)]">
                 Inicio
               </Link>
             </li>
@@ -63,7 +65,7 @@ export default function Navbar(){
             <li>
               <Link
                 to={"/dashboard/Dishes"}
-                className="hover:text-primary transition"
+                className="text-[var(--color-text-primary)]"
               >
                 Platillos
               </Link>
@@ -75,7 +77,7 @@ export default function Navbar(){
               <Link
                 
                 onClick={handleContactClick}
-                className="hover:text-primary transition cursor-pointer"
+                className="text-[var(--color-text-primary)]"
               >
                 Contacto
               </Link>
