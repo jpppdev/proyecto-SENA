@@ -96,3 +96,28 @@ export function showCancelDeleteAlert({
     buttonsStyling: false,
   });
 }
+
+export function showConfirmDeleteAlert({
+  title = "Usuario eliminado",
+  text = "El usuario fue eliminado correctamente.",
+  confirmButtonText = "Aceptar",
+  timer = 2000,
+} = {}) {
+  return Swal.fire({
+    icon: "success",
+    title,
+    text,
+    confirmButtonText,
+    timer,
+    timerProgressBar: true,
+
+    customClass: {
+      popup: "rounded-2xl",
+      title: "text-green-600 font-bold",
+      confirmButton:
+        "bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg",
+    },
+
+    buttonsStyling: false,
+  });
+}

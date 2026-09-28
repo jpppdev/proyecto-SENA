@@ -10,6 +10,7 @@ import {
 } from "@/shared";
 import  logo  from "@/assets/images/1-logo.png";
 import { Link } from "react-router-dom";
+import { showErrorAlert } from "@/shared/services/alertService";
 // import { useNavigate } from "react-router-dom";
 
 export default function Navbar(){
@@ -26,6 +27,15 @@ export default function Navbar(){
 
   const handleClear = () => {
     console.log("Campo limpiado");
+  };
+
+  const handleContactClick = (e) => {
+    e.preventDefault();
+    showErrorAlert({
+      title: "Error inesperado",
+      text: "Ha ocurrido un error inesperado al acceder a Contacto.",
+      timer: 2500,
+    });
   };
 
   return (
@@ -62,7 +72,11 @@ export default function Navbar(){
            
 
             <li>
-              <Link to={"/inicio"} className="hover:text-primary transition">
+              <Link
+                
+                onClick={handleContactClick}
+                className="hover:text-primary transition cursor-pointer"
+              >
                 Contacto
               </Link>
             </li>
