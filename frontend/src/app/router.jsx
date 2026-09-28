@@ -30,7 +30,7 @@ import { HomePage } from "../features/home";
 const  router = createBrowserRouter([
     {
         path: "/",
-        element: <Navigate to="/dashboard" replace/>
+        element: <Navigate to="/dashboard/home" replace/>
     },
 
     // --- MÓDULO: AUTENTICACIÓN ---

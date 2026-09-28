@@ -55,9 +55,13 @@ export default function Navbar(){
             {/* Links de navegación */}
           <ul className="hidden md:flex items-center gap-6">
             <li>
+
               <Link  
                 to={"/auth"} 
                 className="text-[var(--color-text-primary)]">
+
+              <Link to={"/Dashboard/home"} className="hover:text-primary transition">
+
                 Inicio
               </Link>
             </li>
