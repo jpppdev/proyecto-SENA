@@ -55,7 +55,7 @@ export default function Navbar(){
             {/* Links de navegación */}
           <ul className="hidden md:flex items-center gap-6">
             <li>
-              <Link to={"/Dashboar/home"} className="hover:text-primary transition">
+              <Link to={"/Dashboard/home"} className="hover:text-primary transition">
                 Inicio
               </Link>
             </li>
