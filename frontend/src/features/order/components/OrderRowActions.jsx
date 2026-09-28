@@ -1,5 +1,5 @@
 import { Pencil, Eye, Trash } from "lucide-react";
-import { showDeleteAlert, showCancelDeleteAlert } from "../../../shared/service/alertService";
+import { showDeleteAlert, showCancelDeleteAlert,showConfirmDeleteAlert } from "../../../shared/service/alertService";
 import { useNavigate } from "react-router-dom";
 
 export default function OrderRowActions({ order }) {
@@ -17,10 +17,14 @@ export default function OrderRowActions({ order }) {
   const handleDelete = async () => {
         const result =  await showDeleteAlert ({
           title: "Eliminar orden",
-          text:`¿Estas seguro que deseas eliminar la orden ${order.id}? `,
+          text:`¿Estas seguro que deseas eliminar la orden ${order?.id}? `,
           
         })
         if (result.isConfirmed){
+          await showConfirmDeleteAlert({
+                title: "¡Usuario Eliminado!",
+                text: `El usuario ${order?.id} ha sido eliminado con éxito.`
+              });
           navigate(-1)
         } else if (result.dismiss){
             await showCancelDeleteAlert({

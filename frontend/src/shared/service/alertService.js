@@ -79,3 +79,26 @@ export function showCancelDeleteAlert({
     buttonsStyling: false,
   });
 }
+export function showConfirmDeleteAlert({
+  title = "Eliminación exitosa",
+  text = "La eliminación fue todo un exito.",
+  confirmButtonText = "Aceptar",
+  timer = 2000,
+} = {}) {
+  return Swal.fire({
+    icon: "success",
+    title,
+    text,
+    confirmButtonText,
+    timer,
+    timerProgressBar: true,
+
+    customClass: {
+      popup: "rounded-2xl",
+      title: "text-blue-600 font-bold",
+      confirmButton: "bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg",
+    },
+
+    buttonsStyling: false,
+  });
+}

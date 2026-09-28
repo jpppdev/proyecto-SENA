@@ -1,7 +1,7 @@
 // Iconos usados en los botones de acciones
 import { Pencil, Eye , Trash} from "lucide-react";
 
-import { showDeleteAlert, showCancelDeleteAlert } from "../../../shared/service/alertService";
+import { showDeleteAlert, showCancelDeleteAlert , showConfirmDeleteAlert} from "../../../shared/service/alertService";
 // Hook de React Router para navegar programáticamente entre rutas
 import { useNavigate } from "react-router-dom";
 
@@ -41,6 +41,10 @@ export default function UserRowActions({ user }) {
       
     })
     if (result.isConfirmed){
+      await showConfirmDeleteAlert({
+        title: "¡Usuario Eliminado!",
+        text: `El usuario ${user?.userName} ha sido eliminado con éxito.`
+      });
       navigate(-1)
     } else if (result.dismiss){
         await showCancelDeleteAlert({

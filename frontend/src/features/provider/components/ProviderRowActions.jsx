@@ -1,5 +1,5 @@
 import { Pencil, Eye, Trash } from "lucide-react";
-import { showDeleteAlert,showCancelDeleteAlert } from "../../../shared/service/alertService";
+import { showDeleteAlert,showCancelDeleteAlert ,showConfirmDeleteAlert} from "../../../shared/service/alertService";
 import { useNavigate } from "react-router-dom";
 
 export default function ProviderRowActions({ provider }) {
@@ -16,10 +16,13 @@ export default function ProviderRowActions({ provider }) {
   const handleDelete = async () => {
     const result =  await showDeleteAlert ({
       title: "Eliminar proveedor",
-      text:`¿EStas seguro que deseas elimina a ${provider.providerName}? `,
+      text:`¿EStas seguro que deseas elimina a ${provider?.providerName}? `,
       
     })
-    if (result.isConfirmed){
+    if (result.isConfirmed){await showConfirmDeleteAlert({
+        title: "¡Usuario Eliminado!",
+        text: `El usuario ${provider?.providerName} ha sido eliminado con éxito.`
+      });
       navigate(-1)
     } else if (result.dismiss){
         await showCancelDeleteAlert({

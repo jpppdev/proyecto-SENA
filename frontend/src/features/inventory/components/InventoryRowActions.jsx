@@ -1,5 +1,5 @@
 import { Pencil, Eye, Trash } from "lucide-react";
-import { showDeleteAlert,showCancelDeleteAlert } from "../../../shared/service/alertService";
+import { showDeleteAlert,showCancelDeleteAlert,showConfirmDeleteAlert } from "../../../shared/service/alertService";
 import { useNavigate } from "react-router-dom";
 import { inventory } from "../data/inventory";
 
@@ -19,10 +19,14 @@ export default function InventoryRowActions({ product }) {
   const handleDelete = async () => {
        const result =  await showDeleteAlert ({
               title: "Eliminar inventario",
-              text:`¿Estas seguro que deseas elimina a ${inventory.productName}? `,
+              text:`¿Estas seguro que deseas elimina a ${inventory?.productName}? `,
               
             })
             if (result.isConfirmed){
+              await showConfirmDeleteAlert({
+              title: "¡Usuario Eliminado!",
+              text: `El usuario ${inventory?.productName} ha sido eliminado con éxito.`
+            });
               navigate(-1)
             } else if (result.dismiss){
                 await showCancelDeleteAlert({
