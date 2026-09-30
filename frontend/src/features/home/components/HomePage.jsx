@@ -41,7 +41,7 @@ export default function Home() {
 
               <Button
               variant="primary"
-              onClick={() => navigate("/create-order")}
+              onClick={() => navigate("/dashboard/orderCreate")}
                 
               >
                 ORDENAR
