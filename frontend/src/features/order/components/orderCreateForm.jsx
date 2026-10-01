@@ -302,7 +302,13 @@ export default function OrderCreateForm() {
           <Button type="button" onClick={() => navigate(-1)} variant="secondary" size="md" className="rounded-xl border-[var(--color-border-strong)] text-[var(--color-text-primary)] hover:bg-white/40 transition-all">
             Cancelar
           </Button>
-          <Button type="submit" disabled={isSubmitting} variant="primary" size="md" className="rounded-xl flex items-center gap-2 !bg-white !text-[var(--color-gray-600)] hover:opacity-90 !border-none px-10 shadow-lg font-extrabold tracking-wide uppercase">
+          <Button 
+                type="submit" 
+                disabled={isSubmitting} 
+                variant="create" 
+                size="md" 
+                // className="rounded-xl flex items-center gap-2 !bg-white !text-[var(--color-gray-600)] hover:opacity-90 !border-none px-10 shadow-lg font-extrabold tracking-wide uppercase"
+                >
             <Check size={18} />
             {isSubmitting ? "PROCESANDO..." : "Confirmar Orden"}
           </Button>
