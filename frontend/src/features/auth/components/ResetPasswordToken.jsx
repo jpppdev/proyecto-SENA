@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input, Button } from "@/shared";
 import restaurante from "../../../assets/images/Img-Restaurante.jpeg";
-import logo from "../../../assets/images/Img-Login.jpeg";
+import tokenPassword from "../../../assets/images/TokenPassword.png";
 import title from "../../../assets/images/Img-Titulo.png";
 import { resetPasswordTokenSchema } from "../schemas/ResetPasswordTokenSchema";
 
@@ -46,13 +46,13 @@ function ResetPasswordToken() {
         style={{ backgroundImage: `url(${restaurante})` }}
       ></div>
 
-      <div className="relative z-10 w-[1000px] h-[600px] bg-white rounded-4xl shadow-2xl flex overflow-hidden">
+      <div className="relative z-10 w-[1000px] h-[600px] bg-[var(--white)] rounded-4xl shadow-2xl flex overflow-hidden">
 
-        <div className="w-1/2">
+        <div className="w-1/2 flex items-center justify-center">
           <img
-            src={logo}
+            src={tokenPassword}
             alt="Restaurante"
-            className="w-full h-full object-cover"
+            className="w-[85%] h-[85%] object-contain"
           />
         </div>
 
@@ -66,11 +66,11 @@ function ResetPasswordToken() {
             className="w-48 mx-auto mb-6"
           />
 
-          <h1 className="text-main font-heading text-[var(--text-primary)] text-center mb-4">
+          <h1 className="text-main text-[var(--color-text-secondary)] text-center mb-4">
             Verificar token
           </h1>
 
-          <p className="text-body text-[var(--text-primary)] text-center mb-8">
+          <p className="text-body text-[var(--color-text-secondary)] text-center mb-8">
             Ingresa el código que enviamos a tu correo electrónico
             para continuar con la recuperación de tu contraseña.
           </p>
@@ -86,17 +86,11 @@ function ResetPasswordToken() {
             error={errors.token}
           />
 
-          <div className="w-full mt-8">
+          <div className="w-full mt-8 flex justify-center">
             <Button
               variant="primary"
               type="submit"
               size="md"
-              style={{
-                backgroundColor: "var(--semantic-brand)",
-                color: "var(--text-inverse)",
-                borderRadius: "7px",
-                width: "100%",
-              }}
             >
               Verificar token
             </Button>
@@ -104,7 +98,7 @@ function ResetPasswordToken() {
 
           <div className="text-center mt-6">
             <p
-              className="text-medium font-semibold cursor-pointer text-brand"
+              className="text-medium font-[var(--font-weight-bold)] cursor-pointer text-[var(--color-brand)]"
               onClick={() => navigate("/login")}
             >
               Volver al inicio de sesión

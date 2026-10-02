@@ -28,8 +28,8 @@ export default function InventoryViewPage() {
 
   if (!product) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[color:var(--color-background)]">
-        <p className="text-lg font-semibold text-[color:var(--color-text-primary)]">
+      <div className="min-h-screen flex items-center justify-center bg-[color:var(--color-surface)]">
+        <p className="text-title font-[var(--font-weight-bold)] text-[color:var(--color-text-primary)]">
           Producto no encontrado
         </p>
       </div>
@@ -45,14 +45,14 @@ export default function InventoryViewPage() {
         <div className="flex justify-between items-center mb-6">
 
           <div>
-            <h1 className="text-3xl font-bold text-[color:var(--color-text-primary)]">
-              Visualizar inventario
+            <h1 className="text-main font-[var(--font-weight-bold)] text-[color:var(--color-text-primary)]">
+              Visualizar Inventario
             </h1>
           </div>
 
           <Link to="/dashboard/inventoryList">
             <Button>
-              ← Volver a la lista
+              Volver a la lista
             </Button>
           </Link>
 
@@ -60,14 +60,14 @@ export default function InventoryViewPage() {
 
 
         {/* TARJETA PRINCIPAL */}
-        <div className="bg-[color:var(--semantic-brand-light)] rounded-2xl shadow-md p-6 mb-5">
+        <div className="bg-[color:var(--color-brand-light)] rounded-2xl shadow-md p-6 mb-5">
 
           <div className="flex flex-col lg:flex-row lg:items-center gap-6">
 
             {/* IMAGEN */}
             <div className="flex-shrink-0">
 
-              <div className="w-32 h-32 rounded-2xl overflow-hidden border-4 border-[color:var(--semantic-brand)] bg-[color:var(--color-background-secondary)] flex items-center justify-center">
+              <div className="w-32 h-32 rounded-2xl overflow-hidden border-4 border-[var(--black)] bg-[color:var(--color-surface)] flex items-center justify-center">
 
                 {product.image ? (
                   <img
@@ -90,11 +90,11 @@ export default function InventoryViewPage() {
             {/* INFORMACIÓN PRINCIPAL */}
             <div className="flex-1">
 
-              <h2 className="text-2xl font-bold text-[color:var(--color-text-secondary)] mb-2">
+              <h2 className="text-title font-[var(--font-weight-bold)] text-[color:var(--color-text-secondary)] mb-2">
                 {product.productName}
               </h2>
 
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[color:var(--semantic-brand)] text-[color:var(--text-inverse)] text-sm font-medium">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[color:var(--color-brand)] text-[color:var(--color-text-inverse)] text-small font-[var(--font-weight-regular)]">
 
                 <ToggleRight size={20} />
 
@@ -108,18 +108,18 @@ export default function InventoryViewPage() {
             {/* ID */}
             <div className="lg:border-l lg:pl-8 min-w-[150px] border-[color:var(--color-border)]">
 
-              <p className="text-sm text-[color:var(--color-text-secondary)] mb-2">
+              <p className="text-small text-[color:var(--color-text-secondary)] mb-2">
                 ID del producto
               </p>
 
-              <div className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-[color:var(--color-background-secondary)]">
+              <div className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-[color:var(--color-surface)]">
 
                 <Hash
                   size={20}
                   className="text-[color:var(--color-text-secondary)]"
                 />
 
-                <span className="text-sm font-medium text-[color:var(--color-text-secondary)]">
+                <span className="text-small font-[var(--font-weight-regular)] text-[color:var(--color-text-secondary)]">
                   {product.id}
                 </span>
 
@@ -131,18 +131,18 @@ export default function InventoryViewPage() {
             {/* CANTIDAD TOTAL */}
             <div className="lg:border-l lg:pl-8 min-w-[150px] border-[color:var(--color-border)]">
 
-              <p className="text-sm text-[color:var(--color-text-secondary)] mb-2">
+              <p className="text-small text-[color:var(--color-text-secondary)] mb-2">
                 Cantidad total
               </p>
 
-              <div className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-[color:var(--color-background-secondary)]">
+              <div className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-[color:var(--color-surface)]">
 
                 <Boxes
                   size={20}
                   className="text-[color:var(--color-text-secondary)]"
                 />
 
-                <span className="text-sm font-medium text-[color:var(--color-text-secondary)]">
+                <span className="text-small font-[var(--font-weight-regular)] text-[color:var(--color-text-secondary)]">
                   {product.totalQuantity ?? product.quantity}
                 </span>
 
@@ -156,7 +156,7 @@ export default function InventoryViewPage() {
 
 
         {/* PESTAÑAS */}
-        <div className="bg-[color:var(--semantic-brand-light)] rounded-2xl shadow-md mb-5">
+        <div className="bg-[color:var(--color-brand-light)] rounded-2xl shadow-md mb-5">
 
           <div className="flex items-center">
 
@@ -181,22 +181,22 @@ export default function InventoryViewPage() {
           {/* INFORMACIÓN DEL PRODUCTO */}
           <div className="lg:col-span-2">
 
-            <div className="bg-[color:var(--semantic-brand-light)] rounded-2xl shadow-md p-6">
+            <div className="bg-[color:var(--color-brand-light)] rounded-2xl shadow-md p-6">
 
               <div className="flex items-center gap-3 pb-4 mb-6">
 
                 <Package
                   size={20}
-                  className="text-[color:var(--semantic-brand)]"
+                  className="text-[color:var(--color-brand)]"
                 />
 
                 <div>
 
-                  <h2 className="font-bold text-lg text-[color:var(--color-text-secondary)]">
+                  <h2 className="font-[var(--font-weight-bold)] text-title text-[color:var(--color-text-secondary)]">
                     Datos del producto
                   </h2>
 
-                  <p className="text-sm text-[color:var(--color-text-secondary)]">
+                  <p className="text-body text-[color:var(--color-text-secondary)]">
                     Información general del producto
                   </p>
 
@@ -211,17 +211,17 @@ export default function InventoryViewPage() {
                 <div className="flex gap-3">
 
                   <Hash
-                    className="text-[color:var(--semantic-brand)] mt-1"
+                    className="text-[color:var(--color-brand)] mt-1"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-xs text-[color:var(--color-text-secondary)]">
+                    <p className="text-small text-[color:var(--color-text-secondary)]">
                       ID
                     </p>
 
-                    <p className="font-medium mt-1 text-[color:var(--color-text-secondary)]">
+                    <p className="text-body font-[var(--font-weight-regular)] mt-1 text-[color:var(--color-text-secondary)]">
                       {product.id || "No registrado"}
                     </p>
 
@@ -234,17 +234,17 @@ export default function InventoryViewPage() {
                 <div className="flex gap-3">
 
                   <Tag
-                    className="text-[color:var(--semantic-brand)] mt-1"
+                    className="text-[color:var(--color-brand)] mt-1"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-xs text-[color:var(--color-text-secondary)]">
+                    <p className="text-small text-[color:var(--color-text-secondary)]">
                       Marca
                     </p>
 
-                    <p className="font-medium mt-1 text-[color:var(--color-text-secondary)]">
+                    <p className="text-body font-[var(--font-weight-regular)] mt-1 text-[color:var(--color-text-secondary)]">
                       {product.brand || "No registrada"}
                     </p>
 
@@ -257,17 +257,17 @@ export default function InventoryViewPage() {
                 <div className="flex gap-3">
 
                   <Package
-                    className="text-[color:var(--semantic-brand)] mt-1"
+                    className="text-[color:var(--color-brand)] mt-1"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-xs text-[color:var(--color-text-secondary)]">
+                    <p className="text-small text-[color:var(--color-text-secondary)]">
                       Nombre del producto
                     </p>
 
-                    <p className="font-medium mt-1 text-[color:var(--color-text-secondary)]">
+                    <p className="text-body font-[var(--font-weight-regular)] mt-1 text-[color:var(--color-text-secondary)]">
                       {product.productName || "No registrado"}
                     </p>
 
@@ -280,17 +280,17 @@ export default function InventoryViewPage() {
                 <div className="flex gap-3">
 
                   <Barcode
-                    className="text-[color:var(--semantic-brand)] mt-1"
+                    className="text-[color:var(--color-brand)] mt-1"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-xs text-[color:var(--color-text-secondary)]">
+                    <p className="text-small text-[color:var(--color-text-secondary)]">
                       Código de barras
                     </p>
 
-                    <p className="font-medium mt-1 break-all text-[color:var(--color-text-secondary)]">
+                    <p className="text-body font-[var(--font-weight-regular)] mt-1 break-all text-[color:var(--color-text-secondary)]">
                       {product.barCode || "No registrado"}
                     </p>
 
@@ -303,17 +303,17 @@ export default function InventoryViewPage() {
                 <div className="flex gap-3">
 
                   <User
-                    className="text-[color:var(--semantic-brand)] mt-1"
+                    className="text-[color:var(--color-brand)] mt-1"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-xs text-[color:var(--color-text-secondary)]">
+                    <p className="text-small text-[color:var(--color-text-secondary)]">
                       Cuentadante
                     </p>
 
-                    <p className="font-medium mt-1 text-[color:var(--color-text-secondary)]">
+                    <p className="text-body font-[var(--font-weight-regular)] mt-1 text-[color:var(--color-text-secondary)]">
                       {product.custodian || "No registrado"}
                     </p>
 
@@ -326,17 +326,17 @@ export default function InventoryViewPage() {
                 <div className="flex gap-3">
 
                   <Boxes
-                    className="text-[color:var(--semantic-brand)] mt-1"
+                    className="text-[color:var(--color-brand)] mt-1"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-xs text-[color:var(--color-text-secondary)]">
+                    <p className="text-small text-[color:var(--color-text-secondary)]">
                       Cantidad
                     </p>
 
-                    <p className="font-medium mt-1 text-[color:var(--color-text-secondary)]">
+                    <p className="text-body font-[var(--font-weight-regular)] mt-1 text-[color:var(--color-text-secondary)]">
                       {product.quantity ?? "No registrada"}
                     </p>
 
@@ -349,17 +349,17 @@ export default function InventoryViewPage() {
                 <div className="flex gap-3">
 
                   <Boxes
-                    className="text-[color:var(--semantic-brand)] mt-1"
+                    className="text-[color:var(--color-brand)] mt-1"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-xs text-[color:var(--color-text-secondary)]">
+                    <p className="text-small text-[color:var(--color-text-secondary)]">
                       Cantidad total
                     </p>
 
-                    <p className="font-medium mt-1 text-[color:var(--color-text-secondary)]">
+                    <p className="text-body font-[var(--font-weight-regular)] mt-1 text-[color:var(--color-text-secondary)]">
                       {product.totalQuantity ?? product.quantity ?? "No registrada"}
                     </p>
 
@@ -372,17 +372,17 @@ export default function InventoryViewPage() {
                 <div className="flex gap-3">
 
                   <AlertTriangle
-                    className="text-[color:var(--semantic-brand)] mt-1"
+                    className="text-[color:var(--color-brand)] mt-1"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-xs text-[color:var(--color-text-secondary)]">
+                    <p className="text-small text-[color:var(--color-text-secondary)]">
                       Cantidad mínima
                     </p>
 
-                    <p className="font-medium mt-1 text-[color:var(--color-text-secondary)]">
+                    <p className="text-body font-[var(--font-weight-regular)] mt-1 text-[color:var(--color-text-secondary)]">
                       {product.minimumQuantity ?? "No registrada"}
                     </p>
 
@@ -395,17 +395,17 @@ export default function InventoryViewPage() {
                 <div className="flex gap-3">
 
                   <DollarSign
-                    className="text-[color:var(--semantic-brand)] mt-1"
+                    className="text-[color:var(--color-brand)] mt-1"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-xs text-[color:var(--color-text-secondary)]">
+                    <p className="text-small text-[color:var(--color-text-secondary)]">
                       Valor unitario
                     </p>
 
-                    <p className="font-medium mt-1 text-[color:var(--color-text-secondary)]">
+                    <p className="text-body font-[var(--font-weight-regular)] mt-1 text-[color:var(--color-text-secondary)]">
                       {product.unitValue !== undefined
                         ? `$${Number(product.unitValue).toLocaleString("es-CO")}`
                         : "No registrado"}
@@ -420,17 +420,17 @@ export default function InventoryViewPage() {
                 <div className="flex gap-3">
 
                   <DollarSign
-                    className="text-[color:var(--semantic-brand)] mt-1"
+                    className="text-[color:var(--color-brand)] mt-1"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-xs text-[color:var(--color-text-secondary)]">
+                    <p className="text-small text-[color:var(--color-text-secondary)]">
                       Valor total
                     </p>
 
-                    <p className="font-medium mt-1 text-[color:var(--color-text-secondary)]">
+                    <p className="text-body font-[var(--font-weight-regular)] mt-1 text-[color:var(--color-text-secondary)]">
                       {product.totalValue !== undefined
                         ? `$${Number(product.totalValue).toLocaleString("es-CO")}`
                         : "No registrado"}
@@ -445,17 +445,17 @@ export default function InventoryViewPage() {
                 <div className="flex gap-3">
 
                   <ToggleRight
-                    className="text-[color:var(--semantic-brand)] mt-1"
+                    className="text-[color:var(--color-brand)] mt-1"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-xs text-[color:var(--color-text-secondary)]">
+                    <p className="text-small text-[color:var(--color-text-secondary)]">
                       Estado
                     </p>
 
-                    <p className="font-medium mt-1 text-[color:var(--color-text-secondary)]">
+                    <p className="text-body font-[var(--font-weight-regular)] mt-1 text-[color:var(--color-text-secondary)]">
                       {product.status || "No registrado"}
                     </p>
 
@@ -468,17 +468,17 @@ export default function InventoryViewPage() {
                 <div className="flex gap-3">
 
                   <Layers
-                    className="text-[color:var(--semantic-brand)] mt-1"
+                    className="text-[color:var(--color-brand)] mt-1"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-xs text-[color:var(--color-text-secondary)]">
+                    <p className="text-small text-[color:var(--color-text-secondary)]">
                       Lote
                     </p>
 
-                    <p className="font-medium mt-1 text-[color:var(--color-text-secondary)]">
+                    <p className="text-body font-[var(--font-weight-regular)] mt-1 text-[color:var(--color-text-secondary)]">
                       {product.lot ?? "No registrado"}
                     </p>
 
@@ -491,17 +491,17 @@ export default function InventoryViewPage() {
                 <div className="flex gap-3">
 
                   <Calendar
-                    className="text-[color:var(--semantic-brand)] mt-1"
+                    className="text-[color:var(--color-brand)] mt-1"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-xs text-[color:var(--color-text-secondary)]">
+                    <p className="text-small text-[color:var(--color-text-secondary)]">
                       Fecha de vencimiento
                     </p>
 
-                    <p className="font-medium mt-1 text-[color:var(--color-text-secondary)]">
+                    <p className="text-body font-[var(--font-weight-regular)] mt-1 text-[color:var(--color-text-secondary)]">
                       {product.expirationDate || "No registrada"}
                     </p>
 
@@ -514,17 +514,17 @@ export default function InventoryViewPage() {
                 <div className="flex gap-3 md:col-span-2">
 
                   <FileText
-                    className="text-[color:var(--semantic-brand)] mt-1"
+                    className="text-[color:var(--color-brand)] mt-1"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-xs text-[color:var(--color-text-secondary)]">
+                    <p className="text-small text-[color:var(--color-text-secondary)]">
                       Descripción
                     </p>
 
-                    <p className="font-medium mt-1 break-all text-[color:var(--color-text-secondary)]">
+                    <p className="text-body font-[var(--font-weight-regular)] mt-1 break-all text-[color:var(--color-text-secondary)]">
                       {product.description || "No registrada"}
                     </p>
 
@@ -537,17 +537,17 @@ export default function InventoryViewPage() {
                 <div className="flex gap-3">
 
                   <MapPin
-                    className="text-[color:var(--semantic-brand)] mt-1"
+                    className="text-[color:var(--color-brand)] mt-1"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-xs text-[color:var(--color-text-secondary)]">
+                    <p className="text-small text-[color:var(--color-text-secondary)]">
                       Ubicación
                     </p>
 
-                    <p className="font-medium mt-1 text-[color:var(--color-text-secondary)]">
+                    <p className="text-body font-[var(--font-weight-regular)] mt-1 text-[color:var(--color-text-secondary)]">
                       {product.location || "No registrada"}
                     </p>
 
@@ -566,23 +566,23 @@ export default function InventoryViewPage() {
           <div className="space-y-5">
 
             {/* IMAGEN */}
-            <div className="bg-[color:var(--semantic-brand-light)] rounded-2xl shadow-md p-6">
+            <div className="bg-[color:var(--color-brand-light)] rounded-2xl shadow-md p-6">
 
               <div className="flex items-center gap-3 mb-5">
 
                 <Image
                   size={20}
-                  className="text-[color:var(--semantic-brand)]"
+                  className="text-[color:var(--color-brand)]"
                 />
 
-                <h2 className="font-bold text-lg text-[color:var(--color-text-secondary)]">
+                <h2 className="font-[var(--font-weight-bold)] text-title text-[color:var(--color-text-secondary)]">
                   Imagen del producto
                 </h2>
 
               </div>
 
 
-              <div className="w-full aspect-square rounded-xl overflow-hidden border border-[color:var(--color-border)] bg-[color:var(--color-background-secondary)] flex items-center justify-center">
+              <div className="w-full aspect-square rounded-xl overflow-hidden border border-[color:var(--color-border)] bg-[color:var(--color-surface)] flex items-center justify-center">
 
                 {product.image ? (
 
@@ -594,7 +594,7 @@ export default function InventoryViewPage() {
 
                 ) : (
 
-                  <p className="text-sm text-[color:var(--color-text-secondary)]">
+                  <p className="text-body text-[color:var(--color-text-secondary)]">
                     Sin imagen registrada
                   </p>
 
@@ -606,16 +606,16 @@ export default function InventoryViewPage() {
 
 
             {/* LOTE */}
-            <div className="bg-[color:var(--semantic-brand-light)] rounded-2xl shadow-md p-6">
+            <div className="bg-[color:var(--color-brand-light)] rounded-2xl shadow-md p-6">
 
               <div className="flex items-center gap-3 mb-5">
 
                 <Layers
                   size={20}
-                  className="text-[color:var(--semantic-brand)]"
+                  className="text-[color:var(--color-brand)]"
                 />
 
-                <h2 className="font-bold text-lg text-[color:var(--color-text-secondary)]">
+                <h2 className="font-[var(--font-weight-bold)] text-title text-[color:var(--color-text-secondary)]">
                   Información del lote
                 </h2>
 
@@ -626,11 +626,11 @@ export default function InventoryViewPage() {
 
                 <div>
 
-                  <p className="text-xs text-[color:var(--color-text-secondary)]">
+                  <p className="text-small text-[color:var(--color-text-secondary)]">
                     Lote
                   </p>
 
-                  <p className="font-medium mt-1 text-[color:var(--color-text-secondary)]">
+                  <p className="text-body font-[var(--font-weight-regular)] mt-1 text-[color:var(--color-text-secondary)]">
                     {product.lot ?? "No registrado"}
                   </p>
 
@@ -639,11 +639,11 @@ export default function InventoryViewPage() {
 
                 <div>
 
-                  <p className="text-xs text-[color:var(--color-text-secondary)]">
+                  <p className="text-small text-[color:var(--color-text-secondary)]">
                     Estado del lote
                   </p>
 
-                  <p className="font-medium mt-1 text-[color:var(--color-text-secondary)]">
+                  <p className="text-body font-[var(--font-weight-regular)] mt-1 text-[color:var(--color-text-secondary)]">
                     {product.status || "No registrado"}
                   </p>
 
@@ -652,11 +652,11 @@ export default function InventoryViewPage() {
 
                 <div>
 
-                  <p className="text-xs text-[color:var(--color-text-secondary)]">
+                  <p className="text-small text-[color:var(--color-text-secondary)]">
                     Vencimiento
                   </p>
 
-                  <p className="font-medium mt-1 text-[color:var(--color-text-secondary)]">
+                  <p className="text-body font-[var(--font-weight-regular)] mt-1 text-[color:var(--color-text-secondary)]">
                     {product.expirationDate || "No registrada"}
                   </p>
 
@@ -675,3 +675,4 @@ export default function InventoryViewPage() {
     </div>
   );
 }
+

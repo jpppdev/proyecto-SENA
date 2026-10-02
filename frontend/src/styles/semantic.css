@@ -28,7 +28,7 @@
     /* texto menos dominante */
     --semantic-text-muted: var(--color-gray-500);
     /* texto deshabilitado por ejemplo */
-    --semantic-text-inverse: var(--color-white);
+    --semantic-text-inverse: var(--white);
     /* texto invertido */
 
 

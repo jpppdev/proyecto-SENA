@@ -45,7 +45,7 @@ function Login() {
         style={{ backgroundImage:   `url(${restaurante})`}}
       ></div>
 
-      <div className="relative z-10 w-[1000px] h-[600px] bg-white rounded-4xl shadow-2xl flex overflow-hidden">
+      <div className="relative z-10 w-[1000px] h-[600px] bg-[var(--white)] rounded-4xl shadow-2xl flex overflow-hidden">
 
         <div className="w-1/2">
           <img
@@ -65,7 +65,7 @@ function Login() {
             className="w-48 mx-auto mb-6"
           />
 
-          <h1 className="text-main font-heading text-[var(--text-primary)] text-center mb-6">
+          <h1 className="text-main font-[var(--font-weight-bold)] text-[var(--color-text-secondary)] text-center mb-6">
             Bienvenido
           </h1>
 
@@ -103,16 +103,16 @@ function Login() {
             </Button>
           </div>
 
-          <p className="text-body text-[var(--text-primary)] text-center mt-6">
+          <p className="text-body text-[var(--color-text-secondary)] text-center mt-6">
             ¿Aún no tienes una cuenta?{" "}
-            <span className="text-medium font-semibold cursor-pointer text-brand"
+            <span className="text-medium font-[var(--font-weight-bold)] cursor-pointer text-[var(--color-brand)]"
             onClick={() => navigate("/register")}>
               Regístrate
             </span>
           </p>
 
           <div className="text-center mt-6 mb-6">
-            <p className="text-medium font-semibold cursor-pointer text-brand"
+            <p className="text-medium font-[var(--font-weight-bold)] cursor-pointer text-[var(--color-brand)]"
             onClick={() => navigate("/forgotPassword")}>
               
               ¿Olvidaste tu contraseña?
