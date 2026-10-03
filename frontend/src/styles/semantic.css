@@ -13,10 +13,12 @@
 
     /* =========BACKGROUND================= */
     --semantic-background-input: var(--color-tertiary-300);/* fondo del input claro */
-    --semantic-background-div: var(--color-tertiary-900);/* fondo para contenedores */
+    
     --semantic-surface: var(--color-gray-400);/* fondo de modales, cards, containers */
     --semantic-surface-muted: var(--color-gray-200);/* zonas secundarias, con menos importancia */
     --semantic-background-inverse: var(--color-gray-800);
+    /* Color para fondos blancos */
+    --semantic-background-div: var(--white);/* fondo para contenedores */
 
 
     /* ===================TEXT===================== */
@@ -24,13 +26,17 @@
     /* color principal de lectura, títulos, texto base del documento */
     --semantic-text-primary: var(--white);
     
+    /* Color de texto utilizado para parrafos */
     --semantic-text-socondary: var(--color-gray-700);
     /* texto menos dominante */
     --semantic-text-muted: var(--color-gray-500);
     /* texto deshabilitado por ejemplo */
     --semantic-text-inverse: var(--white);
     /* texto invertido */
-
+    /* Color de Titulos negativo */
+    --semantic-text-negative: var(--black);
+    /* Color naranja para textos */
+    --semantic-text-brand: var(--color-secondary-950)
 
     /* ============BORDER============== */
 
@@ -69,6 +75,7 @@
     --semantic-font-weight-heading: var(--font-weight-bold);
     --semantic-font-weight-body: var(--font-weight-regular);
     --semantic-font-weight-label: var(--font-weight-regular);
+    --semantic-font-weight-medium: var(--font-weight-medium-custom);
 
     /* ======================================================= */
                 /* YA NO DEPENDEMOS DE NOMBRES DE COLOR, 

@@ -42,10 +42,10 @@ function Login() {
     <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
       <div
         className="absolute inset-0 bg-cover bg-center blur-md scale-110"
-        style={{ backgroundImage:   `url(${restaurante})`}}
+        style={{ backgroundImage: `url(${restaurante})` }}
       ></div>
 
-      <div className="relative z-10 w-[1000px] h-[600px] bg-[var(--white)] rounded-4xl shadow-2xl flex overflow-hidden">
+      <div className="relative z-10 w-[1000px] h-[600px] bg-background-div rounded-4xl shadow-2xl flex overflow-hidden">
 
         <div className="w-1/2">
           <img
@@ -65,11 +65,12 @@ function Login() {
             className="w-48 mx-auto mb-6"
           />
 
-          <h1 className="text-main font-[var(--font-weight-bold)] text-[var(--color-text-secondary)] text-center mb-6">
+          <h1 className="text-main font-heading text-text-negative text-center mb-6">
             Bienvenido
           </h1>
 
           <Input
+            variant="tertiary"
             htmlFor="email"
             name="email"
             type="email"
@@ -82,6 +83,7 @@ function Login() {
 
           <div className="mt-2">
             <Input
+              variant="tertiary"
               htmlFor="password"
               name="password"
               type="password"
@@ -103,18 +105,21 @@ function Login() {
             </Button>
           </div>
 
-          <p className="text-body text-[var(--color-text-secondary)] text-center mt-6">
+          <p className="text-body text-text-secondary text-center mt-6">
             ¿Aún no tienes una cuenta?{" "}
-            <span className="text-medium font-[var(--font-weight-bold)] cursor-pointer text-[var(--color-brand)]"
-            onClick={() => navigate("/register")}>
+            <span
+              className="text-medium font-medium-custom cursor-pointer text-brand"
+              onClick={() => navigate("/register")}
+            >
               Regístrate
             </span>
           </p>
 
           <div className="text-center mt-6 mb-6">
-            <p className="text-medium font-[var(--font-weight-bold)] cursor-pointer text-[var(--color-brand)]"
-            onClick={() => navigate("/forgotPassword")}>
-              
+            <p
+              className="text-medium font-medium-custom cursor-pointer text-brand"
+              onClick={() => navigate("/forgotPassword")}
+            >
               ¿Olvidaste tu contraseña?
             </p>
           </div>

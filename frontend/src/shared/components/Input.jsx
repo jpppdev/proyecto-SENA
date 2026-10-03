@@ -21,8 +21,14 @@ export default function Input({
             bg-gray-300
         `, 
         tertiary: `
-            border-green-950
-        `
+            border border-border-clear
+            bg-background-input
+            text-text-secondary
+            hover:border-brand
+            focus:border-brand
+            focus:bg-white
+            focus:outline-none
+            `
     }
     const sizes = {
         

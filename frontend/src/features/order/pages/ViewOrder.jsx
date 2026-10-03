@@ -19,8 +19,8 @@ export default function OrderViewPage() {
 
   if (!order) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[color:var(--color-background)]">
-        <p className="text-title font-[var(--font-weight-bold)] text-[color:var(--color-text-primary)]">
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <p className="text-title font-heading text-text-primary">
           Orden no encontrada
         </p>
       </div>
@@ -36,7 +36,7 @@ export default function OrderViewPage() {
         <div className="flex justify-between items-center mb-6">
 
           <div>
-            <h1 className="text-main font-[var(--font-weight-bold)] text-[color:var(--color-text-primary)]">
+            <h1 className="text-main font-heading text-text-primary">
               Visualizar Orden
             </h1>
           </div>
@@ -51,7 +51,7 @@ export default function OrderViewPage() {
 
 
         {/* TARJETA PRINCIPAL */}
-        <div className="bg-[color:var(--color-brand-light)] rounded-2xl shadow-md p-6 mb-5">
+        <div className="bg-brand-light rounded-2xl shadow-md p-6 mb-5">
 
           <div className="flex flex-col lg:flex-row lg:items-center gap-6">
 
@@ -61,7 +61,7 @@ export default function OrderViewPage() {
               <div className="flex items-center gap-3">
 
                 <div>
-                  <h2 className="text-title font-[var(--font-weight-bold)] text-[color:var(--color-text-secondary)]">
+                  <h2 className="text-title font-heading text-text-secondary">
                     Orden #{order.id}
                   </h2>
 
@@ -69,10 +69,10 @@ export default function OrderViewPage() {
 
                     <ClipboardList
                       size={20}
-                      className="text-[color:var(--color-brand)]"
+                      className="text-brand"
                     />
 
-                    <span className="text-body text-[color:var(--color-text-secondary)]">
+                    <span className="text-body text-text-secondary">
                       Información de la orden
                     </span>
 
@@ -86,15 +86,15 @@ export default function OrderViewPage() {
 
 
             {/* ESTADO */}
-            <div className="lg:border-l lg:pl-8 min-w-[180px] border-[color:var(--color-border)]">
+            <div className="lg:border-l lg:pl-8 min-w-[180px] border-border">
 
-              <p className="text-body text-[color:var(--color-text-secondary)] mb-2">
+              <p className="text-body text-text-secondary mb-2">
                 Estado
               </p>
 
-              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-small font-[var(--font-weight-regular)] bg-[color:var(--color-brand)] text-[color:var(--color-text-inverse)]">
+              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-small font-body bg-brand text-text-inverse">
 
-                <span className="w-2 h-2 rounded-full bg-[color:var(--color-text-inverse)]"></span>
+                <span className="w-2 h-2 rounded-full bg-text-inverse"></span>
 
                 {order.status || "Activo"}
 
@@ -108,11 +108,11 @@ export default function OrderViewPage() {
 
 
         {/* PESTAÑAS */}
-        <div className="bg-[color:var(--color-brand-light)] rounded-2xl shadow-md mb-5">
+        <div className="bg-brand-light rounded-2xl shadow-md mb-5">
 
           <div className="flex items-center">
 
-            <div className="px-6 py-4 text-[color:var(--color-text-secondary)] flex items-center gap-2">
+            <div className="px-6 py-4 text-text-secondary flex items-center gap-2">
 
               <ClipboardList size={20} />
 
@@ -120,7 +120,7 @@ export default function OrderViewPage() {
 
             </div>
 
-            <div className="px-6 py-4 text-[color:var(--color-text-secondary)] flex items-center gap-2">
+            <div className="px-6 py-4 text-text-secondary flex items-center gap-2">
 
               <Utensils size={20} />
 
@@ -139,22 +139,22 @@ export default function OrderViewPage() {
           {/* INFORMACIÓN GENERAL */}
           <div className="lg:col-span-2">
 
-            <div className="bg-[color:var(--color-brand-light)] rounded-2xl shadow-md p-6">
+            <div className="bg-brand-light rounded-2xl shadow-md p-6">
 
               <div className="flex items-center gap-3 pb-4 mb-6">
 
                 <ClipboardList
                   size={20}
-                  className="text-[color:var(--color-brand)]"
+                  className="text-brand"
                 />
 
                 <div>
 
-                  <h2 className="font-[var(--font-weight-bold)] text-title text-[color:var(--color-text-secondary)]">
+                  <h2 className="font-heading text-title text-text-secondary">
                     Datos de la orden
                   </h2>
 
-                  <p className="text-body text-[color:var(--color-text-secondary)]">
+                  <p className="text-body text-text-secondary">
                     Información general de la orden
                   </p>
 
@@ -169,17 +169,17 @@ export default function OrderViewPage() {
                 <div className="flex gap-3">
 
                   <Hash
-                    className="text-[color:var(--color-brand)] mt-1"
+                    className="text-brand mt-1"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-small text-[color:var(--color-text-secondary)]">
+                    <p className="text-small text-text-secondary">
                       Número de mesa
                     </p>
 
-                    <p className="font-[var(--font-weight-regular)] mt-1 text-[color:var(--color-text-secondary)]">
+                    <p className="font-body mt-1 text-text-secondary">
                       {order.table || "No registrado"}
                     </p>
 
@@ -192,17 +192,17 @@ export default function OrderViewPage() {
                 <div className="flex gap-3">
 
                   <User
-                    className="text-[color:var(--color-brand)] mt-1"
+                    className="text-brand mt-1"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-small text-[color:var(--color-text-secondary)]">
+                    <p className="text-small text-text-secondary">
                       Mesero responsable
                     </p>
 
-                    <p className="font-[var(--font-weight-regular)] mt-1 text-[color:var(--color-text-secondary)]">
+                    <p className="font-body mt-1 text-text-secondary">
                       {order.waiter || "No registrado"}
                     </p>
 
@@ -215,17 +215,17 @@ export default function OrderViewPage() {
                 <div className="flex gap-3">
 
                   <ToggleRight
-                    className="text-[color:var(--color-brand)] mt-1"
+                    className="text-brand mt-1"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-small text-[color:var(--color-text-secondary)]">
+                    <p className="text-small text-text-secondary">
                       Estado
                     </p>
 
-                    <p className="font-[var(--font-weight-regular)] mt-1 text-[color:var(--color-text-secondary)]">
+                    <p className="font-body mt-1 text-text-secondary">
                       {order.status || "Activo"}
                     </p>
 
@@ -238,17 +238,17 @@ export default function OrderViewPage() {
                 <div className="flex gap-3">
 
                   <MessageSquare
-                    className="text-[color:var(--color-brand)] mt-1"
+                    className="text-brand mt-1"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-small text-[color:var(--color-text-secondary)]">
+                    <p className="text-small text-text-secondary">
                       Observaciones especiales
                     </p>
 
-                    <p className="font-[var(--font-weight-regular)] mt-1 break-all text-[color:var(--color-text-secondary)]">
+                    <p className="font-body mt-1 break-all text-text-secondary">
                       {order.observations || "Sin observaciones"}
                     </p>
 
@@ -266,16 +266,16 @@ export default function OrderViewPage() {
           {/* RESUMEN */}
           <div className="space-y-5">
 
-            <div className="bg-[color:var(--color-brand-light)] rounded-2xl shadow-md p-6">
+            <div className="bg-brand-light rounded-2xl shadow-md p-6">
 
               <div className="flex items-center gap-3 mb-5">
 
                 <Utensils
                   size={20}
-                  className="text-[color:var(--color-brand)]"
+                  className="text-brand"
                 />
 
-                <h2 className="font-[var(--font-weight-bold)] text-title text-[color:var(--color-text-secondary)]">
+                <h2 className="font-heading text-title text-text-secondary">
                   Resumen
                 </h2>
 
@@ -285,11 +285,11 @@ export default function OrderViewPage() {
 
                 <div>
 
-                  <p className="text-small text-[color:var(--color-text-secondary)]">
+                  <p className="text-small text-text-secondary">
                     Número de orden
                   </p>
 
-                  <p className="font-[var(--font-weight-regular)] mt-1 text-[color:var(--color-text-secondary)]">
+                  <p className="font-body mt-1 text-text-secondary">
                     #{order.id}
                   </p>
 
@@ -298,11 +298,11 @@ export default function OrderViewPage() {
 
                 <div>
 
-                  <p className="text-small text-[color:var(--color-text-secondary)]">
+                  <p className="text-small text-text-secondary">
                     Total de platillos
                   </p>
 
-                  <p className="font-[var(--font-weight-regular)] mt-1 text-[color:var(--color-text-secondary)]">
+                  <p className="font-body mt-1 text-text-secondary">
                     {order.dishes?.length || 0}
                   </p>
 
@@ -311,11 +311,11 @@ export default function OrderViewPage() {
 
                 <div>
 
-                  <p className="text-small text-[color:var(--color-text-secondary)]">
+                  <p className="text-small text-text-secondary">
                     Total de la orden
                   </p>
 
-                  <p className="font-[var(--font-weight-regular)] mt-1 text-[color:var(--color-text-secondary)]">
+                  <p className="font-body mt-1 text-text-secondary">
                     ${order.total || "0"}
                   </p>
 
@@ -331,22 +331,22 @@ export default function OrderViewPage() {
 
 
         {/* PLATILLOS */}
-        <div className="bg-[color:var(--color-brand-light)] rounded-2xl shadow-md p-6 mt-5">
+        <div className="bg-brand-light rounded-2xl shadow-md p-6 mt-5">
 
           <div className="flex items-center gap-3 pb-4 mb-6">
 
             <Utensils
               size={20}
-              className="text-[color:var(--color-brand)]"
+              className="text-brand"
             />
 
             <div>
 
-              <h2 className="font-[var(--font-weight-bold)] text-title text-[color:var(--color-text-secondary)]">
+              <h2 className="font-heading text-title text-text-secondary">
                 Platillos seleccionados
               </h2>
 
-              <p className="text-body text-[color:var(--color-text-secondary)]">
+              <p className="text-body text-text-secondary">
                 Platillos incluidos en la orden
               </p>
 
@@ -361,7 +361,7 @@ export default function OrderViewPage() {
 
               <div
                 key={index}
-                className="border border-[color:var(--color-border)] rounded-lg p-4"
+                className="border border-border rounded-lg p-4"
               >
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -370,17 +370,17 @@ export default function OrderViewPage() {
                   <div className="flex gap-3">
 
                     <Utensils
-                      className="text-[color:var(--color-brand)] mt-1"
+                      className="text-brand mt-1"
                       size={20}
                     />
 
                     <div>
 
-                      <p className="text-small text-[color:var(--color-text-secondary)]">
+                      <p className="text-small text-text-secondary">
                         Platillo
                       </p>
 
-                      <p className="font-[var(--font-weight-regular)] mt-1 text-[color:var(--color-text-secondary)]">
+                      <p className="font-body mt-1 text-text-secondary">
                         {dish.name || "No registrado"}
                       </p>
 
@@ -393,17 +393,17 @@ export default function OrderViewPage() {
                   <div className="flex gap-3">
 
                     <Package
-                      className="text-[color:var(--color-brand)] mt-1"
+                      className="text-brand mt-1"
                       size={20}
                     />
 
                     <div>
 
-                      <p className="text-small text-[color:var(--color-text-secondary)]">
+                      <p className="text-small text-text-secondary">
                         Cantidad
                       </p>
 
-                      <p className="font-[var(--font-weight-regular)] mt-1 text-[color:var(--color-text-secondary)]">
+                      <p className="font-body mt-1 text-text-secondary">
                         {dish.quantity || "No registrado"}
                       </p>
 
@@ -416,17 +416,17 @@ export default function OrderViewPage() {
                   <div className="flex gap-3">
 
                     <ClipboardList
-                      className="text-[color:var(--color-brand)] mt-1"
+                      className="text-brand mt-1"
                       size={20}
                     />
 
                     <div>
 
-                      <p className="text-small text-[color:var(--color-text-secondary)]">
+                      <p className="text-small text-text-secondary">
                         Precio
                       </p>
 
-                      <p className="font-[var(--font-weight-regular)] mt-1 text-[color:var(--color-text-secondary)]">
+                      <p className="font-body mt-1 text-text-secondary">
                         ${dish.price || "0"}
                       </p>
 
@@ -449,3 +449,4 @@ export default function OrderViewPage() {
     </div>
   );
 }
+
