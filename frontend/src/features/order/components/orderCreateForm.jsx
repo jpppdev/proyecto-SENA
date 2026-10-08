@@ -307,7 +307,7 @@ export default function OrderCreateForm() {
                 disabled={isSubmitting} 
                 variant="create" 
                 size="md" 
-                // className="rounded-xl flex items-center gap-2 !bg-white !text-[var(--color-gray-600)] hover:opacity-90 !border-none px-10 shadow-lg font-extrabold tracking-wide uppercase"
+               
                 >
             <Check size={18} />
             {isSubmitting ? "PROCESANDO..." : "Confirmar Orden"}

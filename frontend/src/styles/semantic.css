@@ -26,8 +26,12 @@
     /* color principal de lectura, títulos, texto base del documento */
     --semantic-text-primary: var(--white);
     
-    /* Color de texto utilizado para parrafos */
-    --semantic-text-socondary: var(--color-gray-700);
+/* Color de texto utilizado para parrafos */
+    --semantic-text-secondary: var(--color-gray-700);
+
+    
+    
+
     /* texto menos dominante */
     --semantic-text-muted: var(--color-gray-500);
     /* texto deshabilitado por ejemplo */
