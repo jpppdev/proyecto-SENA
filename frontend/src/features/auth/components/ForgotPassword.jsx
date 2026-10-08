@@ -2,9 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input, Button } from "@/shared";
 import restaurante from "../../../assets/images/Img-Restaurante.jpeg";
-import logo from "../../../assets/images/Img-Login.jpeg";
+import savePassword from "../../../assets/images/SavePassword.png";
 import title from "../../../assets/images/Img-Titulo.png";
 import { forgotPasswordSchema } from "../schemas/ForgotPasswordSchema";
+import { showSuccessAlert } from "@/shared/services/alertService";
 
 function ForgotPassword() {
   const navigate = useNavigate();
@@ -35,14 +36,18 @@ function ForgotPassword() {
 
     setErrors({});
 
-    alert("Se ha enviado un codigo a su correo para recuperar su contraseña");
+    showSuccessAlert({
+      title: "Codigo Enviado",
+      text: "Enviamos un código a tu correo.",
+      timer: 3000,
+    });
 
     navigate("/resetPasswordToken");
   };
 
   return (
     <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
-      
+
       {/* Fondo */}
       <div
         className="absolute inset-0 bg-cover bg-center blur-md scale-110"
@@ -50,12 +55,12 @@ function ForgotPassword() {
       ></div>
 
       {/* Tarjeta */}
-      <div className="relative z-10 w-[1000px] h-[600px] bg-white rounded-4xl shadow-2xl flex overflow-hidden">
+      <div className="relative z-10 w-[1000px] h-[600px] bg-background-div rounded-4xl shadow-2xl flex overflow-hidden">
 
         {/* Imagen */}
-        <div className="w-1/2">
+        <div className="w-1/2 flex items-center justify-center">
           <img
-            src={logo}
+            src={savePassword}
             alt="Restaurante"
             className="w-full h-full object-cover"
           />
@@ -72,17 +77,18 @@ function ForgotPassword() {
             className="w-48 mx-auto mb-6"
           />
 
-          <h1 className="text-main font-heading text-[var(--text-primary)] text-center mb-4">
+          <h1 className="text-main font-heading text-text-negative text-center mb-6">
             Recuperar contraseña
           </h1>
 
-          <p className="text-body text-[var(--text-primary)] text-center mb-8">
+          <p className="text-body text-text-secondary text-center mb-8">
             Ingresa tu correo electrónico y te enviaremos
             un enlace para recuperar tu contraseña.
           </p>
 
           <Input
             htmlFor="email"
+            variant="tertiary"
             name="email"
             type="email"
             label="Correo electrónico"
@@ -92,17 +98,11 @@ function ForgotPassword() {
             error={errors.email}
           />
 
-          <div className="w-full mt-8">
+          <div className="w-full mt-8 flex justify-center">
             <Button
               variant="primary"
               type="submit"
               size="md"
-              style={{
-                backgroundColor: "var(--semantic-brand)",
-                color: "var(--text-inverse)",
-                borderRadius: "7px",
-                width: "100%",
-              }}
             >
               Recuperar contraseña
             </Button>
@@ -110,7 +110,7 @@ function ForgotPassword() {
 
           <div className="text-center mt-6">
             <p
-              className="text-medium font-semibold cursor-pointer text-brand"
+              className="text-medium font-medium-custom cursor-pointer text-brand"
               onClick={() => navigate("/login")}
             >
               Volver al inicio de sesión
@@ -125,4 +125,3 @@ function ForgotPassword() {
 }
 
 export default ForgotPassword;
-

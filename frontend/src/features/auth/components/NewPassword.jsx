@@ -2,9 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input, Button } from "@/shared";
 import restaurante from "../../../assets/images/Img-Restaurante.jpeg";
-import logo from "../../../assets/images/Img-Login.jpeg";
+import newPassword from "../../../assets/images/NewPassword.png";
 import title from "../../../assets/images/Img-Titulo.png";
 import { newPasswordSchema } from "../schemas/NewPasswordSchema";
+import { showSuccessAlert } from "@/shared/services/alertService";
 
 function NewPassword() {
   const navigate = useNavigate();
@@ -30,7 +31,11 @@ function NewPassword() {
 
     setErrors({});
 
-    alert("Contraseña actualizada correctamente");
+    showSuccessAlert({
+      title: "Contraseña cambiada",
+      text: "Tu contraseña fue cambiada con éxito.",
+      timer: 3000,
+    });
 
     navigate("/login");
   };
@@ -45,12 +50,12 @@ function NewPassword() {
       ></div>
 
       {/* Tarjeta */}
-      <div className="relative z-10 w-[1000px] h-[600px] bg-white rounded-4xl shadow-2xl flex overflow-hidden">
+      <div className="relative z-10 w-[1000px] h-[600px] bg-background-div rounded-4xl shadow-2xl flex overflow-hidden">
 
         {/* Imagen */}
-        <div className="w-1/2">
+        <div className="w-1/2 flex items-center justify-center">
           <img
-            src={logo}
+            src={newPassword}
             alt="Restaurante"
             className="w-full h-full object-cover"
           />
@@ -68,67 +73,60 @@ function NewPassword() {
             className="w-48 mx-auto mb-6"
           />
 
-          <h1 className="text-main font-heading text-[var(--text-primary)] text-center mb-4">
+          <h1 className="text-main font-heading text-text-negative text-center mb-6">
             Renovar contraseña
           </h1>
 
-          <p className="text-body text-[var(--text-primary)] text-center mb-8">
+          <p className="text-body text-text-secondary text-center mb-8">
             Ingresa y confirma tu nueva contraseña para
             completar el proceso de recuperación.
           </p>
 
-          
-<div className="w-1/2 flex flex-col justify-center items-center">
-  <Input
-    htmlFor="password"
-    name="password"
-    type="password"
-    label="Nueva contraseña"
-    placeholder="Ingresa tu nueva contraseña"
-    value={password}
-    onChange={(e) => {
-      setPassword(e.target.value);
-      setErrors({
-        ...errors,
-        password: undefined,
-      });
-    }}
-    error={errors.password}
-  />
+          <div className="w-1/2 flex flex-col justify-center items-center">
+            <Input
+              htmlFor="password"
+              name="password"
+              variant="tertiary"
+              type="password"
+              label="Nueva contraseña"
+              placeholder="Ingresa tu nueva contraseña"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setErrors({
+                  ...errors,
+                  password: undefined,
+                });
+              }}
+              error={errors.password}
+            />
 
-  <div className="mt-4">
-    <Input
-      htmlFor="confirmPassword"
-      name="confirmPassword"
-      type="password"
-      label="Confirmar contraseña"
-      placeholder="Confirma tu nueva contraseña"
-      value={confirmPassword}
-      onChange={(e) => {
-        setConfirmPassword(e.target.value);
-        setErrors({
-          ...errors,
-          confirmPassword: undefined,
-        });
-      }}
-      error={errors.confirmPassword}
-    />
-  </div>
-</div>
+            <div className="mt-4">
+              <Input
+                htmlFor="confirmPassword"
+                name="confirmPassword"
+                variant="tertiary"
+                type="password"
+                label="Confirmar contraseña"
+                placeholder="Confirma tu nueva contraseña"
+                value={confirmPassword}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  setErrors({
+                    ...errors,
+                    confirmPassword: undefined,
+                  });
+                }}
+                error={errors.confirmPassword}
+              />
+            </div>
+          </div>
 
-
-
-          <div className="w-full mt-8">
+          <div className="w-full mt-8 flex justify-center">
             <Button
               variant="primary"
               type="submit"
               size="md"
-              style={{
-                backgroundColor: "var(--semantic-brand)",
-                color: "var(--text-inverse)",
-                borderRadius: "7px",
-                width: "100%",
-              }}
             >
               Renovar contraseña
             </Button>
@@ -136,7 +134,7 @@ function NewPassword() {
 
           <div className="text-center mt-6">
             <p
-              className="text-medium font-semibold cursor-pointer text-brand"
+              className="text-medium font-medium-custom cursor-pointer text-brand"
               onClick={() => navigate("/login")}
             >
               Volver al inicio de sesión
@@ -151,4 +149,3 @@ function NewPassword() {
 }
 
 export default NewPassword;
-
