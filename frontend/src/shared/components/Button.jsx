@@ -5,7 +5,7 @@ export default function Button ({
     variant = "primary",
     size = "md",
     type = "button",
-    children,
+    children ="",
     className = "",
     ...props
 }){
@@ -15,7 +15,7 @@ export default function Button ({
         
         secondary : "border border-[var(--color-border-clear)] bg-[var(--semantic-brand)] text-[color:var(--text-inverse)] hover:bg-[var(--color-brand-hover)] ",
         
-      create: "bg-text-primary text-text-inverse font-extrabold tracking-wide shadow-lg hover:opacity-90 active:scale-95 border-none disabled:opacity-50 disabled:active:scale-100"
+     create: "rounded-full bg-[var(--color-text-primary)] !text-[var(--semantic-text-secondary)] px-10 py-3.5 text-sm font-bold shadow-lg hover:opacity-80 active:scale-95 transition-all !border-none disabled:opacity-50 disabled:active:scale-100"
     };
 
     const sizes = {

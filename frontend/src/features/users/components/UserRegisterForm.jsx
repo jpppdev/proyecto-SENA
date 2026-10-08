@@ -172,10 +172,10 @@ export default function UserRegisterForm (){
           </div>
 
           <div>
-            <h1 className="text-3xl font-extrabold text-[var(--color-text-primary)] mb-1">
+            <h1 className="text-3xl font-extrabold text-text-primary mb-1">
               Nuevo Usuario
             </h1>
-            <p className="text-sm font-medium text-[var(--color-text-muted)]">
+            <p className="text-sm font-medium text-text-muted">
               Registra los datos para el empleado o admin
             </p>
           </div>
@@ -247,7 +247,7 @@ export default function UserRegisterForm (){
               variant="create"
               size="md"
               disabled={isSubmitting}
-              // className="rounded-full bg-[var(--color-text-primary)] !text-[var(--color-background)] px-10 py-3.5 text-sm font-bold shadow-lg hover:opacity-80 active:scale-95 transition-all !border-none disabled:opacity-50 disabled:active:scale-100"
+             
             >
               {isSubmitting ? "GUARDANDO..." : "GUARDAR USUARIO"}
             </Button>

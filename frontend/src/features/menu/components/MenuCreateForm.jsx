@@ -199,10 +199,10 @@ export default function MenuCreateForm() {
           <div className="flex justify-end mt-12 border-t-2 border-[var(--color-border-strong)] pt-8">
             <Button 
               type="submit" 
-              variant="primary" 
+              variant="create" 
               size="md" 
               disabled={isSubmitting} 
-             className="rounded-full bg-[var(--color-text-primary)] !text-[var(--color-background)] px-10 py-3.5 text-sm font-bold shadow-lg hover:opacity-80 active:scale-95 transition-all !border-none disabled:opacity-50 disabled:active:scale-100"
+             
             >
               {isSubmitting ? "GUARDANDO..." : "GUARDAR MENÚ"}
             </Button>

@@ -226,10 +226,20 @@ export default function InventoryCreateForm() {
 
         {/* FOOTER GENERAL */}
         <div className="flex justify-end gap-4 bg-white/30 backdrop-blur-md p-4 rounded-3xl shadow-sm border border-white/40 mt-6">
-          <Button type="button" onClick={() => navigate(-1)} variant="secondary" size="md" className="rounded-xl border-[var(--color-border-strong)] text-[var(--color-text-primary)] hover:bg-white/40 transition-all">
+          <Button 
+            type="button" 
+            onClick={() => navigate(-1)} 
+            variant="secondary" 
+            size="md" 
+            className="rounded-xl border-[var(--color-border-strong)] text-[var(--color-text-primary)] hover:bg-white/40 transition-all">
             Cancelar
           </Button>
-          <Button type="submit" disabled={isSubmitting} variant="primary" size="md" className="rounded-xl flex items-center gap-2 bg-[var(--color-secondary-500)] text-white hover:bg-[var(--color-secondary-600)] !border-none px-8 shadow-md">
+          <Button 
+            type="submit"
+            disabled={isSubmitting} 
+            variant="create"
+            size="md" 
+           >
             <PackagePlus size={18} />
             {isSubmitting ? "CREANDO..." : "Crear producto"}
           </Button>
