@@ -19,6 +19,7 @@ import { ViewSuppliers } from "@/features/provider";
 import { ProviderListPage } from "@/features/provider";
 import { MenuCreateForm, ViewMenu, MenuListPage } from "@/features/menu";
 
+
 import { UserEditForm } from "../features/users";
 import { OrderEditForm } from "../features/order";
 import MenuEditForm from "../features/menu/components/MenuEditForm";
@@ -72,6 +73,7 @@ const  router = createBrowserRouter([
         children: [
             {index: true},
             { path: "home", element: <HomePage />},
+            { path: "Dishes", element: <DishesPage />},
             
             // --- USUARIOS ---
 { path: "userList", element: <UserListPage />},
