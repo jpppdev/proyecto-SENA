@@ -25,6 +25,7 @@ export {Dropdown,
         DropdownContent,
 } from "./components/Dropdown";
 export {default as FileInput} from "./components/FileInput";
+export {default as TextArea} from "./components/TextArea";
 
 
 // layouts components
