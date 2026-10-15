@@ -8,22 +8,18 @@ import {
   DropdownContent,
   DropdownItem,
 } from "@/shared";
-import  logo  from "@/assets/images/1-logo.png";
+import logo from "@/assets/images/1-logo.png";
 import { Link } from "react-router-dom";
 import { showErrorAlert } from "@/shared/services/alertService";
-// import { useNavigate } from "react-router-dom";
 
-export default function Navbar(){
+export default function Navbar() {
 
-
-  // Componente de búsqueda 😂😂😂
+  // Componente de búsqueda
   const [search, setSearch] = useState("");
-
 
   const handleSearch = (value) => {
     console.log("Buscar:", value);
   };
-
 
   const handleClear = () => {
     console.log("Campo limpiado");
@@ -39,120 +35,110 @@ export default function Navbar(){
   };
 
   return (
-    <nav className="w-full bg-white/30  backdrop-blur-md relative z-50">
-      
+    <nav className="w-full bg-white/20 backdrop-blur-md relative z-50">
+
       <div className="mx-auto max-w-7xl px-4">
-        <div className="flex h-16 items-center justify-between">
+        <div className="flex h-28 items-center justify-between">
 
           {/* Logo de marca */}
-          <div className=" hidden sm:block items-center">
-            <Link to={"/dashboard"} className="text-h1 font-heading">
-              <img src={logo} alt="logo" className="h-12" />
+          <div className="hidden sm:block items-center">
+            <Link to="/dashboard" className="text-h1 font-heading">
+              <img src={logo} alt="logo" className="h-20 w-auto" />
             </Link>
           </div>
 
-
-            {/* Links de navegación */}
+          {/* Links de navegación */}
           <ul className="hidden md:flex items-center gap-6">
             <li>
-              <Link  
-                to={"/Home"} 
-                className="text-[var(--color-text-primary)]">
+              <Link to="/Home" className="text-text-primary">
                 Inicio
               </Link>
             </li>
 
-
-
             <li>
               <Link
-                to={"/dashboard/Dishes"}
-                className="text-[var(--color-text-primary)]"
+                to="/dashboard/Dishes"
+                className="text-text-primary"
               >
                 Platillos
               </Link>
             </li>
 
-           
-
             <li>
               <Link
                 onClick={handleContactClick}
-                className="text-[var(--color-text-primary)]"
+                className="text-text-primary"
               >
                 Contacto
               </Link>
             </li>
+          </ul>
 
-            </ul>
+          {/* SearchField + IconButton */}
+          <div>
+            <SearchField
+              value={search}
+              onChange={setSearch}
+              onSubmit={handleSearch}
+              onClear={handleClear}
+              placeholder="Buscar productos..."
+              size="md"
+              variant="outlined"
+              className="w-76"
+            />
+          </div>
 
-                {/* SearchField + IconButton */}
-            <div>
-              <SearchField
-                value={search}
-                onChange={setSearch}
-                onSubmit={handleSearch}
-                onClear={handleClear}
-                placeholder="Buscar productos..."
-                size="md"
-                variant="outlined"
-                className="w-76"
-              />
-            </div>
+          {/* Dropdown */}
+          <div>
+            <Dropdown className="z-50">
+              <DropdownTrigger>
+                <IconButton>
+                  <Menu />
+                </IconButton>
+              </DropdownTrigger>
 
-        {/* Dropdown */}
-        <div>
-      <Dropdown className="z-50">
-          {/* Disparador */}
-          <DropdownTrigger>
-            <IconButton>
-              <Menu/>
-            </IconButton>
-          </DropdownTrigger>
+              <DropdownContent>
+                <DropdownItem>
+                  <Link to="/dashboard/userList" className="block w-full">
+                    Módulo usuario
+                  </Link>
+                </DropdownItem>
 
-          {/* Contenido */}
-        <DropdownContent>
-          <DropdownItem>
-            <Link to="/dashboard/userList" className="block w-full">
-            Módulo usuario
-            </Link>
-          </DropdownItem>
-          
-          <DropdownItem>
-            <Link to="/dashboard/inventoryList" className="block w-full">
-              Módulo inventario
-            </Link>
-          </DropdownItem>
+                <DropdownItem>
+                  <Link to="/dashboard/inventoryList" className="block w-full">
+                    Módulo inventario
+                  </Link>
+                </DropdownItem>
 
-          <DropdownItem>
-            <Link to="/dashboard/providerList" className="block w-full">
-              Módulo proveedor
-            </Link>
-          </DropdownItem>
-          <DropdownItem>
-            <Link to="/dashboard/menuList" className="block w-full">
-              Módulo menu
-            </Link>
-          </DropdownItem>
-          <DropdownItem>
-            <Link to="/dashboard/orderList" className="block w-full">
-              Módulo orden
-            </Link>
-          </DropdownItem>
+                <DropdownItem>
+                  <Link to="/dashboard/providerList" className="block w-full">
+                    Módulo proveedor
+                  </Link>
+                </DropdownItem>
 
-          <DropdownItem>
-            <Link to="/login" className="block w-full">
-              Cerrar sesión
-            </Link>
-          </DropdownItem>
-          
-        </DropdownContent>
+                <DropdownItem>
+                  <Link to="/dashboard/menuList" className="block w-full">
+                    Módulo menú
+                  </Link>
+                </DropdownItem>
 
-      </Dropdown>
-        </div>
+                <DropdownItem>
+                  <Link to="/dashboard/orderList" className="block w-full">
+                    Módulo orden
+                  </Link>
+                </DropdownItem>
+
+                <DropdownItem>
+                  <Link to="/login" className="block w-full">
+                    Cerrar sesión
+                  </Link>
+                </DropdownItem>
+              </DropdownContent>
+            </Dropdown>
+          </div>
 
         </div>
       </div>
     </nav>
   );
-};
+}

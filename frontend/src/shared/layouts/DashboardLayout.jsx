@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import authBg from "@/assets/images/fondo.png";
 // import {UserRegisterForm} from "@/features/users";
-import { Navbar } from "@/shared";
+import { Navbar, Footer } from "@/shared";
 
 export default function DashboardLayout(){
     return(
@@ -28,6 +28,7 @@ export default function DashboardLayout(){
                 
             </main>
 
+          <Footer />
 
         </div>   
         </>
