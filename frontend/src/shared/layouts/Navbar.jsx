@@ -19,11 +19,19 @@ import logo from "@/assets/images/1-logo.png";
 import { Link } from "react-router-dom";
 import { showErrorAlert } from "@/shared/services/alertService";
 
+
 export default function Navbar({ onMenuClick }) {
   const [search, setSearch] = useState("");
   const [darkMode, setDarkMode] = useState(
     document.documentElement.classList.contains("dark")
   );
+
+
+export default function Navbar() {
+
+  // Componente de búsqueda
+  const [search, setSearch] = useState("");
+
 
   const handleSearch = (value) => {
     console.log("Buscar:", value);
@@ -61,6 +69,7 @@ export default function Navbar({ onMenuClick }) {
   };
 
   return (
+
     <nav className="relative z-50 w-full bg-white/30 backdrop-blur-md">
       <div className="mx-auto max-w-7xl px-4">
         <div className="flex h-16 items-center justify-between gap-4">
@@ -79,6 +88,24 @@ export default function Navbar({ onMenuClick }) {
                 to="/Home"
                 className="text-text-primary transition-colors hover:text-text-brand"
               >
+
+    <nav className="w-full bg-white/20 backdrop-blur-md relative z-50">
+
+      <div className="mx-auto max-w-7xl px-4">
+        <div className="flex h-28 items-center justify-between">
+
+          {/* Logo de marca */}
+          <div className="hidden sm:block items-center">
+            <Link to="/dashboard" className="text-h1 font-heading">
+              <img src={logo} alt="logo" className="h-20 w-auto" />
+            </Link>
+          </div>
+
+          {/* Links de navegación */}
+          <ul className="hidden md:flex items-center gap-6">
+            <li>
+              <Link to="/Home" className="text-text-primary">
+
                 Inicio
               </Link>
             </li>
@@ -86,7 +113,11 @@ export default function Navbar({ onMenuClick }) {
             <li>
               <Link
                 to="/dashboard/Dishes"
+
                 className="text-text-primary transition-colors hover:text-text-brand"
+
+                className="text-text-primary"
+
               >
                 Platillos
               </Link>
@@ -96,15 +127,24 @@ export default function Navbar({ onMenuClick }) {
               <Link
                 to="/dashboard"
                 onClick={handleContactClick}
+
                 className="text-text-primary transition-colors hover:text-text-brand"
+
+                className="text-text-primary"
+
               >
                 Contacto
               </Link>
             </li>
           </ul>
 
+
           {/* Buscador */}
           <div className="max-w-xs flex-1">
+
+          {/* SearchField + IconButton */}
+          <div>
+
             <SearchField
               value={search}
               onChange={setSearch}
@@ -113,6 +153,7 @@ export default function Navbar({ onMenuClick }) {
               placeholder="Buscar productos..."
               size="md"
               variant="outlined"
+
               className="w-full"
             />
           </div>
@@ -161,6 +202,18 @@ export default function Navbar({ onMenuClick }) {
                   iconSize={20}
                 >
                   <UserRound />
+
+              className="w-76"
+            />
+          </div>
+
+          {/* Dropdown */}
+          <div>
+            <Dropdown className="z-50">
+              <DropdownTrigger>
+                <IconButton>
+                  <Menu />
+
                 </IconButton>
               </DropdownTrigger>
 
@@ -191,7 +244,11 @@ export default function Navbar({ onMenuClick }) {
 
                 <DropdownItem>
                   <Link to="/dashboard/orderList" className="block w-full">
+
                     Módulo órdenes
+
+                    Módulo orden
+
                   </Link>
                 </DropdownItem>
 
@@ -202,6 +259,10 @@ export default function Navbar({ onMenuClick }) {
                 </DropdownItem>
               </DropdownContent>
             </Dropdown>
+ feat-component-sidenav
+
+          </div>
+
 
           </div>
         </div>
