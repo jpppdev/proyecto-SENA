@@ -29,4 +29,8 @@ export {default as FileInput} from "./components/FileInput";
 
 // layouts components
 export {default as Navbar} from "./layouts/navbar";
+
+export {default as Sidenav} from "./layouts/sidenav";
+
 export {default as Footer} from "./layouts/footer";
+
