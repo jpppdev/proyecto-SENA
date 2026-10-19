@@ -14,17 +14,17 @@
 
     
     /* Secondary Color: Base #DC6D15 */
---color-secondary-950: #DC6D15;
---color-secondary-900: #DD7623;
---color-secondary-800: #E1873D;
---color-secondary-700: #E39856;
---color-secondary-600: #E6A96F;
---color-secondary-500: #E9BA88;
---color-secondary-400: #EDC9A0;
---color-secondary-300: #F0D9B9;
---color-secondary-200: #F4E4D0;
---color-secondary-100: #FAEEE4;
---color-secondary-50:  #FDF5EF;
+--color-secondary-950: #B3550E;
+--color-secondary-900: #DC6D15;
+--color-secondary-800: #DD7623;
+--color-secondary-700: #E1873D;
+--color-secondary-600: #E39856;
+--color-secondary-500: #E6A96F;
+--color-secondary-400: #E9BA88;
+--color-secondary-300: #EDC9A0;
+--color-secondary-200: #F0D9B9;
+--color-secondary-100: #F4E4D0;
+--color-secondary-50:  #FAEEE4;
 
     /* Tertiary Color: Base #fbe8d6 (200) */
     --color-tertiary-950: #BFAA92;

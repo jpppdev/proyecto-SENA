@@ -6,14 +6,13 @@ export default function Button ({
     size = "md",
     type = "button",
     children ="",
-    className = "",
     ...props
 }){
 
     const variants = {
-        primary : "bg-[var(--semantic-brand)] text-[color:var(--text-inverse)] hover:bg-[var(--color-brand-hover)]",
+        primary : "bg-brand text-text-primary hover:bg-brand-hover ",
         
-        secondary : "border border-[var(--color-border-clear)] bg-[var(--semantic-brand)] text-[color:var(--text-inverse)] hover:bg-[var(--color-brand-hover)] ",
+        secondary : "bg-brand text-text-primary hover:bg-brand-hover",
         
      create: "rounded-full bg-[var(--color-text-primary)] !text-[var(--semantic-text-secondary)] px-10 py-3.5 text-sm font-bold shadow-lg hover:opacity-80 active:scale-95 transition-all !border-none disabled:opacity-50 disabled:active:scale-100"
     };
