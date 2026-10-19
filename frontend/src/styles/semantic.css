@@ -3,8 +3,8 @@
 
     /* ==========BRAND============== */
 
-    --semantic-brand: var(--color-secondary-950);
-    --semantic-brand-hover: var(--color-primary-950);/*un tono mas alto que el brand  */
+    --semantic-brand: var(--color-secondary-900);
+    --semantic-brand-hover: var(--color-secondary-950);/*un tono mas alto que el brand  */
     --semantic-brand-soft: var(--color-primary-200);
     --semantic-brand-soft-hover: var(--color-primary-350);
     --semantic-brand-soft-hover: var(--color-primary-350);
