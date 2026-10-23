@@ -45,7 +45,7 @@ export const ProviderColumns = [
     cell: ({ row }) => {
       const provider = row.original;
       return <ProviderRowActions provider={provider} />;
-      return <span className="text-gray-400 text-sm">Botones pendientes...</span>;
+      
     },
   },
 ];

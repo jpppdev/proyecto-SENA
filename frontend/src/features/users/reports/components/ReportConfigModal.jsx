@@ -1,16 +1,16 @@
 ﻿// Hook para manejo de estado local en componentes funcionales
 import { useState } from "react";
 
-// Configuracion de campos disponibles para el reporte
+// Configuration de campos disponibles para el reporte
 import { userReportFields } from "../config/userReportFields";
 
-// Caso de uso que orquesta la generacion del reporte
+// Caso de uso que orquesta la generación del reporte
 import { generateUserReport } from "../services/generateUserReport";
 
 // Componentes UI reutilizables (design system)
 import { Button, Input, Select, Checkbox } from "@/shared";
 
-// Componente modal para configuracion de reportes
+// Componente modal para configuration de reportes
 export default function ReportConfigModal({ isOpen, onClose }) {
   // Estado del formato de salida
   const [format, setFormat] = useState("pdf");
@@ -21,7 +21,7 @@ export default function ReportConfigModal({ isOpen, onClose }) {
   // Estado para filtro por documento
   const [documentNumber, setDocumentNumber] = useState("");
 
-  // Estado de campos seleccionados (inicializacion lazy)
+  // Estado de campos seleccionados (initialization lazy)
   const [selectedFields, setSelectedFields] = useState(() =>
     userReportFields.filter((field) => field.default),
   );
@@ -60,7 +60,7 @@ export default function ReportConfigModal({ isOpen, onClose }) {
         {/* Titulo */}
         <h2 className="mb-6 text-xl font-semibold">Generar reporte de usuarios</h2>
 
-        {/* Seleccion de formato */}
+        {/* Selección de formato */}
         <div className="mb-4">
           <Select
             label="Formato del reporte"
@@ -74,7 +74,7 @@ export default function ReportConfigModal({ isOpen, onClose }) {
           />
         </div>
 
-        {/* Seleccion de campos */}
+        {/* Selección de campos */}
         <div className="mb-4">
           <p className="mb-2 font-medium">Campos del reporte</p>
 
@@ -97,7 +97,7 @@ export default function ReportConfigModal({ isOpen, onClose }) {
           </div>
         </div>
 
-        {/* Seleccion de alcance */}
+        {/* Selección de alcance */}
         <div className="mb-4">
           <Select
             label="Alcance del reporte"

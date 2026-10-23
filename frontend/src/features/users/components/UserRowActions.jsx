@@ -2,6 +2,7 @@
 
 import { Pencil, Eye, Trash } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { IconButton } from "@/shared";
 import { 
   showDeleteAlert, 
   showCancelDeleteAlert, 
@@ -47,33 +48,39 @@ export default function UserRowActions({ user }) {
   };
 
   return (
-    <div className="flex gap-2">
-      <button 
-        type="button"
-        onClick={handleView} 
-        className="p-1 rounded hover:bg-gray-100 text-blue-600 transition-colors"
+    <div className="flex items-center gap-1">
+      <IconButton
+        variant="info"
+        onClick={handleView}
+        ariaLabel="Visualizar usuario"
         title="Visualizar usuario"
+        hitSize={32}
+        iconSize={16}
       >
-        <Eye size={16} /> 
-      </button>
+        <Eye size={16} />
+      </IconButton>
       
-      <button 
-        type="button"
-        onClick={handleEdit} 
-        className="p-1 rounded hover:bg-gray-100 text-orange-500 transition-colors"
+      <IconButton
+        variant="warning"
+        onClick={handleEdit}
+        ariaLabel="Editar usuario"
         title="Editar usuario"
+        hitSize={32}
+        iconSize={16}
       >
-        <Pencil size={16} /> 
-      </button>
+        <Pencil size={16} />
+      </IconButton>
 
-      <button 
-        type="button"
-        onClick={handleDelete} 
-        className="p-1 rounded hover:bg-gray-100 text-red-600 transition-colors"
+      <IconButton
+        variant="danger"
+        onClick={handleDelete}
+        ariaLabel="Eliminar usuario"
         title="Eliminar usuario"
+        hitSize={32}
+        iconSize={16}
       >
-        <Trash size={16} /> 
-      </button>
+        <Trash size={16} />
+      </IconButton>
     </div>
   );
 }

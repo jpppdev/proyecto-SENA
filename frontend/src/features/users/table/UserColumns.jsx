@@ -1,4 +1,4 @@
-// src/feautures/
+// src/features/
 
 // Componente reutilizable que muestra un switch para activar o desactivar estados
 import StatusSwitch from "@/shared/components/StatusSwitch";

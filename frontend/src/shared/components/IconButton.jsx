@@ -56,6 +56,21 @@ export const IconButton = React.forwardRef(function IconButton(
             hover:bg-blue-700
             focus-visible:ring-blue-500
         `,
+        info: `
+            text-blue-600 
+            hover:bg-neutral-100
+            focus-visible:ring-blue-400
+        `,
+        warning: `
+            text-orange-500 
+            hover:bg-neutral-100
+            focus-visible:ring-orange-400
+        `,
+        danger: `
+            text-red-600 
+            hover:bg-neutral-100
+            focus-visible:ring-red-400
+        `,
     };
 
     return (
