@@ -6,6 +6,7 @@ import {
   Bell,
   Sun,
   Moon,
+  ChevronDown,
 } from "lucide-react";
 import {
   IconButton,
@@ -62,23 +63,33 @@ export default function Navbar({ onMenuClick }) {
   };
 
   return (
-    <nav className="relative z-50 w-full bg-white/30 backdrop-blur-md">
-      <div className="mx-auto max-w-7xl px-4">
-        <div className="flex h-16 items-center justify-between gap-4">
+    <nav aria-label="Navegación superior" className="relative z-50 w-full bg-[linear-gradient(105deg,#f9e8cf_0%,#fff3e6_55%,#ffe3bd_100%)] text-[#713008]">
+      <div className="mx-auto max-w-[1600px] px-3 sm:px-6 lg:px-8">
+        <div className="flex h-[72px] items-center justify-between gap-2 sm:h-20 sm:gap-4">
+
+          <IconButton
+            onClick={onMenuClick}
+            ariaLabel="Abrir o cerrar menú lateral"
+            hitSize={44}
+            iconSize={22}
+            className="shrink-0 text-[#a14d0b]! hover:bg-white/60!"
+          >
+            <Menu />
+          </IconButton>
 
           {/* Logo */}
-          <div className="hidden items-center sm:flex">
+          <div className="hidden shrink-0 items-center xl:flex">
             <Link to="/dashboard" className="text-h1 font-heading">
               <img src={logo} alt="Logo" className="h-12" />
             </Link>
           </div>
 
           {/* Enlaces de navegación */}
-          <ul className="hidden items-center gap-6 md:flex">
+          <ul className="hidden shrink-0 items-center gap-5 xl:flex">
             <li>
               <Link
                 to="/Home"
-                className="text-text-primary transition-colors hover:text-text-brand"
+                className="text-sm font-semibold text-[#713008] transition-colors hover:text-orange-600"
               >
                 Inicio
               </Link>
@@ -87,7 +98,7 @@ export default function Navbar({ onMenuClick }) {
             <li>
               <Link
                 to="/dashboard/Dishes"
-                className="text-text-primary transition-colors hover:text-text-brand"
+                className="text-sm font-semibold text-[#713008] transition-colors hover:text-orange-600"
               >
                 Platillos
               </Link>
@@ -97,7 +108,7 @@ export default function Navbar({ onMenuClick }) {
               <Link
                 to="/dashboard"
                 onClick={handleContactClick}
-                className="text-text-primary transition-colors hover:text-text-brand"
+                className="text-sm font-semibold text-[#713008] transition-colors hover:text-orange-600"
               >
                 Contacto
               </Link>
@@ -105,35 +116,27 @@ export default function Navbar({ onMenuClick }) {
           </ul>
 
           {/* Buscador */}
-          <div className="max-w-xs flex-1">
+          <div className="mr-auto min-w-0 max-w-[510px] flex-1">
             <SearchField
               value={search}
               onChange={setSearch}
               onSubmit={handleSearch}
               onClear={handleClear}
-              placeholder="Buscar productos..."
+              placeholder="Buscar en el sistema..."
+              ariaLabel="Buscar en el sistema"
               size="md"
               variant="outlined"
-              className="w-full"
+              className="h-11! w-full rounded-2xl! border-orange-100! bg-white/85! text-[#713008] hover:border-orange-300! focus-within:ring-orange-300! sm:h-[49px]! [&_input]:min-w-0 [&_input]:w-full [&_input]:bg-transparent [&_input]:placeholder:text-[#977d6e] [&>svg]:text-[#d96502]!"
             />
           </div>
 
           {/* Botones de acciones */}
-          <div className="flex items-center gap-2">
-
-            {/* Abrir y cerrar Sidenav */}
-            <IconButton
-              onClick={onMenuClick}
-              ariaLabel="Abrir o cerrar menú lateral"
-              hitSize={44}
-              iconSize={20}
-            >
-              <Menu />
-            </IconButton>
+          <div className="flex shrink-0 items-center gap-1 sm:gap-3">
 
             {/* Modo claro y oscuro */}
             <IconButton
               onClick={handleTheme}
+              className="text-[#713008]! hover:bg-white/70!"
               ariaLabel={
                 darkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"
               }
@@ -146,6 +149,7 @@ export default function Navbar({ onMenuClick }) {
             {/* Notificaciones */}
             <IconButton
               onClick={handleNotifications}
+              className="bg-white/70 text-[#713008]! hover:bg-white!"
               ariaLabel="Ver notificaciones"
               hitSize={44}
               iconSize={20}
@@ -156,16 +160,18 @@ export default function Navbar({ onMenuClick }) {
             {/* Menú de usuario */}
             <Dropdown className="z-50">
               <DropdownTrigger>
-                <IconButton
-                  ariaLabel="Abrir menú de usuario"
-                  hitSize={44}
-                  iconSize={20}
+                <button
+                  type="button"
+                  aria-label="Abrir menú de usuario"
+                  className="inline-flex items-center gap-3 rounded-full p-1 text-sm font-bold text-[#713008] hover:bg-white/40 focus-visible:outline-2 focus-visible:outline-orange-600"
                 >
-                  <UserRound />
-                </IconButton>
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white/90 bg-[linear-gradient(145deg,#c87521,#a4470a)] text-white"><UserRound size={26} aria-hidden="true" /></span>
+                  <span className="hidden sm:inline">Admin</span>
+                  <ChevronDown size={16} className="hidden sm:block" aria-hidden="true" />
+                </button>
               </DropdownTrigger>
 
-              <DropdownContent>
+              <DropdownContent className="right-0 border-orange-100 bg-[#fff8f1]! text-[#713008]! [&_button:hover]:bg-orange-100">
                 <DropdownItem>
                   <Link to="/dashboard/userList" className="block w-full">
                     Módulo usuario

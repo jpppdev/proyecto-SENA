@@ -38,15 +38,15 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="w-52 min-h-screen bg-white/30 backdrop-blur-md border-r border-border p-3">
+    <aside className="w-52 min-h-screen bg-[linear-gradient(163deg,#ffa932_0%,#ee8115_27%,#cf6207_67%,#bd5100_100%)] border-r border-white/20 p-3 text-white">
 
       {/* Encabezado */}
-      <div className="mb-5 border-b border-border pb-3">
-        <h2 className="text-title font-heading text-text-primary">
+      <div className="mb-5 border-b border-white/20 pb-3">
+        <h2 className="text-title font-heading text-white">
           Módulos
         </h2>
 
-        <p className="mt-1 text-small text-text-secondary">
+        <p className="mt-1 text-small text-orange-100">
           Restaurante Aurum
         </p>
       </div>
@@ -65,8 +65,8 @@ export default function Sidebar() {
                 transition-colors duration-300
                 ${
                   isActive
-                    ? "bg-brand text-text-inverse"
-                    : "text-text-primary hover:bg-brand-soft-hover hover:text-text-primary"
+                    ? "bg-[linear-gradient(110deg,rgba(255,193,95,.65),rgba(255,146,37,.67))] text-white"
+                    : "text-white hover:bg-[linear-gradient(110deg,rgba(255,193,95,.65),rgba(255,146,37,.67))]"
                 }`
               }
             >

@@ -26,6 +26,7 @@ import MenuEditForm from "../features/menu/components/MenuEditForm";
 import ProviderEditForm from "../features/provider/components/ProviderEditForm";
 
 import { HomePage } from "../features/home";
+import { AdminHomePage } from "../features/home";
 
 
 const  router = createBrowserRouter([
@@ -72,7 +73,7 @@ const  router = createBrowserRouter([
         element : <DashboardLayout/>,
         children: [
             {index: true},
-            { path: "home", element: <HomePage />},
+            { path: "home", element: <AdminHomePage />},
             { path: "Dishes", element: <DishesPage />},
             
             // --- USUARIOS ---
