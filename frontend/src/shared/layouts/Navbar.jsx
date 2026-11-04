@@ -172,33 +172,22 @@ export default function Navbar({ onMenuClick }) {
               </DropdownTrigger>
 
               <DropdownContent className="right-0 border-orange-100 bg-[#fff8f1]! text-[#713008]! [&_button:hover]:bg-orange-100">
+
+                <DropdownItem>
+                  <Link to="/dashboard/userCreate" className="block w-full">
+                    Crear Usuario
+                  </Link>
+                </DropdownItem>
+                
                 <DropdownItem>
                   <Link to="/dashboard/userList" className="block w-full">
-                    Módulo usuario
+                    Gestion de Usuarios
                   </Link>
                 </DropdownItem>
 
                 <DropdownItem>
-                  <Link to="/dashboard/inventoryList" className="block w-full">
-                    Módulo inventario
-                  </Link>
-                </DropdownItem>
-
-                <DropdownItem>
-                  <Link to="/dashboard/providerList" className="block w-full">
-                    Módulo proveedor
-                  </Link>
-                </DropdownItem>
-
-                <DropdownItem>
-                  <Link to="/dashboard/menuList" className="block w-full">
-                    Módulo menú
-                  </Link>
-                </DropdownItem>
-
-                <DropdownItem>
-                  <Link to="/dashboard/orderList" className="block w-full">
-                    Módulo órdenes
+                  <Link to="/dashboard/userList" className="block w-full">
+                    Mi Perfil
                   </Link>
                 </DropdownItem>
 
