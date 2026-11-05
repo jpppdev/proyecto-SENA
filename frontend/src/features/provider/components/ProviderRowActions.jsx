@@ -1,4 +1,9 @@
 import { Pencil, Eye, Trash } from "lucide-react";
+import { 
+  showDeleteAlert, 
+  showCancelDeleteAlert, 
+  showConfirmDeleteAlert 
+} from "@/shared/services/alertService";
 import { useNavigate } from "react-router-dom";
 
 export default function ProviderRowActions({ provider }) {
@@ -12,9 +17,25 @@ export default function ProviderRowActions({ provider }) {
     navigate(`/dashboard/providerEdit/${provider.id}`);
   };
 
-  const handleDelete = () => {
-    console.log("Eliminar proveedor", provider.id);
-  };
+  const handleDelete =  async () => {
+      const result = await showDeleteAlert({
+        title: "¿Eliminar proveedor?",
+        text: `¿Deseas eliminar a ${provider?.providerName || "este proveedor"}?`,
+      });
+  
+      if (result.isConfirmed) {
+        console.log("proveedor eliminado:", provider?.id);
+        await showConfirmDeleteAlert({
+          title: "Usuario eliminado",
+          text: `El usuario ${provider?.providerName ? `"${provider.providerName}" ` : ""}ha sido eliminado correctamente.`,
+        });
+      } else if (result.dismiss) {
+        await showCancelDeleteAlert({
+          title: "Eliminación cancelada",
+          text: "El proveedor no fue eliminado.",
+        });
+      }
+    }
 
   return (
     <div className="flex gap-2">

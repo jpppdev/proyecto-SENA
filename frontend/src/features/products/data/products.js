@@ -1,40 +1,40 @@
 // src/data/products.js
-import laptop from "@/assets/images/card-laptop.png";
-import monitor from "@/assets/images/card-monitor.png";
-import mouse from "@/assets/images/card-mouse.png";
-import teclado from "@/assets/images/card-teclado.png";
+import lasaña from "@/assets/images/lasaña.png";
+import pasta from "@/assets/images/pasta.jpeg";
+import pulpo from "@/assets/images/pulpo.jpg";
+import bandeja from "@/assets/images/bandeja paisa.jpg";
 
 export const products = [
   {
     id: 1,
-    title: "Laptop Profesional",
+    title: "lasaña",
     price: 3500000,
     description: "Laptop de alto rendimiento para desarrollo y diseño.",
-    image: laptop,
-    category: "perifericos",
+    image: lasaña,
+    category: "plato fuerte",
   },
   {
     id: 2,
-    title: "Monitor 27 Pulgadas",
+    title: "pasta",
     price: 1200000,
     description: "Monitor IPS ideal para programación y edición.",
-    image: monitor,
-    category: "perifericos",
+    image: pasta,
+    category: "plato fuerte",
   },
   {
     id: 3,
-    title: "Mouse",
+    title: "pulpo",
     price: 80000,
     description: "Mouse ergonómico, la mejor calidad y precio.",
-    image: mouse,
-    category: "perifericos",
+    image: pulpo,
+    category: "plato fuerte",
   },
   {
     id: 4,
-    title: "Teclado Gamer",
+    title: "bandeja paisa",
     price: 50000,
     description: "Teclado mecánico con iluminación RGB.",
-    image: teclado,
-    category: "perifericos",
+    image: bandeja,
+    category: "plato fuerte",
   },
 ];

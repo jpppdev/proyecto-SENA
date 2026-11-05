@@ -10,6 +10,7 @@
     --color-brand-hover: var(--semantic-brand-hover);
     --color-brand-soft: var(--semantic-brand-soft);
     --color-brand-soft-hover: var(--semantic-brand-soft-hover);
+    --color-brand-light: var(--semantic-brand-light);
 
 
     /* ==========BACKGROUND======= */
@@ -24,6 +25,10 @@
     --color-text-secondary: var(--semantic-text-secondary);
     --color-text-muted: var(--semantic-text-muted);
     --color-text-inverse: var(--semantic-text-inverse);
+    /* Color para titulos negativo */
+    --color-text-negative: var(--semantic-text-negative);
+    /* Color naranja para textos */
+    --color-text-brand: var(--semantic-text-brand)
 
     /* =============BORDER===================*/
 
@@ -62,9 +67,10 @@
 
 
     /* =================FONT WEIGHT================== */
-    --font-heading: var(--semantic-font-heading)
-    --font-body: var(--semantic-font-weight-body)
-    --font-label: var(--semantic-font-weight-label)
+    --font-heading: var(--semantic-font-weight-heading);
+    --font-body: var(--semantic-font-weight-body);
+    --font-label: var(--semantic-font-weight-label);
+    --font-weight-medium-custom: var(--semantic-font-weight-medium);
 }
 
     @layer base {

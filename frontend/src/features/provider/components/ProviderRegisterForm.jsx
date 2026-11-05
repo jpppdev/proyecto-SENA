@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { providerSchema } from "../schemas/providerSchemas";
 import { Input, Button, Select, FileInput } from "@/shared";
 import { Store, ArrowLeft, Check, Truck } from "lucide-react";
+import { showErrorAlert } from "@/shared/services/alertService";
 
 export default function ProviderRegisterForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -59,13 +60,23 @@ export default function ProviderRegisterForm() {
 
     const result = providerSchema.safeParse(dataToValidate);
 
-    if (!result.success) {
+      if (!result.success) {
       const fieldErrors = {};
+
       result.error.issues.forEach((issue) => {
         fieldErrors[issue.path[0]] = issue.message;
       });
+
       setErrors(fieldErrors);
+
+      await showErrorAlert({
+        title: "Error al crear proveedor",
+        text: "Ocurrió un problema al crear el proveedor. Inténtalo nuevamente.",
+        timer: 3000,
+      });
+
       console.log("Zod bloqueó el envío por estos errores:", fieldErrors);
+
       return;
     }
 
@@ -200,10 +211,9 @@ export default function ProviderRegisterForm() {
           <div className="flex justify-end mt-10 border-t-2 border-[var(--color-border-strong)] pt-6">
             <Button 
               type="submit" 
-              variant="primary" 
+              variant="create" 
               size="md" 
               disabled={isSubmitting} 
-              className="rounded-full bg-[var(--color-text-primary)] !text-[var(--color-background)] px-10 py-3.5 text-sm font-bold shadow-lg hover:opacity-80 active:scale-95 transition-all !border-none disabled:opacity-50 disabled:active:scale-100"
             >
               {isSubmitting ? "GUARDANDO..." : "GUARDAR PROVEEDOR"}
             </Button>

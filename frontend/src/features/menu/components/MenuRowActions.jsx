@@ -1,4 +1,9 @@
 import { Pencil, Eye, Trash } from "lucide-react";
+import { 
+  showDeleteAlert, 
+  showCancelDeleteAlert, 
+  showConfirmDeleteAlert 
+} from "@/shared/services/alertService";
 import { useNavigate } from "react-router-dom";
 
 export default function MenuRowActions({ product }) {
@@ -13,10 +18,25 @@ export default function MenuRowActions({ product }) {
     navigate(`/dashboard/menuEdit/${product.id}`);
   };
 
-  const handleDelete = () => {
-    console.log("Eliminar producto del menú:", product.id);
-  };
-
+  const handleDelete =  async () => {
+      const result = await showDeleteAlert({
+        title: "¿Eliminar orden?",
+        text: `¿Deseas eliminar a ${menu?.menuName || "esta order"}?`,
+      });
+  
+      if (result.isConfirmed) {
+        console.log("orden eliminada:", menu?.id);
+        await showConfirmDeleteAlert({
+          title: "Orden eliminada",
+          text: `La orden ${menu?.meuName ? `"${menu.menuName}" ` : ""}ha sido eliminado correctamente.`,
+        });
+      } else if (result.dismiss) {
+        await showCancelDeleteAlert({
+          title: "Eliminación cancelada",
+          text: "La orden no fue eliminado.",
+        });
+      }
+    }
   return (
     <div className="flex gap-2">
       <button onClick={handleView} className="p-1 rounded hover:bg-gray-100 text-blue-600 transition-colors">

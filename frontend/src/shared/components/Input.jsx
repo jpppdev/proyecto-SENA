@@ -21,8 +21,14 @@ export default function Input({
             bg-gray-300
         `, 
         tertiary: `
-            border-green-950
-        `
+            border border-border-clear
+            bg-background-input
+            text-text-secondary
+            hover:border-brand
+            focus:border-brand
+            focus:bg-white
+            focus:outline-none
+            `
     }
     const sizes = {
         
@@ -41,12 +47,19 @@ export default function Input({
 
     return(
         <div className="w-80">
+
+
                 {/*Label */}
             <label 
                 // htmlFor con kebab-case
+                // obliga al a que se acomode al lado y ocupe todo el ancho
+                //caption: tamaño de la letra.
+                // mb-1: margen inferior de 1
+                // text-secondary: color de texto secundario
+
                 htmlFor={htmlFor}
                 className={`
-                    block
+                    block   
                     text-caption
                     mb-1
                     text-secondary
@@ -57,12 +70,12 @@ export default function Input({
                             ? "-mb-0"
                             : "-mb-1"
                     }
-                    ${error ? "text-red-800" : "text-text-primary"}
+                    ${error ? "text-red-800" : "text-[color:var(--text-primary)]"}
                 `}
-            >
-                
+            > 
                 {label}
             </label>
+
 
                 {/* Contenedor del input */}
                 <div 
@@ -114,7 +127,11 @@ export default function Input({
                     `}
                         {...props}
                     />
+
+
             </div>
+
+            
             {/*Feedback*/}
             {error && (
                 <p className="text-caption text-red-800 place-self-start">{error}</p>

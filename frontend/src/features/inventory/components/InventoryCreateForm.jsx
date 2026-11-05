@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { inventorySchema } from "../schemas/InventorySchema";
 import { Input, Button, Select } from "@/shared";
 import { ArrowLeft, Box, ClipboardList, Store, FileText, Check, Plus, PackagePlus } from "lucide-react";
+import { showErrorAlert } from "@/shared/services/alertService";
 
 export default function InventoryCreateForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -56,13 +57,21 @@ export default function InventoryCreateForm() {
     // Zod validará directamente los strings con tus regex
     const result = inventorySchema.safeParse(formData);
 
-    if (!result.success) {
+        if (!result.success) {
       const fieldErrors = {};
+
       result.error.issues.forEach((issue) => {
         fieldErrors[issue.path[0]] = issue.message;
       });
+
       setErrors(fieldErrors);
-      console.log("Zod bloqueó el envío por estos errores:", fieldErrors);
+
+      await showErrorAlert({
+        title: "Error al crear producto",
+        text: "Ocurrió un problema al crear el producto. Inténtalo nuevamente.",
+        timer: 3000,
+      });
+
       return;
     }
 
@@ -217,10 +226,20 @@ export default function InventoryCreateForm() {
 
         {/* FOOTER GENERAL */}
         <div className="flex justify-end gap-4 bg-white/30 backdrop-blur-md p-4 rounded-3xl shadow-sm border border-white/40 mt-6">
-          <Button type="button" onClick={() => navigate(-1)} variant="secondary" size="md" className="rounded-xl border-[var(--color-border-strong)] text-[var(--color-text-primary)] hover:bg-white/40 transition-all">
+          <Button 
+            type="button" 
+            onClick={() => navigate(-1)} 
+            variant="secondary" 
+            size="md" 
+            className="rounded-xl border-[var(--color-border-strong)] text-[var(--color-text-primary)] hover:bg-white/40 transition-all">
             Cancelar
           </Button>
-          <Button type="submit" disabled={isSubmitting} variant="primary" size="md" className="rounded-xl flex items-center gap-2 bg-[var(--color-secondary-500)] text-white hover:bg-[var(--color-secondary-600)] !border-none px-8 shadow-md">
+          <Button 
+            type="submit"
+            disabled={isSubmitting} 
+            variant="create"
+            size="md" 
+           >
             <PackagePlus size={18} />
             {isSubmitting ? "CREANDO..." : "Crear producto"}
           </Button>

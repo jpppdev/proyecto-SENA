@@ -1,5 +1,11 @@
 import { Pencil, Eye, Trash } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { 
+  showDeleteAlert, 
+  showCancelDeleteAlert, 
+  showConfirmDeleteAlert 
+} from "@/shared/services/alertService";
+import { inventory } from "../data/inventory";
 
 export default function InventoryRowActions({ product }) {
   const navigate = useNavigate();
@@ -14,10 +20,25 @@ export default function InventoryRowActions({ product }) {
     navigate(`/dashboard/ViewInventory/${product.id}`);
   };
 
-  const handleDelete = () => {
-    console.log("Eliminar producto", product.id);
-  };
-
+  const handleDelete =  async () => {
+      const result = await showDeleteAlert({
+        title: "¿Eliminar inventario?",
+        text: `¿Deseas eliminar a ${inventory?.productName || "este producto del inventario"}?`,
+      });
+  
+      if (result.isConfirmed) {
+        console.log("orden eliminada:", inventory?.id);
+        await showConfirmDeleteAlert({
+          title: "inventario eliminado",
+          text: `el producto ${inventory?.productName ? `"${inventory.productName}" ` : ""}ha sido eliminado correctamente.`,
+        });
+      } else if (result.dismiss) {
+        await showCancelDeleteAlert({
+          title: "Eliminación cancelada",
+          text: "el producto no fue eliminado.",
+        });
+      }
+    }
   return (
     <div className="flex gap-2">
       {/* Botón Visualizar (Ojo) */}

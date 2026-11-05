@@ -5,7 +5,7 @@
 export const users = [
     {
         id: 1,
-        userName: "polanco",
+        userName: "Polanco",
         userEmail: "polanco206@gmail.com",
         userPhone: "3001234567",
         userDocumentTypes: "CC",

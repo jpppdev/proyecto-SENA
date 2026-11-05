@@ -1,35 +1,39 @@
+import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import authBg from "@/assets/images/fondo.png";
-// import {UserRegisterForm} from "@/features/users";
-import { Navbar } from "@/shared";
 
-export default function DashboardLayout(){
-    return(
-        <>
+import { Navbar, Sidenav, Footer } from "@/shared";
 
-        {/* fondo y estilo  */}
-        <div className="min-h-screen w-full"
-        style={{
-            backgroundImage: `url(${authBg})`, 
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-        }}
-        >
+export default function DashboardLayout() {
+  const [sidenavOpen, setSidenavOpen] = useState(false);
 
+  return (
+    <div
+      className="flex min-h-screen w-full flex-col overflow-x-hidden"
+      style={{
+        backgroundImage: `url(${authBg})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      <Navbar
+        onMenuClick={() => setSidenavOpen(!sidenavOpen)}
+      />
 
-            <main className="mx-auto">
+      <div className="flex flex-1 min-w-0">
+        {sidenavOpen && (
+          <div className="relative z-40 shrink-0">
+            <Sidenav />
+          </div>
+        )}
 
+        <main className="flex-1 min-w-0">
+          <Outlet />
+        </main>
+      </div>
 
-                <Navbar/>
-
-                {/* <UserRegisterForm/> */}
-
-                <Outlet/>
-                
-            </main>
-
-
-        </div>   
-        </>
-    );
+      <Footer />
+    </div>
+  );
 }
+

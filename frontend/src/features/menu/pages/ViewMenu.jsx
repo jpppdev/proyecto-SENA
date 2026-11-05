@@ -1,4 +1,13 @@
 import { Link, useParams } from "react-router-dom";
+import {
+  Utensils,
+  DollarSign,
+  Image,
+  Tag,
+  FileText,
+  ToggleRight,
+} from "lucide-react";
+
 import { Button } from "@/shared";
 import { menu } from "../data/menu";
 
@@ -10,103 +19,360 @@ export default function ViewMenu() {
   );
 
   if (!dish) {
-    return <p className="text-center mt-10 text-[color:var(--color-text-primary)]">Platillo no encontrado</p>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-surface">
+        <p className="text-title font-heading text-text-primary">
+          Platillo no encontrado
+        </p>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-[url('/src/assets/images/fondo.png')] bg-cover bg-center flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[url('/src/assets/images/fondo.png')] bg-cover bg-center p-6">
 
-      <div className="max-w-4xl mx-auto w-full">
+      <div className="max-w-6xl mx-auto">
 
-        <h1 className="text-[length:var(--text-main)] font-semibold mb-6 text-[color:var(--color-text-primary)] drop-shadow-sm">
-          Visualizar Platillo
-        </h1>
+        {/* HEADER */}
+        <div className="flex justify-between items-center mb-6">
 
-        <div className="bg-white rounded-2xl shadow-md p-8">
-
-          {/* Información del platillo */}
-          <h2 className="text-xl font-semibold mb-6 text-[color:var(--color-text-primary)] border-b pb-2">
-            Información del platillo
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-            <div>
-              <p className="text-gray-500 text-sm">Nombre del plato</p>
-              <p className="font-medium text-gray-900">{dish.menuName}</p>
-            </div>
-
-            <div>
-              <p className="text-gray-500 text-sm">Categoría</p>
-              <p className="font-medium text-gray-900">{dish.category}</p>
-            </div>
-
-            <div>
-              <p className="text-gray-500 text-sm">Precio</p>
-              <p className="font-medium text-gray-900">${dish.price}</p>
-            </div>
-
-            <div>
-              <p className="text-gray-500 text-sm">Tiempo de preparación</p>
-              <p className="font-medium text-gray-900">{dish.prepTime} minutos</p>
-            </div>
-
-            <div className="md:col-span-2">
-              <p className="text-gray-500 text-sm">Ingredientes</p>
-              <p className="font-medium text-gray-900">{dish.ingredients}</p>
-            </div>
-
-            <div className="md:col-span-2">
-              <p className="text-gray-500 text-sm">Descripción</p>
-              <p className="text-gray-800">{dish.description}</p>
-            </div>
-
-            <div>
-              <p className="text-gray-500 text-sm">Alérgenos</p>
-              <p className="font-medium text-gray-900">{dish.allergens || "Ninguno registrado"}</p>
-            </div>
-
-            <div>
-              <p className="text-gray-500 text-sm">Estado en Menú</p>
-              <span className={`px-2 py-1 rounded-full text-xs font-semibold inline-block mt-1 ${
-                dish.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-              }`}>
-                {dish.isActive ? "DISPONIBLE" : "AGOTADO"}
-              </span>
-            </div>
-
+          <div>
+            <h1 className="text-main font-heading text-text-primary">
+              Visualizar Platillo
+            </h1>
           </div>
 
-          {/* Imagen */}
-          <div className="mt-8">
-            <h2 className="text-xl font-semibold mb-4 text-[color:var(--color-text-primary)] border-b pb-2">
-              Imagen de Referencia
-            </h2>
-            <div className="w-64 h-64 rounded-xl overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center">
-              <img
-                src={dish.menuImage}
-                alt={dish.menuName}
-                className="w-full h-full object-cover"
-                onError={(e) => { e.target.src = "https://via.placeholder.com/256?text=Sin+Imagen" }}
-              />
+          <Link to="/dashboard/menuList">
+            <Button>
+              Volver a la lista
+            </Button>
+          </Link>
+
+        </div>
+
+
+        {/* TARJETA PRINCIPAL */}
+        <div className="bg-brand-light rounded-2xl shadow-md p-6 mb-5">
+
+          <div className="flex flex-col lg:flex-row lg:items-center gap-6">
+
+            {/* IMAGEN */}
+            <div className="flex-shrink-0">
+
+              <div className="w-32 h-32 rounded-2xl overflow-hidden border-4 border-black">
+
+                <img
+                  src={dish.menuImage}
+                  alt={dish.menuName}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.style.display = "none";
+                  }}
+                />
+
+              </div>
+
             </div>
-          </div>
 
-          {/* Acciones */}
-          <div className="mt-8 flex gap-4 justify-end border-t pt-6">
-            <Link to="/dashboard/menuList">
-              <Button variant="outlined">Volver al listado</Button>
-            </Link>
 
-            <Link to={`/dashboard/menuUpdate/${dish.id}`}>
-              <Button className="bg-[var(--color-text-primary)] !text-[var(--color-background)]">
-                Actualizar menú
-              </Button>
-            </Link>
+            {/* INFORMACIÓN PRINCIPAL */}
+            <div className="flex-1">
+
+              <h2 className="text-title font-heading text-text-secondary mb-2">
+                {dish.menuName}
+              </h2>
+
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand text-text-inverse text-small font-body">
+
+                <ToggleRight size={20} />
+
+                {dish.isActive ? "Habilitado" : "Deshabilitado"}
+
+              </div>
+
+            </div>
+
+
+            {/* PRECIO */}
+            <div className="lg:border-l lg:pl-8 min-w-[150px] border-border">
+
+              <p className="text-body text-text-secondary mb-2">
+                Precio
+              </p>
+
+              <div className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-background-secondary">
+
+                <DollarSign
+                  size={20}
+                  className="text-brand"
+                />
+
+                <span className="text-small font-body text-text-secondary">
+                  ${dish.price}
+                </span>
+
+              </div>
+
+            </div>
+
           </div>
 
         </div>
+
+
+        {/* PESTAÑAS */}
+        <div className="bg-brand-light rounded-2xl shadow-md mb-5">
+
+          <div className="flex items-center">
+
+            <div className="px-6 py-4 text-text-secondary flex items-center gap-2">
+
+              <Utensils size={20} />
+
+              Información general
+
+            </div>
+
+            <div className="px-6 py-4 text-text-secondary flex items-center gap-2">
+
+              <Image size={20} />
+
+              Imagen
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        {/* CONTENIDO */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+          {/* INFORMACIÓN DEL PLATILLO */}
+          <div className="lg:col-span-2">
+
+            <div className="bg-brand-light rounded-2xl shadow-md p-6">
+
+              <div className="flex items-center gap-3 pb-4 mb-6">
+
+                <Utensils
+                  size={20}
+                  className="text-brand"
+                />
+
+                <div>
+
+                  <h2 className="font-heading text-title text-text-secondary">
+                    Datos del platillo
+                  </h2>
+
+                  <p className="text-body text-text-secondary">
+                    Información general del menú
+                  </p>
+
+                </div>
+
+              </div>
+
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
+
+                {/* NOMBRE DEL PLATILLO */}
+                <div className="flex gap-3">
+
+                  <Utensils
+                    className="text-brand mt-1"
+                    size={20}
+                  />
+
+                  <div>
+
+                    <p className="text-small text-text-secondary">
+                      Nombre del platillo
+                    </p>
+
+                    <p className="font-body mt-1 text-text-secondary">
+                      {dish.menuName || "No registrado"}
+                    </p>
+
+                  </div>
+
+                </div>
+
+
+                {/* PRECIO */}
+                <div className="flex gap-3">
+
+                  <DollarSign
+                    className="text-brand mt-1"
+                    size={20}
+                  />
+
+                  <div>
+
+                    <p className="text-small text-text-secondary">
+                      Precio
+                    </p>
+
+                    <p className="font-body mt-1 text-text-secondary">
+                      ${dish.price || "0"}
+                    </p>
+
+                  </div>
+
+                </div>
+
+
+                {/* CATEGORÍA */}
+                <div className="flex gap-3">
+
+                  <Tag
+                    className="text-brand mt-1"
+                    size={20}
+                  />
+
+                  <div>
+
+                    <p className="text-small text-text-secondary">
+                      Categoría
+                    </p>
+
+                    <p className="font-body mt-1 text-text-secondary">
+                      {dish.category || "No registrada"}
+                    </p>
+
+                  </div>
+
+                </div>
+
+
+                {/* ESTADO */}
+                <div className="flex gap-3">
+
+                  <ToggleRight
+                    className="text-brand mt-1"
+                    size={20}
+                  />
+
+                  <div>
+
+                    <p className="text-small text-text-secondary">
+                      Estado
+                    </p>
+
+                    <p className="font-body mt-1 text-text-secondary">
+                      {dish.isActive ? "Habilitado" : "Deshabilitado"}
+                    </p>
+
+                  </div>
+
+                </div>
+
+
+                {/* DESCRIPCIÓN */}
+                <div className="flex gap-3 md:col-span-2">
+
+                  <FileText
+                    className="text-brand mt-1"
+                    size={20}
+                  />
+
+                  <div>
+
+                    <p className="text-small text-text-secondary">
+                      Descripción
+                    </p>
+
+                    <p className="font-body mt-1 break-all text-text-secondary">
+                      {dish.description || "No registrada"}
+                    </p>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          {/* IMAGEN */}
+          <div className="space-y-5">
+
+            <div className="bg-brand-light rounded-2xl shadow-md p-6">
+
+              <div className="flex items-center gap-3 mb-5">
+
+                <Image
+                  size={20}
+                  className="text-brand"
+                />
+
+                <h2 className="font-heading text-title text-text-secondary">
+                  Imagen del platillo
+                </h2>
+
+              </div>
+
+
+              <div className="w-full aspect-square rounded-xl overflow-hidden border border-border bg-background-secondary flex items-center justify-center">
+
+                {dish.menuImage ? (
+
+                  <img
+                    src={dish.menuImage}
+                    alt={dish.menuName}
+                    className="w-full h-full object-cover"
+                  />
+
+                ) : (
+
+                  <div className="text-body text-text-secondary">
+                    Sin imagen registrada
+                  </div>
+
+                )}
+
+              </div>
+
+            </div>
+
+
+            {/* ACCIONES */}
+            <div className="bg-brand-light rounded-2xl shadow-md px-8 p-4">
+
+              <div className="flex flex-col gap-1.5 items-center">
+
+                <Link to={`/dashboard/menuUpdate/${dish.id}`}>
+
+                  <Button>
+
+                    <span className="flex items-center justify-center gap-2">
+
+                      <Utensils size={20} />
+
+                      Actualizar menú
+
+                    </span>
+
+                  </Button>
+
+                </Link>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
       </div>
+
     </div>
   );
 }
+

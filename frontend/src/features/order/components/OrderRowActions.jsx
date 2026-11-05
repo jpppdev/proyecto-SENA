@@ -1,4 +1,9 @@
 import { Pencil, Eye, Trash } from "lucide-react";
+import { 
+  showDeleteAlert, 
+  showCancelDeleteAlert, 
+  showConfirmDeleteAlert 
+} from "@/shared/services/alertService";
 import { useNavigate } from "react-router-dom";
 
 export default function OrderRowActions({ order }) {
@@ -13,9 +18,25 @@ export default function OrderRowActions({ order }) {
     navigate(`/dashboard/orders/${order.id}/edit`);
   };
 
-  const handleDelete = () => {
-    console.log("Eliminar orden:", order.id);
-  };
+   const handleDelete =  async () => {
+      const result = await showDeleteAlert({
+        title: "¿Eliminar orden?",
+        text: `¿Deseas eliminar a ${order.orderName || "esta order"}?`,
+      });
+  
+      if (result.isConfirmed) {
+        console.log("orden eliminada:", order?.id);
+        await showConfirmDeleteAlert({
+          title: "Orden eliminada",
+          text: `La orden ${order?.orderName ? `"${order.orderName}" ` : ""}ha sido eliminado correctamente.`,
+        });
+      } else if (result.dismiss) {
+        await showCancelDeleteAlert({
+          title: "Eliminación cancelada",
+          text: "La orden no fue eliminado.",
+        });
+      }
+    }
 
   return (
     <div className="flex gap-2">

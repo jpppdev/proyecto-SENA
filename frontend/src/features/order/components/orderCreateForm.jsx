@@ -14,6 +14,7 @@ import {
 
 import { Input, Button, Select } from "@/shared";
 import { orderSchema } from "../schema/orderSchema"; 
+import { showErrorAlert } from "@/shared/services/alertService";
 
 // =====================================================================
 // 1. CONSTANTES MOCK (Fuera del componente para evitar re-renderizados)
@@ -120,12 +121,21 @@ export default function OrderCreateForm() {
     // Validar el esquema base con Zod
     const result = orderSchema.safeParse(formData);
 
-    if (!result.success) {
+        if (!result.success) {
       const fieldErrors = {};
+
       result.error.issues.forEach((issue) => {
         fieldErrors[issue.path[0]] = issue.message;
       });
+
       setErrors(fieldErrors);
+
+      await showErrorAlert({
+        title: "Error al crear orden",
+        text: "Ocurrió un problema al crear la orden. Inténtalo nuevamente.",
+        timer: 3000,
+      });
+
       return;
     }
 
@@ -292,7 +302,13 @@ export default function OrderCreateForm() {
           <Button type="button" onClick={() => navigate(-1)} variant="secondary" size="md" className="rounded-xl border-[var(--color-border-strong)] text-[var(--color-text-primary)] hover:bg-white/40 transition-all">
             Cancelar
           </Button>
-          <Button type="submit" disabled={isSubmitting} variant="primary" size="md" className="rounded-xl flex items-center gap-2 !bg-white !text-[var(--color-gray-600)] hover:opacity-90 !border-none px-10 shadow-lg font-extrabold tracking-wide uppercase">
+          <Button 
+                type="submit" 
+                disabled={isSubmitting} 
+                variant="create" 
+                size="md" 
+               
+                >
             <Check size={18} />
             {isSubmitting ? "PROCESANDO..." : "Confirmar Orden"}
           </Button>

@@ -3,22 +3,14 @@
 import { useState, useEffect } from "react";
 import {    Input, 
             Button, 
-            // DeleteCounter2,
             Select, 
-            // IconButton,
-            // Dropdown,
-            // DropdownTrigger,
-            // DropdownItem,
-            // DropdownContent,
             FileInput
     } from "@/shared";
 import { getDocumentTypes } from "@/services/selectService";
 import { useNavigate} from "react-router-dom";
 import {userSchema} from "../schemas/userSchema";
 import { UserPlus, ArrowLeft, Check, User } from "lucide-react";
-
-
-
+import { showSuccessAlert, showErrorAlert } from "@/shared/services/alertService";
 
 export default function UserRegisterForm (){
 
@@ -34,10 +26,16 @@ export default function UserRegisterForm (){
         // Estado del formulario 
         const [formData, setFormData] =  useState({
             userName: "",
+            userLastName: "",
             userEmail: "",
+            businessEmail: "",
             userPhone: "",
             userDocumentTypes: "",
             userDocumentNumber: "",
+            startDate: "",
+            endDate: "",
+            address: "",
+            role: "",
             userPassword: "",
             userImage: [],
 
@@ -46,7 +44,6 @@ export default function UserRegisterForm (){
             isActive: true,
             isSuperUser: false,
         });
-
 
         //Estado para los tipos de documento
         const [documentTypes, setDocumentTypes] = useState([]);
@@ -59,100 +56,63 @@ export default function UserRegisterForm (){
         //========================================
         //          Handle Generico
         //========================================
-        /**
-         * Función que se ejecuta cada vez que cambia el valor de un input del formulario
-         */
         const handleChange = (e) => {
-            // Se obtiene el nombre del campo y su valor
             const { name, value, type, checked } = e.target;
 
-        setFormData((prev) => ({
-            // Se copian todos los valores anteriores del estado
-            ...prev,
-
-            // Se actualiza unicamente lo que cambio
-            [name]: type === "checkbox" ? checked : value,
-        }));
-    };
-
- 
+            setFormData((prev) => ({
+                ...prev,
+                [name]: type === "checkbox" ? checked : value,
+            }));
+        };
 
     //===================== HANDLE SUBMIT =============================
     const handleSubmit = async(e) => {
-        //Evita que el formulario recargue la pagina
         e.preventDefault();
 
-        //Validamos los datos del formulario contra el esquema Zod
-        //saFeParse NO lanza exceptcion, retorna un objeto controlado
         const result = userSchema.safeParse(formData);
 
-        //Verificar en consola si el esquema está funcionado correctamente 
-        // console.log(result);
-
-        //Si la validacion falla
         if(!result.success){
-            //Objeto donde almacenaremos los errores por campo
             const fieldErrors = {};
 
-            // Recorremos cada error generado por Zod
             result.error.issues.forEach((issue) => {
-                //issue.path[0] corresponde al nombre del campo
-                // issue.message contiene el mensaje de error definido en el schema
                 fieldErrors[issue.path[0]] = issue.message;
             });
 
-            // Actualizamos el estado de errores para mostrarlos en el UI 
             setErrors(fieldErrors);
 
-            // Cortamos la ejecución: NO se envia nada al backend
+            await showErrorAlert({
+                title: "Error al crear usuario",
+                text: "Ocurrió un problema al crear el usuario. Inténtalo nuevamente.",
+                timer: 3000,
+            });
 
             return;
         }
-        // Si la validacion pasa, limpiamos errores previos
+        
         setErrors({});
-
-        //Activamos eestado de envio (util para desahibilitar el boton)
         setIsSubmitting(true);
 
         try {
-            //llamamos al servivio frontend que soncume la API 
-            //result.data contiene los datos ya validamos por Zod
-            // const responde = await createUser(result.data); linea comentada es un servicio 
+            // const responde = await createUser(result.data); 
 
-            //Log informativo para desarrolllo
-            // console("Usuario Creado:", responde); igual
+            setIsSuccess(true); // Activa la animación de éxito
 
-            //Feedback basico al usuario 
-            alert("Usuario creado correctamente");
+            await showSuccessAlert({
+                title: "Usuario creado",
+                text: "El usuario fue creado correctamente",
+                timer: 3000,
+            });
 
-            //Navegamos a la vista anterior
-            // navigate (-1) equivale a "volver atras"
             navigate(-1);
         } catch (error){
-            //Caoturamos errores de red o errores lanzados por el service
             console.error("Error:" , error.message);
-
-            //Mstramos el mensaje de error al usuario 
             alert(error.message);
         } finally {
-            //Pase lo que pase, desactivamos el esrado de envio 
-            // setIsSubmitting(false);
+            setIsSubmitting(false); // Liberamos el botón
         }
     };
 
-    //========================================
-    //          Handle NameChange
-    //========================================
-
-    // const handleNameChange = (e) => {
-    //     const value = e.target.value.trim();
-
-    //     if (value === "") {
-    //         console.log("El nombre no puede estar vacio");
-    //     }
-    // };
-
-return (
+  return (
     <div className="relative w-full max-w-[1024px] min-h-[600px] mx-auto mt-12 bg-white/30 rounded-[2.5rem] shadow-md overflow-hidden border border-[var(--color-border-strong)] p-8 md:p-10">
       
       {/* --- CAPA DE ÉXITO (OVERLAY) --- */}
@@ -176,8 +136,13 @@ return (
         {/* HEADER */}
         <div className="flex items-center gap-6 mb-10">
           
-          <div className="relative">
-            <div className={`h-24 w-24 rounded-[1.75rem] rotate-3 bg-[var(--color-secondary-500)] flex items-center justify-center text-white shadow-lg overflow-hidden [&_.border-dashed]:!border-transparent [&_.text-blue-500]:!hidden ${formData.userImage?.length > 0 ? "[&>div>div:last-child]:!hidden" : ""}`}>
+          {/* CONTENEDOR PRINCIPAL DEL AVATAR CON MANEJO DE ERROR */}
+          <div className="relative flex flex-col items-center">
+            
+            <div className={`h-24 w-24 rounded-[1.75rem] rotate-3 flex items-center justify-center text-white shadow-lg overflow-hidden [&_.border-dashed]:!border-transparent [&_.text-blue-500]:!hidden transition-all duration-300
+              ${formData.userImage?.length > 0 ? "[&>div>div:last-child]:!hidden" : ""} 
+              ${errors.userImage ? "bg-red-500 ring-4 ring-red-500/50" : "bg-[var(--color-secondary-500)]"}`}
+            >
               
               {(!formData.userImage || formData.userImage.length === 0) && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10 -rotate-3">
@@ -192,16 +157,25 @@ return (
                   onChange={(files) => setFormData((prev) => ({ ...prev, userImage: files }))}
                   multiple={false}
                   accept="image/jpeg, image/jpg, image/png, image/webp"
+                  error={errors.userImage}
                 />
               </div>
+
             </div>
+
+            {/* TEXTO DEL ERROR FUERA DE LA ROTACIÓN */}
+            {errors.userImage && (
+              <span className="absolute -bottom-6 text-red-500 text-xs font-bold text-center w-max whitespace-nowrap z-10">
+                {errors.userImage}
+              </span>
+            )}
           </div>
 
           <div>
-            <h1 className="text-3xl font-extrabold text-[var(--color-text-primary)] mb-1">
+            <h1 className="text-3xl font-extrabold text-text-primary mb-1">
               Nuevo Usuario
             </h1>
-            <p className="text-sm font-medium text-[var(--color-text-muted)]">
+            <p className="text-sm font-medium text-text-muted">
               Registra los datos para el empleado o admin
             </p>
           </div>
@@ -270,10 +244,10 @@ return (
           <div className="flex justify-end mt-12 border-t-2 border-[var(--color-border-strong)] pt-8">
             <Button 
               type="submit" 
-              variant="primary"
+              variant="create"
               size="md"
               disabled={isSubmitting}
-              className="rounded-full bg-[var(--color-text-primary)] !text-[var(--color-background)] px-10 py-3.5 text-sm font-bold shadow-lg hover:opacity-80 active:scale-95 transition-all !border-none disabled:opacity-50 disabled:active:scale-100"
+             
             >
               {isSubmitting ? "GUARDANDO..." : "GUARDAR USUARIO"}
             </Button>

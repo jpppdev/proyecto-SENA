@@ -14,17 +14,17 @@
 
     
     /* Secondary Color: Base #DC6D15 */
---color-secondary-950: #DC6D15;
---color-secondary-900: #DD7623;
---color-secondary-800: #E1873D;
---color-secondary-700: #E39856;
---color-secondary-600: #E6A96F;
---color-secondary-500: #E9BA88;
---color-secondary-400: #EDC9A0;
---color-secondary-300: #F0D9B9;
---color-secondary-200: #F4E4D0;
---color-secondary-100: #FAEEE4;
---color-secondary-50:  #FDF5EF;
+--color-secondary-950: #B3550E;
+--color-secondary-900: #DC6D15;
+--color-secondary-800: #DD7623;
+--color-secondary-700: #E1873D;
+--color-secondary-600: #E39856;
+--color-secondary-500: #E6A96F;
+--color-secondary-400: #E9BA88;
+--color-secondary-300: #EDC9A0;
+--color-secondary-200: #F0D9B9;
+--color-secondary-100: #F4E4D0;
+--color-secondary-50:  #FAEEE4;
 
     /* Tertiary Color: Base #fbe8d6 (200) */
     --color-tertiary-950: #BFAA92;
@@ -40,14 +40,14 @@
     --color-tertiary-50: #fffdfb;
     
     /* Basic color */
-    --white: #fff;
+    --white: #fdfcfc;
     --black: #000;
     --color-gray-950:#101010;
     --color-gray-900:#262626;
     --color-gray-800:#3B3B3B;
     --color-gray-700:#515151;
     --color-gray-600:#676767;
-    --color-gray-500:#7D7D7D;
+    --color-gray-500:#7d7d7d;
     --color-gray-400:#929292;
     --color-gray-300:#A8A8A8;
     --color-gray-200:#D4D4D4;
@@ -65,7 +65,8 @@
     /* Font weigths crudos */
     --font-weight-light: 300;
     --font-weight-regular: 400;
-    --font-weight-bold: 700;
+    --font-weight-medium-custom: 700;
+    --font-weight-bold: 900;
 
     /* Font-size */
 

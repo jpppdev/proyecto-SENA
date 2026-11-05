@@ -1,61 +1,79 @@
-// Iconos usados en los botones de acciones
-import { Pencil, Eye , Trash} from "lucide-react";
+// src/features/users/components/UserRowActions.jsx
 
-
-// Hook de React Router para navegar programáticamente entre rutas
+import { Pencil, Eye, Trash } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { 
+  showDeleteAlert, 
+  showCancelDeleteAlert, 
+  showConfirmDeleteAlert 
+} from "@/shared/services/alertService";
 
-
-// Componente que renderiza las acciones de cada fila de usuario
-// Recibe como prop el objeto user
 export default function UserRowActions({ user }) {
-
-
-  // const handleEdit = () => {
-  //   console.log("Editar usuario", user.id);
-  // };
-
-
-  // Hook que permite redirigir a otra ruta desde código
   const navigate = useNavigate();
 
-
-  // Acción para editar el usuario
-  // Redirige a la página de edición usando el id del usuario
-  const handleEdit = () => {
-    navigate(`/dashboard/users/${user.id}/edit`);
-  };
-
+  // Redirige a la vista de detalle
   const handleView = () => {
-    navigate(`/dashboard/userView/${user.id}`);
+    if (user?.id) {
+      navigate(`/dashboard/userView/${user.id}`);
+    }
   };
 
-  // Acción para eliminar el usuario
-  // Actualmente solo imprime en consola el id
-  // En una aplicación real aquí se llamaría a la API
-  const handleDelete = () => {
-    console.log("Eliminar usuario", user.id);
+  // Redirige a la vista de edición
+  const handleEdit = () => {
+    if (user?.id) {
+      navigate(`/dashboard/users/${user.id}/edit`);
+    }
   };
 
+  // Diálogo para eliminar con dos botones
+  const handleDelete = async () => {
+    const result = await showDeleteAlert({
+      title: "¿Eliminar usuario?",
+      text: `¿Deseas eliminar a ${user?.userName || "este usuario"}?`,
+    });
 
- return (
+    if (result.isConfirmed) {
+      console.log("Usuario eliminado:", user?.id);
+      await showConfirmDeleteAlert({
+        title: "Usuario eliminado",
+        text: `El usuario ${user?.userName ? `"${user.userName}" ` : ""}ha sido eliminado correctamente.`,
+      });
+    } else if (result.dismiss) {
+      await showCancelDeleteAlert({
+        title: "Eliminación cancelada",
+        text: "El usuario no fue eliminado.",
+      });
+    }
+  };
+
+  return (
     <div className="flex gap-2">
-      {/* Botón Visualizar (Ojo) */}
-      <button onClick={handleView} className="p-1 rounded hover:bg-gray-100 text-blue-600">
+      <button 
+        type="button"
+        onClick={handleView} 
+        className="p-1 rounded hover:bg-gray-100 text-blue-600 transition-colors"
+        title="Visualizar usuario"
+      >
         <Eye size={16} /> 
       </button>
       
-      {/* Botón Editar (Lápiz) ---> AQUÍ CONECTAMOS LA FUNCIÓN */}
-      <button onClick={handleEdit} className="p-1 rounded hover:bg-gray-100 text-orange-500">
+      <button 
+        type="button"
+        onClick={handleEdit} 
+        className="p-1 rounded hover:bg-gray-100 text-orange-500 transition-colors"
+        title="Editar usuario"
+      >
         <Pencil size={16} /> 
       </button>
 
-      {/* Botón Eliminar (Cambié el icono a Trash para que tenga sentido) */}
-      <button onClick={handleDelete} className="p-1 rounded hover:bg-gray-100 text-red-600">
+      <button 
+        type="button"
+        onClick={handleDelete} 
+        className="p-1 rounded hover:bg-gray-100 text-red-600 transition-colors"
+        title="Eliminar usuario"
+      >
         <Trash size={16} /> 
       </button>
     </div>
-  )
+  );
 }
-
-
