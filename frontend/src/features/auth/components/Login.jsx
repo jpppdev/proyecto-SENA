@@ -5,6 +5,8 @@ import restaurante from "../../../assets/images/Img-Restaurante.jpeg";
 import logo from "../../../assets/images/Img-Login.jpeg";
 import title from "../../../assets/images/Img-Titulo.png";
 import { loginSchema } from "../schemas/LoginSchema";
+import { login } from "../schemas/authService";
+import { showSuccessAlert, showCancelAlert } from "@/shared/services/alertService";
 
 function Login() {
   const navigate = useNavigate();
@@ -13,29 +15,58 @@ function Login() {
     email: "",
     password: "",
   });
-
+  
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
-  const handleLogin = (e) => {
+ const handleLogin = async (e) => {
     e.preventDefault();
 
     const result = loginSchema.safeParse(formData);
 
     if (!result.success) {
-      setErrors(result.error.flatten().fieldErrors);
+      const fieldErrors = {};
+      result.error.issues.forEach((issue) => {
+        fieldErrors[issue.path[0]] = issue.message;
+      });
+      setErrors(fieldErrors);
       return;
     }
 
     setErrors({});
 
-    navigate("/home");
+    try {
+      const data = await login(result.data);
+      console.log("LOGIN RESPONSE:", data);
+
+      sessionStorage.setItem("token", data.token);
+
+      // Metemos un sweetaler dentro del try que avisara que se pudo iniciar sesion correctamente 
+      await showSuccessAlert({
+        title: "Inicio de sesión exitoso",
+        text: "Bienvenido al sistema",
+        timer: 1500,
+      });
+
+      navigate("/dashboard/home");
+
+    } catch (error) {
+      console.error("Error en login:", error.message);
+
+      // lo mismo hacemos en el cath por si llega a fallar y no encuentra el usuario o la contraseña es incorrecta
+      await showCancelAlert({
+        title: "Error al iniciar sesión",
+        text: "Credenciales incorrectas",
+        timer: 2000,
+      });
+    }
   };
 
   return (

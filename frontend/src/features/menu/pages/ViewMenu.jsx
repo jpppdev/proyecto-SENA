@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   Utensils,
@@ -9,14 +10,34 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/shared";
-import { menu } from "../data/menu";
+import { getMenuById } from "../services/menuServices";
+
 
 export default function ViewMenu() {
   const { id } = useParams();
 
-  const dish = menu.find(
-    (item) => String(item.id) === String(id)
-  );
+  const [dish, setDish] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getMenuById(id)
+      .then((data) => {
+        setDish(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error al cargar platillo:", err);
+        setLoading(false);
+      });
+  }, [id]);
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">Cargando datos...</div>;
+  }
+
+  // Datos cargados desde el backend (PostgreSQL)
+
+
 
   if (!dish) {
     return (
@@ -27,7 +48,6 @@ export default function ViewMenu() {
       </div>
     );
   }
-
   return (
     <div className="min-h-screen bg-[url('/src/assets/images/fondo.png')] bg-cover bg-center p-6">
 

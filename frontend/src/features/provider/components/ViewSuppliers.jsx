@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   User,
@@ -19,14 +20,29 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/shared";
-import { providers } from "../data/provider";
+import { getProviderById } from "../services/providerServices";
 
 export default function ViewSuppliers() {
   const { id } = useParams();
 
-  const supplier = providers.find(
-    (item) => String(item.id) === String(id)
-  );
+  const [supplier, setSupplier] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getProviderById(id)
+      .then((data) => {
+        setSupplier(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error al cargar proveedor:", err);
+        setLoading(false);
+      });
+  }, [id]);
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">Cargando datos...</div>;
+  }
 
   if (!supplier) {
     return (
@@ -37,7 +53,6 @@ export default function ViewSuppliers() {
       </div>
     );
   }
-
   return (
     <div className="min-h-screen bg-[url('/src/assets/images/fondo.png')] bg-cover bg-center p-6">
 

@@ -10,7 +10,7 @@ export const userService = {
     //Metido encargado de crear un usuario.
     // Recibe datos provenientes del controller,
     // idealmente ya validados a nivel estructural (schema)
-    async createUser(data) {
+    async create(data) {
 
         // En este punto, en una arquitectura real, deberia ocurrir:
         //-Validaciones de reglas de negocio
@@ -21,5 +21,12 @@ export const userService = {
         //Actualmente, el metodo solo delega directamente al repository
         // sin agregar ninguna logica adicional.
         return await userRepository.create(data);
+    },
+
+    async getAll(){
+        return await userRepository.getAll()
+    },
+    async getById(id) {
+        return await userRepository.getById(id);
     },
 };

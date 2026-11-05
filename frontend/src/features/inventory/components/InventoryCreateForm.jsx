@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { inventorySchema } from "../schemas/InventorySchema";
+import { createInventory } from "../services/inventoryServices";
 import { Input, Button, Select } from "@/shared";
 import { ArrowLeft, Box, ClipboardList, Store, FileText, Check, Plus, PackagePlus } from "lucide-react";
 import { showErrorAlert } from "@/shared/services/alertService";
@@ -80,6 +81,9 @@ export default function InventoryCreateForm() {
 
     try {
       // Aquí iría tu llamado real a la API
+      const response = await createInventory(result.data);
+      console.log("Producto creado:", response);
+
       alert("Producto creado exitosamente");
       navigate(-1);
     } catch (error) {

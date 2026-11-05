@@ -1,14 +1,21 @@
 // src/users/pagesUserListPage.js
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DataTable, Button } from "@/shared";
 import { InventoryColumns } from "../table/InventoryColumns";
-import { inventory } from "../data/inventory";
+import { getInventory } from "../services/inventoryServices";
 import { Link } from "react-router-dom";
 import ReportConfigModal from "@/features/users/reports/components/ReportConfigModal";
 
 export default function InventoryListPage() {
-  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false)
+  const [inventoryData, setInventoryData] = useState([]);
+
+  useEffect(() => {
+    getInventory()
+      .then((data) => setInventoryData(data))
+      .catch((error) => console.error("Error cargando inventario:", error));
+  }, []);
 
   return (
     <div className="p-6">
@@ -31,7 +38,7 @@ export default function InventoryListPage() {
 
       </div>
 
-      <DataTable data={inventory} columns={InventoryColumns} />
+      <DataTable data={inventoryData} columns={InventoryColumns} />
 
       <ReportConfigModal
         isOpen={isReportModalOpen}

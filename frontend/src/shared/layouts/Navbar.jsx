@@ -201,6 +201,12 @@ export default function Navbar({ onMenuClick }) {
                     Módulo órdenes
                   </Link>
                 </DropdownItem>
+                <DropdownItem>
+                  <Link to="permissions" className="block w-full">
+                    Gestion de Permisos
+                  </Link>
+                </DropdownItem>
+
 
                 <DropdownItem>
                   <Link to="/login" className="block w-full">

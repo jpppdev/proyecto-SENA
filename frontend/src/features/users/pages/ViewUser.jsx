@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   User,
@@ -14,11 +15,29 @@ import {
 
 import { Button } from "@/shared";
 import { users } from "../data/users";
+import { getUserById} from "../services/userServices";
 
 export default function UserViewPage() {
   const { id } = useParams();
 
-  const user = users.find((item) => item.id === Number(id));
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getUserById(id)
+      .then((data) => {
+        setUser(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error al cargar el usuario:", err);
+        setLoading(false);
+      });
+  }, [id]);
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">Cargando datos...</div>;
+  }
 
   if (!user) {
     return (
@@ -29,7 +48,7 @@ export default function UserViewPage() {
       </div>
     );
   }
-
+  
   return (
     <div className="min-h-screen bg-[url('/src/assets/images/fondo.png')] bg-cover bg-center p-6">
 
