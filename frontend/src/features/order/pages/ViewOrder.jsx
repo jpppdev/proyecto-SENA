@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   Utensils,
@@ -10,12 +11,30 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/shared";
-import { orders } from "../data/order";
+import { getOrderById } from "../services/orderServices";
+
 
 export default function OrderViewPage() {
   const { id } = useParams();
 
-  const order = orders.find((item) => String(item.id) === String(id));
+  const [order, setOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getOrderById(id)
+      .then((data) => {
+        setOrder(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error al cargar la orden:", err);
+        setLoading(false);
+      });
+  }, [id]);
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">Cargando datos...</div>;
+  }
 
   if (!order) {
     return (
@@ -26,6 +45,7 @@ export default function OrderViewPage() {
       </div>
     );
   }
+
 
   return (
     <div className="min-h-screen bg-[url('/src/assets/images/imagen-fondo.png')] bg-cover bg-center p-6">

@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   Package,
@@ -17,14 +18,29 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/shared";
-import { inventory } from "../data/inventory";
+import { getInventoryById } from "../services/inventoryServices";
 
 export default function InventoryViewPage() {
   const { id } = useParams();
 
-  const product = inventory.find(
-    (product) => String(product.id) === String(id)
-  );
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getInventoryById(id)
+      .then((data) => {
+        setProduct(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error al cargar producto:", err);
+        setLoading(false);
+      });
+  }, [id]);
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">Cargando datos...</div>;
+  }
 
   if (!product) {
     return (

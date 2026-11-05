@@ -11,7 +11,7 @@ export const userController = {
 
     //Metodo encargado de manejar la creacion de un usuario.
     // Se asume que este metodo sera usada como handler de una ruta Express.
-    async createUser(req, res) {
+    async create(req, res) {
 
         //log del cuerpo de la peticion
         // Util en desarrollo para validar que el frontend encia correctamente los datos
@@ -22,7 +22,7 @@ export const userController = {
             // llamamos al servicio de usuario, pasando los datos recividos
             // Aqui ocurre la logica real del negocia(validaciones, presistencia, etc.)
 
-            const user = await userService.createUser(req.body);
+            const user = await userService.create(req.body);
 
             // Respuesta HTTP en caso de exito
             // 201. recurso creado correctamente segun el estadar REST
@@ -54,4 +54,26 @@ export const userController = {
             });
             }
         },
+        async getAll(req, res) {
+            try {
+                const users = await userService.getAll();
+                 res.status(200).json(users);
+            } catch (err) {
+                 console.error("ERROR BACKEND:", err);
+                 res.status(500).json({ error: err.message });
+            }
+        },
+        async getById(req, res) {
+        try {
+            const user = await userService.getById(req.params.id);
+            if (!user) {
+                return res.status(404).json({ message: "Usuario no encontrado" });
+            }
+            res.status(200).json(user);
+        } catch (err) {
+            console.error("ERROR BACKEND:", err);
+            res.status(500).json({ error: err.message });
+        }
+        },
+
     };

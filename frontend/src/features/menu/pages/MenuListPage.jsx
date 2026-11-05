@@ -1,9 +1,18 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button, DataTable } from "@/shared";
 import { MenuColumns } from "../table/MenuColumns";
-import { menu } from "../data/menu"; 
+import { getMenu } from "../services/menuServices";
 
 export default function MenuListPage() {
+  const [menuData, setMenuData] = useState([]);
+
+  useEffect(() => {
+    getMenu()
+      .then((data) => setMenuData(data))
+      .catch((error) => console.error("Error cargando menu:", error));
+  }, []);
+
   return (
     <div className="p-6">
       
@@ -20,7 +29,7 @@ export default function MenuListPage() {
 
       </div>
 
-      <DataTable data={menu} columns={MenuColumns} />
+      <DataTable data={menuData} columns={MenuColumns} />
 
     </div>
   );
