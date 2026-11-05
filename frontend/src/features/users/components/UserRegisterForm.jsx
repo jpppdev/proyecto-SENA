@@ -1,4 +1,3 @@
-// UserRegisterForm componente para registrar un usuario
 
 import { useState, useEffect } from "react";
 import {    Input, 
@@ -9,8 +8,9 @@ import {    Input,
 import { getDocumentTypes } from "@/services/selectService";
 import { useNavigate} from "react-router-dom";
 import {userSchema} from "../schemas/userSchema";
+import { createUser } from "../services/userServices";
 import { UserPlus, ArrowLeft, Check, User } from "lucide-react";
-import { showSuccessAlert, showErrorAlert } from "@/shared/services/alertService";
+import { showSuccessAlert, showErrorAlert, showCancelAlert } from "@/shared/services/alertService";
 
 export default function UserRegisterForm (){
 
@@ -66,36 +66,62 @@ export default function UserRegisterForm (){
         };
 
     //===================== HANDLE SUBMIT =============================
-    const handleSubmit = async(e) => {
+        const handleSubmit = async(e) => {
+        //Evita que el formulario recargue la pagina
         e.preventDefault();
 
-        const result = userSchema.safeParse(formData);
+        //Validamos los datos del formulario contra el esquema Zod
+        //saFeParse NO lanza exceptcion, retorna un objeto controlado
+        const dataToValidate = {
+            ...formData,
+            userImage: formData.userImage?.length > 0 ? formData.userImage : undefined,
+        };
+        const result = userSchema.safeParse(dataToValidate);
 
+        //Verificar en consola si el esquema está funcionado correctamente 
+        // console.log(result);
+
+        //Si la validacion falla
         if(!result.success){
+            //Objeto donde almacenaremos los errores por campo
             const fieldErrors = {};
 
+            // Recorremos cada error generado por Zod
             result.error.issues.forEach((issue) => {
+                //issue.path[0] corresponde al nombre del campo
+                // issue.message contiene el mensaje de error definido en el schema
                 fieldErrors[issue.path[0]] = issue.message;
             });
 
+            // Actualizamos el estado de errores para mostrarlos en el UI 
             setErrors(fieldErrors);
-
             await showErrorAlert({
-                title: "Error al crear usuario",
-                text: "Ocurrió un problema al crear el usuario. Inténtalo nuevamente.",
+                title: "Error de validación",
+                text: "Por favor revisa los campos marcados en rojo.",
                 timer: 3000,
             });
 
+            // Cortamos la ejecución: NO se envia nada al backend
+
             return;
         }
-        
+        // Si la validacion pasa, limpiamos errores previos
         setErrors({});
+
+        //Activamos eestado de envio (util para desahibilitar el boton)
         setIsSubmitting(true);
 
         try {
-            // const responde = await createUser(result.data); 
+            //llamamos al servivio frontend que soncume la API 
+            //result.data contiene los datos ya validamos por Zod
+            const response = await createUser(result.data);
+            //  linea comentada es un servicio 
 
-            setIsSuccess(true); // Activa la animación de éxito
+            //Log informativo para desarrolllo
+            console.log("Usuario creado:", response);
+        //   igual
+
+            setIsSuccess(true);
 
             await showSuccessAlert({
                 title: "Usuario creado",
@@ -103,15 +129,50 @@ export default function UserRegisterForm (){
                 timer: 3000,
             });
 
-            navigate(-1);
+            //Navegamos a la vista anterior
+            // navigate (-1) equivale a "volver atras"
+        
+            navigate("/dashboard/userList");
+
         } catch (error){
+            //Caoturamos errores de red o errores lanzados por el service
             console.error("Error:" , error.message);
-            alert(error.message);
+
+            //Mstramos el mensaje de error al usuario 
+            await showErrorAlert({
+                title: "Error al crear usuario",
+                text: error.message || "Ocurrió un problema al crear el usuario.",
+                timer: 3000,
+            });
         } finally {
-            setIsSubmitting(false); // Liberamos el botón
+            //Pase lo que pase, desactivamos el esrado de envio 
+            setIsSubmitting(false);
         }
     };
 
+const handleCancel = async () => {
+    const result = await showCancelAlert({
+                title: "Cancelado",
+                text: "El usuario no fue creado",
+                timer: 3000,
+        });
+
+        if (result.isConfirmed || result.isDismissed) {
+            navigate(-1);
+        }
+};
+
+    //========================================
+    //          Handle NameChange
+    //========================================
+
+    // const handleNameChange = (e) => {
+    //     const value = e.target.value.trim();
+
+    //     if (value === "") {
+    //         console.log("El nombre no puede estar vacio");
+    //     }
+    // };
   return (
     <div className="relative w-full max-w-[1024px] min-h-[600px] mx-auto mt-12 bg-white/30 rounded-[2.5rem] shadow-md overflow-hidden border border-[var(--color-border-strong)] p-8 md:p-10">
       
@@ -184,7 +245,7 @@ export default function UserRegisterForm (){
           
           <button 
             type="button" 
-            onClick={() => navigate(-1)}
+            onClick={handleCancel}
             className="hidden sm:flex items-center gap-2 rounded-2xl border-2 border-[var(--color-text-primary)] text-[var(--color-text-primary)] px-5 py-2.5 text-sm font-bold hover:bg-[var(--color-text-primary)] hover:text-[var(--color-background)] transition-all"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -234,7 +295,7 @@ export default function UserRegisterForm (){
                 SENSIBLES
               </h3>
               <Select label="Estado" htmlFor="isActive" name="isActive" value={formData.isActive} onChange={handleChange} error={errors.isActive} options={[{ label: "Activo", value: "true" }, { label: "Inactivo", value: "false" }]} />
-              <Select label="Tipo de Usuario" htmlFor="role" name="role" value={formData.role} onChange={handleChange} error={errors.role} options={[{ label: "Administrador", value: "admin" }, { label: "Empleado", value: "employee" }]} />
+              <Select label="Tipo de Usuario" htmlFor="role" name="role" value={formData.role} onChange={handleChange} error={errors.role} options={[{ label: "Administrador", value: "administrador" }, { label: "Mesero", value: "mesero" }, { label: "Empleado", value: "empleado" }, { label: "Cajero", value: "cajero" }, { label: "Usuario Normal", value: "usuario" }]} />
               <Input variant="primary" size="md" label="Contraseña" htmlFor="userPassword" name="userPassword" type="password" value={formData.userPassword} onChange={handleChange} error={errors.userPassword} placeholder="Mínimo 8 caracteres" />
             </div>
 

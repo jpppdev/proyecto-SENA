@@ -1,9 +1,18 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button, DataTable } from "@/shared";
-import { ProviderColumns } from "../table/ProviderColumns";
-import { providers } from "../data/provider"; 
+import { ProviderColumns } from "../table/ProviderColumns"; 
+import { getProviders } from "../services/providerServices";
 
 export default function ProviderListPage() {
+  const [providersData, setProvidersData] = useState([]);
+
+  useEffect(() => {
+    getProviders()
+      .then((data) => setProvidersData(data))
+      .catch((error) => console.error("Error cargando proveedores:", error));
+  }, []);
+
   return (
     <div className="p-6">
       
@@ -20,7 +29,7 @@ export default function ProviderListPage() {
 
       </div>
 
-      <DataTable data={providers} columns={ProviderColumns} />
+      <DataTable data={providersData} columns={ProviderColumns} />
 
     </div>
   );

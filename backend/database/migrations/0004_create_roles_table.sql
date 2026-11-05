@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS roles (
+    id_rol SERIAL PRIMARY KEY,
+    nombre_rol VARCHAR(50) NOT NULL UNIQUE
+);

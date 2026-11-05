@@ -27,12 +27,13 @@ import ProviderEditForm from "../features/provider/components/ProviderEditForm";
 
 import { HomePage } from "../features/home";
 import { AdminHomePage } from "../features/home";
+import { PermissionsPage } from "@/features/permissions";
 
 
 const  router = createBrowserRouter([
     {
         path: "/",
-        element: <Navigate to="/dashboard/home" replace/>
+        element: <Navigate to="/login" replace/>
     },
 
     // --- MÓDULO: AUTENTICACIÓN ---
@@ -77,11 +78,11 @@ const  router = createBrowserRouter([
             { path: "Dishes", element: <DishesPage />},
             
             // --- USUARIOS ---
-{ path: "userList", element: <UserListPage />},
-{ path: "userCreate", element: <UserRegisterForm />},
-{ path: "userView/:id", element: <ViewUser /> }, 
-{ path: "users/:id/edit", element: <UserEditForm /> },
-{ path: "userEdit/:id", element: <UserEditForm /> }, 
+            { path: "userList", element: <UserListPage />},
+            { path: "userCreate", element: <UserRegisterForm />},
+            { path: "userView/:id", element: <ViewUser /> }, 
+            { path: "users/:id/edit", element: <UserEditForm /> },
+            { path: "userEdit/:id", element: <UserEditForm /> }, 
 
             // --- ÓRDENES ---
             { path: "orderList", element: <OrderListPage /> },
@@ -107,6 +108,10 @@ const  router = createBrowserRouter([
             { path: "addmenu", element: <MenuCreateForm />}, // Si es duplicado, revisa si necesitas ambas
             { path: "ViewMenu/:id", element: <ViewMenu /> },
             { path: "menuEdit/:id", element: <MenuEditForm /> },
+
+            // --- PERMISOS ---
+            { path: "permissions", element: <PermissionsPage /> },
+        
         ],
     },
 ]);

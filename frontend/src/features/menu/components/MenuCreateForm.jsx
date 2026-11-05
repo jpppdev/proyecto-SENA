@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { menuSchema } from "../schema/menuSchema";
+import { createMenuItem } from "../services/menuServices";
 import { Input, Button, Select, FileInput } from "@/shared";
 import { Coffee, ArrowLeft, Check, UtensilsCrossed } from "lucide-react";
 import { showErrorAlert } from "@/shared/services/alertService";
@@ -72,8 +73,11 @@ export default function MenuCreateForm() {
     setErrors({});
     setIsSubmitting(true);
 
-    try {
-      // API Call: await createMenuItem(result.data);
+   try {
+      // Llamamos al servicio frontend que consume la API
+      const response = await createMenuItem(result.data);
+      console.log("Plato creado:", response);
+
       setIsSuccess(true);
       setTimeout(() => navigate(-1), 2500);
     } catch (error) {

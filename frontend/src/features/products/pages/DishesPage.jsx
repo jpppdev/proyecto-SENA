@@ -1,7 +1,17 @@
+import { useState, useEffect } from "react";
 import Card from "@/shared/components/Card";
 import { products } from "@/features/products";
+import { getProducts } from "../services/productServices";
 
 export default function DishesPage() {
+  const [productsData, setProductsData] = useState([]);
+
+  useEffect(() => {
+    getProducts()
+      .then((data) => setProductsData(data))
+      .catch((error) => console.error("Error cargando productos:", error));
+  }, []);
+  
   return (
     <div className="mx-auto mt-4 max-w-7x1">
       {/* Hero */}
@@ -23,7 +33,7 @@ export default function DishesPage() {
         justify-items-center
         ">
 
-        {products.map((product) => (
+        {(productsData.length > 0 ? productsData : products).map((product) => (
           <Card key={product.id} product={product} />
         ))}
 

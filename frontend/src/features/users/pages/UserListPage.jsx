@@ -1,14 +1,21 @@
 ﻿// src/users/pagesUserListPage.js
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DataTable, Button } from "@/shared";
 import { UserColumns } from "../table/UserColumns";
-import { users } from "../data/users";
+import { getUsers } from "../services/userServices";
 import { Link } from "react-router-dom";
 import ReportConfigModal from "../reports/components/ReportConfigModal";
 
 export default function UserListPage() {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [usersData, setUsersData] = useState([]);
+  
+  useEffect(() => {
+    getUsers()
+      .then((data) => setUsersData(data))
+      .catch((error) => console.error("Error cargando usuarios:", error));
+  }, []);
 
   return (
     <div className="p-6">
@@ -17,6 +24,7 @@ export default function UserListPage() {
       {/* color de texto,  */}
       
       <div className="flex justify-end items-center gap-4 pb-10">
+
 
         {/* botón de reportar usuario */}
         <Button onClick={() => setIsReportModalOpen(true)}>
@@ -31,7 +39,7 @@ export default function UserListPage() {
 
       </div>
 
-      <DataTable data={users} columns={UserColumns} />
+      <DataTable data={usersData} columns={UserColumns} />
 
       <ReportConfigModal
         isOpen={isReportModalOpen}

@@ -6,7 +6,7 @@ export function showSuccessAlert({
   text = "",
   confirmButtonText = "Aceptar",
   timer = 1000,
-}) {
+} = {}) {
   return Swal.fire({
     icon: "success",
     title,
@@ -30,7 +30,7 @@ export function showErrorAlert({
   text = "",
   confirmButtonText = "Aceptar",
   timer = 1000,
-}) {
+} = {}) {
   return Swal.fire({
     icon: "error",
     title,
@@ -116,6 +116,30 @@ export function showConfirmDeleteAlert({
       title: "text-green-600 font-bold",
       confirmButton:
         "bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg",
+    },
+
+    buttonsStyling: false,
+  });
+}
+export function showCancelAlert({
+  title = "Cancelado",
+  text = "",
+  confirmButtonText = "Aceptar",
+  timer = 1000,
+} = {}) {
+  return Swal.fire({
+    icon: "error",
+    title,
+    text,
+    confirmButtonText,
+    timer,
+    timerProgressBar: true,
+
+    customClass: {
+      popup: "rounded-2xl",
+      title: "!text-red-600",
+      confirmButton: "bg-red-600 text-white hover:bg-red-700 px-4 py-2 rounded-lg",
+      timerProgressBar: "!bg-red-600 hover:bg-red-700 rounded-lg",
     },
 
     buttonsStyling: false,

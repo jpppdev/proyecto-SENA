@@ -16,7 +16,18 @@ const router = Router();
 // POST /users
 // Cuando  se recibe una peticion POST en la raiz del recurso,
 // Express ejecuta el metodo create del controller.
-router.post("/", userController.create);
+router.post(
+    "/", 
+    userController.create
+);
+router.get(
+    "/",
+    userController.getAll
+);
+router.get(
+    "/:id",
+    userController.getById
+)
 // Exportamos el router ára ser registrado en la aplicacion principal
 //(eje: app.use("/users", router))
 

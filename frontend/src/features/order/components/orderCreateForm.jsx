@@ -14,6 +14,7 @@ import {
 
 import { Input, Button, Select } from "@/shared";
 import { orderSchema } from "../schema/orderSchema"; 
+import { createOrder } from "../services/orderServices";
 import { showErrorAlert } from "@/shared/services/alertService";
 
 // =====================================================================
@@ -156,6 +157,9 @@ export default function OrderCreateForm() {
       };
       console.log("Enviando orden:", finalOrderData);
       
+      const response = await createOrder(finalOrderData);
+      console.log("Orden creada:", response);
+
       // await createOrder(finalOrderData);
       setIsSuccess(true);
       setTimeout(() => navigate(-1), 2500);

@@ -1,16 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DataTable, Button } from "@/shared";
 import { OrderColumns } from "../table/OrderColumns";
+import { getOrders } from "../services/orderServices";
 import { Link } from "react-router-dom";
-
-// CORRECCIÓN 1: Asegúrate de que el archivo de datos se llame 'orders.js' en plural
-import { orders } from "../data/order"; 
-
 // CORRECCIÓN 2: Importamos el modal desde el módulo de usuarios donde ya existe
 import { ReportConfigModal } from "@/features/users";
 
 export default function OrderListPage() {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [ordersData, setOrdersData] = useState([]);
+
+  useEffect(() => {
+    getOrders()
+      .then((data) => setOrdersData(data))
+      .catch((error) => console.error("Error cargando ordenes:", error));
+  }, []);
 
   return (
     <div className="p-6">
@@ -28,7 +32,7 @@ export default function OrderListPage() {
         </Link>
       </div>
 
-      <DataTable data={orders} columns={OrderColumns} />
+      <DataTable data={ordersData} columns={OrderColumns} />
 
       <ReportConfigModal
         isOpen={isReportModalOpen}

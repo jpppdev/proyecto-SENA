@@ -1,52 +1,67 @@
 // URL base de endpoint de usarios en el backend
 // En desarrollo apunta al servidor Express local
 // En produccion deberia provenir de variables de entrono
+import { API_URL } from "@/features/config"
 
-const API_URl = "http://localhost:400/api/users";
+const USERS_URL = `${API_URL}/users`;
 
 // funcion para cerar un usario en el backend
 // Recibe un objeto con los datos del usuario
 // retorna la respuesta JSON del servidor
 
 export async function createUser(userData){
+const token = sessionStorage.getItem("token");
+  const headers = {
+    "Content-Type": "application/json",
+  };
 
-    //Realizamos la peticion HTTP uasando fetch
-    const response = await fetch(API_URl,{
-
-// Método HTTP según convención REST
-        method: "POST",
-
-    //Cabeceras de la petición
-    // Indicamos que enviamos JSON
-    headers: {
-        "content-Type": "application/json",
-    },
-
-    // convertimos el objeto userData a JSON
-    body: JSON.stringify(userData),
-
+  if (token && token !== "null" && token !== "undefined") {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+  const response = await fetch(USERS_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(userData),
     });
 
-    // Verificamos si la respuesta NO fue exitosa (stats != 2xx)
-    if (!response.ok) {
-        // Leemos el cuerpo de la respuesta de error
-        const error = await response.json();
+  if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Error al crear usuario");
+  }
 
+  return response.json();
+  };
 
-        // Lanzamos una excepcion con el mensaje error
-        // Esto permite que el componente que llama maneje el error con try
-        throw new Error(error.error || "Error al crear usuario");
-    }
+export async function getUsers() {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(USERS_URL, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
-    // Si la petición fue exitosa, retornamos la respuesta parseada como JSON
-    return response.json();
-
+  if (!response.ok) {
+    throw new Error("Error al obtener los usuarios");
+  }
+  return response.json();
 }
+export async function getUserById(id) {
+  const token = sessionStorage.getItem("token");
+  
+  const response = await fetch(`${USERS_URL}/${id}`, {
+    method: "GET",
+    headers: { 
+      Authorization: `Bearer ${token}` 
+    }
+  });
 
-
-
-
-
-
-
-})
+  if (!response.ok) {
+    throw new Error("Error al obtener los datos del usuario");
+  }
+  
+  return response.json();
+}
