@@ -174,18 +174,6 @@ export default function Navbar({ onMenuClick }) {
               <DropdownContent className="right-0 border-orange-100 bg-[#fff8f1]! text-[#713008]! [&_button:hover]:bg-orange-100">
 
                 <DropdownItem>
-                  <Link to="/dashboard/userCreate" className="block w-full">
-                    Crear Usuario
-                  </Link>
-                </DropdownItem>
-                
-                <DropdownItem>
-                  <Link to="/dashboard/userList" className="block w-full">
-                    Gestion de Usuarios
-                  </Link>
-                </DropdownItem>
-
-                <DropdownItem>
                   <Link to="/dashboard/userList" className="block w-full">
                     Mi Perfil
                   </Link>
