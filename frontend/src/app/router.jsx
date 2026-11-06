@@ -28,6 +28,7 @@ import ProviderEditForm from "../features/provider/components/ProviderEditForm";
 import { HomePage } from "../features/home";
 import { AdminHomePage } from "../features/home";
 import { PermissionsPage } from "@/features/permissions";
+import { ProtectedRoute, PublicRoute } from "@/features/auth/components/ProtectedRoute";
 
 
 const  router = createBrowserRouter([
@@ -36,7 +37,10 @@ const  router = createBrowserRouter([
         element: <Navigate to="/login" replace/>
     },
 
-    // --- MÓDULO: AUTENTICACIÓN ---
+    // --- MÓDULO: AUTENTICACIÓN (solo accesible SIN sesión) ---
+    {
+    element: <PublicRoute />,
+    children: [
     // Login
     {
         path: "/login",
@@ -57,7 +61,13 @@ const  router = createBrowserRouter([
         path: "/newPassword",
         element: <NewPassword />,
     },
+    ],
+    },
 
+    // --- RUTAS PROTEGIDAS (requieren sesión iniciada) ---
+    {
+    element: <ProtectedRoute />,
+    children: [
     {
         path: "/Home",
         element: <DashboardLayout/>,
@@ -113,6 +123,14 @@ const  router = createBrowserRouter([
             { path: "permissions", element: <PermissionsPage /> },
         
         ],
+    },
+    ],
+    },
+
+    // Cualquier ruta inexistente redirige al inicio
+    {
+        path: "*",
+        element: <Navigate to="/" replace />,
     },
 ]);
 
