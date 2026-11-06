@@ -19,6 +19,7 @@ import {
 import logo from "@/assets/images/1-logo.png";
 import { Link } from "react-router-dom";
 import { showErrorAlert } from "@/shared/services/alertService";
+import { logout } from "@/features/auth/schemas/logoutService";
 
 
 export default function Navbar({ onMenuClick }) {
@@ -186,7 +187,7 @@ export default function Navbar({ onMenuClick }) {
 
 
                 <DropdownItem>
-                  <Link to="/login" className="block w-full">
+                  <Link to="/login" replace onClick={logout} className="block w-full">
                     Cerrar sesión
                   </Link>
                 </DropdownItem>
