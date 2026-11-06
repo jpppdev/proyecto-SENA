@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/shared";
 import restaurante from "../../../assets/images/Img-Restaurante.jpeg";
 import tokenPassword from "../../../assets/images/TokenPassword.png";
-import title from "../../../assets/images/Img-Titulo.png";
+import title from "../../../assets/images/1-logo.png";
 import { resetPasswordTokenSchema } from "../schemas/ResetPasswordTokenSchema";
 
 function ResetPasswordToken() {

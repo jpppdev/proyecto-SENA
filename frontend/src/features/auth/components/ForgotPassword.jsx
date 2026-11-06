@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Input, Button } from "@/shared";
 import restaurante from "../../../assets/images/Img-Restaurante.jpeg";
 import savePassword from "../../../assets/images/SavePassword.png";
-import title from "../../../assets/images/Img-Titulo.png";
+import title from "../../../assets/images/1-logo.png";
 import { forgotPasswordSchema } from "../schemas/ForgotPasswordSchema";
 import { showSuccessAlert } from "@/shared/services/alertService";
 
