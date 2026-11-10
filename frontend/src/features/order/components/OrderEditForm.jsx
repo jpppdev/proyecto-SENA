@@ -14,7 +14,9 @@ import {
 
 import { Input, Button, Select } from "@/shared";
 import { orderSchema } from "../schema/orderSchema"; 
-import { orders } from "../data/order"; 
+import { getOrderById, updateOrder } from "../services/orderServices";
+import { getMenu } from "@/features/menu/services/menuServices";
+import { showSuccessAlert, showErrorAlert } from "@/shared/services/alertService";
 
 const ORDER_TYPES = [
   { label: "Consumo en Mesa", value: "mesa" },
@@ -29,12 +31,12 @@ const PAYMENT_METHODS = [
 ];
 
 
-const AVAILABLE_PRODUCTS = [
+const DEFAULT_PRODUCTS = [
   { label: "Café Americano - $5.000", value: "p1", price: 5000, name: "Café Americano" },
   { label: "Capuchino Vainilla - $7.500", value: "p2", price: 7500, name: "Capuchino Vainilla" },
-  { label: "Hamburguesa especial - $20.000", value: "p3", price: 20000, name: "Hamburguesa especial" },
-  { label: "Pizza personal - $25.000", value: "p4", price: 25000, name: "Pizza personal" },
-  { label: "Gaseosa - $2.500", value: "p5", price: 2500, name: "Gaseosa" }
+  { label: "Croissant de Mantequilla - $4.500", value: "p3", price: 4500, name: "Croissant de Mantequilla" },
+  { label: "Hamburguesa especial - $20.000", value: "p4", price: 20000, name: "Hamburguesa especial" },
+  { label: "Pizza personal - $25.000", value: "p5", price: 25000, name: "Pizza personal" },
 ];
 
 
@@ -59,13 +61,15 @@ export default function OrderEditForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errors, setErrors] = useState({});
+  const [availableProducts, setAvailableProducts] = useState(DEFAULT_PRODUCTS);
 
   const [formData, setFormData] = useState({
     customerName: "",
-    orderType: "",
+    orderType: "mesa",
     tableNumber: "",
-    paymentMethod: "",
+    paymentMethod: "efectivo",
     observations: "",
+    orderStatus: "En preparación",
   });
 
   const [orderItems, setOrderItems] = useState([]);
@@ -74,31 +78,57 @@ export default function OrderEditForm() {
 
   const totalOrder = orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-
   useEffect(() => {
-    const orderToEdit = orders.find((item) => String(item.id) === String(id));
-    
-    if (orderToEdit) {
-      setFormData({
-        customerName: orderToEdit.customerName || "",
-        orderType: orderToEdit.table ? "mesa" : "domicilio",
-        tableNumber: orderToEdit.table ? String(orderToEdit.table) : "",
-        paymentMethod: "efectivo", 
-        observations: orderToEdit.observations || "",
-      });
+    getMenu()
+      .then((dishes) => {
+        if (Array.isArray(dishes) && dishes.length > 0) {
+          setAvailableProducts(
+            dishes.map((d) => ({
+              label: `${d.menuName} - $${Number(d.price || 0).toLocaleString("es-CO")}`,
+              value: String(d.id),
+              price: Number(d.price) || 0,
+              name: d.menuName,
+            }))
+          );
+        }
+      })
+      .catch(() => {});
 
+    getOrderById(id)
+      .then((orderToEdit) => {
+        if (orderToEdit) {
+          setFormData({
+            customerName: orderToEdit.customerName || "",
+            orderType: orderToEdit.table && Number(orderToEdit.table) > 0 ? "mesa" : "domicilio",
+            tableNumber: orderToEdit.table ? String(orderToEdit.table) : "",
+            paymentMethod: "efectivo",
+            observations: orderToEdit.observations || "",
+            orderStatus: orderToEdit.status || "En preparación",
+          });
 
-      if (orderToEdit.dishes && orderToEdit.dishes.length > 0) {
-        const loadedDishes = orderToEdit.dishes.map((dish, index) => ({
-          id: `loaded-${index}`, 
-          productId: `mock-${index}`, 
-          name: dish.name,
-          price: dish.price,
-          quantity: dish.quantity
-        }));
-        setOrderItems(loadedDishes);
-      }
-    }
+          if (orderToEdit.dishes && orderToEdit.dishes.length > 0) {
+            const loadedDishes = orderToEdit.dishes.map((dish, index) => ({
+              id: `loaded-${index}`,
+              productId: String(dish.productId || `item-${index}`),
+              name: dish.name,
+              price: Number(dish.price) || 0,
+              quantity: Number(dish.quantity) || 1,
+            }));
+            setOrderItems(loadedDishes);
+          } else if (orderToEdit.total) {
+            setOrderItems([
+              {
+                id: "loaded-0",
+                productId: "1",
+                name: "Consumo general",
+                price: Number(orderToEdit.total) || 0,
+                quantity: 1,
+              },
+            ]);
+          }
+        }
+      })
+      .catch((err) => console.error("Error cargando orden:", err));
   }, [id]);
 
   const handleChange = (e) => {
@@ -109,7 +139,7 @@ export default function OrderEditForm() {
   const handleAddItem = () => {
     if (!currentProduct || !currentQty || parseInt(currentQty) <= 0) return;
     
-    const productDef = AVAILABLE_PRODUCTS.find(p => p.value === currentProduct);
+    const productDef = availableProducts.find(p => p.value === currentProduct);
     
     if (productDef) {
       const newItem = {
@@ -140,11 +170,20 @@ export default function OrderEditForm() {
         fieldErrors[issue.path[0]] = issue.message;
       });
       setErrors(fieldErrors);
+      await showErrorAlert({
+        title: "Error de validación",
+        text: "Por favor revisa los datos de la orden.",
+        timer: 2500,
+      });
       return;
     }
 
     if (orderItems.length === 0) {
-      alert("Debes mantener al menos un producto en la orden.");
+      await showErrorAlert({
+        title: "Orden vacía",
+        text: "Debes mantener al menos un producto en la orden.",
+        timer: 2500,
+      });
       return;
     }
 
@@ -152,11 +191,26 @@ export default function OrderEditForm() {
     setIsSubmitting(true);
 
     try {
+      await updateOrder(id, {
+        ...result.data,
+        orderStatus: formData.orderStatus,
+        items: orderItems,
+        total: totalOrder,
+      });
       setIsSuccess(true);
-      setTimeout(() => navigate(-1), 2500);
+      await showSuccessAlert({
+        title: "Orden actualizada",
+        text: "La orden fue actualizada correctamente.",
+        timer: 2000,
+      });
+      navigate("/dashboard/orderList");
     } catch (error) {
       console.error("Error:", error.message);
-      alert(error.message);
+      await showErrorAlert({
+        title: "Error al actualizar orden",
+        text: error.message || "Ocurrió un error al actualizar la orden.",
+        timer: 3000,
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -221,7 +275,7 @@ export default function OrderEditForm() {
           <CardSection icon={<Coffee size={20} />} title="2. Agregar Productos">
             <div className="flex flex-col sm:flex-row items-end gap-4 w-full">
               <div className="flex-1 w-full [&>div]:!w-full">
-                <Select label="Seleccionar Producto" htmlFor="currentProduct" name="currentProduct" value={currentProduct} onChange={(e) => setCurrentProduct(e.target.value)} options={AVAILABLE_PRODUCTS} />
+                <Select label="Seleccionar Producto" htmlFor="currentProduct" name="currentProduct" value={currentProduct} onChange={(e) => setCurrentProduct(e.target.value)} options={availableProducts} />
               </div>
               <div className="w-24 [&>div]:!w-full">
                 <Input type="text" variant="primary" size="md" label="Cant." htmlFor="currentQty" name="currentQty" value={currentQty} onChange={(e) => setCurrentQty(e.target.value.replace(/\D/g, ''))} />

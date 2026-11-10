@@ -28,6 +28,22 @@ router.get(
     "/:id",
     providerController.getById
 );
+router.put(
+    "/:id",
+    providerController.update
+);
+router.patch(
+    "/:id/status",
+    providerController.updateStatus
+);
+router.patch(
+    "/:id/disable",
+    providerController.disable
+);
+router.delete(
+    "/:id",
+    providerController.disable
+);
 
 // Exportamos el router para ser registrado en la aplicacion principal
 // (ej: app.use("/api/providers", router))

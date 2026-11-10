@@ -29,4 +29,13 @@ export const userService = {
     async getById(id) {
         return await userRepository.getById(id);
     },
+    async update(id, data) {
+        return await userRepository.update(id, data);
+    },
+    async updateStatus(id, isActive) {
+        return await userRepository.updateStatus(id, isActive);
+    },
+    async disable(id) {
+        return await userRepository.disable(id);
+    },
 };

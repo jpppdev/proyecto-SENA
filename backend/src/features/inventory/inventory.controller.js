@@ -69,4 +69,44 @@ export const inventoryController = {
             res.status(500).json({ error: err.message });
         }
     },
+
+    async update(req, res) {
+        try {
+            const updated = await inventoryService.update(req.params.id, req.body);
+            if (!updated) {
+                return res.status(404).json({ message: "Producto de inventario no encontrado" });
+            }
+            res.status(200).json({ message: "Producto de inventario actualizado correctamente", itemId: updated.id });
+        } catch (err) {
+            console.error("ERROR BACKEND:", err);
+            res.status(500).json({ error: err.message });
+        }
+    },
+
+    async updateStatus(req, res) {
+        try {
+            const { isActive } = req.body || {};
+            const updated = await inventoryService.updateStatus(req.params.id, isActive);
+            if (!updated) {
+                return res.status(404).json({ message: "Producto de inventario no encontrado" });
+            }
+            res.status(200).json({ message: "Estado de inventario actualizado correctamente", item: updated });
+        } catch (err) {
+            console.error("ERROR BACKEND:", err);
+            res.status(500).json({ error: err.message });
+        }
+    },
+
+    async disable(req, res) {
+        try {
+            const updated = await inventoryService.disable(req.params.id);
+            if (!updated) {
+                return res.status(404).json({ message: "Producto de inventario no encontrado" });
+            }
+            res.status(200).json({ message: "Producto de inventario deshabilitado correctamente", item: updated });
+        } catch (err) {
+            console.error("ERROR BACKEND:", err);
+            res.status(500).json({ error: err.message });
+        }
+    },
 };

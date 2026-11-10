@@ -56,3 +56,62 @@ export async function getMenuById(id) {
 
   return response.json();
 }
+
+export async function updateMenu(id, menuData) {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(`${MENU_URL}/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(menuData),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || error.error || "Error al actualizar platillo del menú");
+  }
+
+  return response.json();
+}
+
+export const updateMenuItem = updateMenu;
+
+export async function updateMenuStatus(id, isActive) {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(`${MENU_URL}/${id}/status`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ isActive }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || error.error || "Error al cambiar estado del platillo");
+  }
+
+  return response.json();
+}
+
+export async function disableMenu(id) {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(`${MENU_URL}/${id}/disable`, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || error.error || "Error al deshabilitar platillo del menú");
+  }
+
+  return response.json();
+}
+
+export const deleteMenu = disableMenu;

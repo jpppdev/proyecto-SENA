@@ -28,6 +28,22 @@ router.get(
     "/:id",
     orderController.getById
 );
+router.put(
+    "/:id",
+    orderController.update
+);
+router.patch(
+    "/:id/status",
+    orderController.updateStatus
+);
+router.patch(
+    "/:id/disable",
+    orderController.disable
+);
+router.delete(
+    "/:id",
+    orderController.disable
+);
 
 // Exportamos el router para ser registrado en la aplicacion principal
 // (ej: app.use("/api/orders", router))

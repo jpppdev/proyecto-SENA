@@ -15,10 +15,13 @@ import {
   MapPin,
   Hash,
   Image,
+  Edit,
+  Ban,
 } from "lucide-react";
 
 import { Button } from "@/shared";
-import { getInventoryById } from "../services/inventoryServices";
+import { getInventoryById, updateInventoryStatus, disableInventory } from "../services/inventoryServices";
+import { showSuccessAlert, showErrorAlert, showDisableAlert } from "@/shared/services/alertService";
 
 export default function InventoryViewPage() {
   const { id } = useParams();
@@ -37,6 +40,54 @@ export default function InventoryViewPage() {
         setLoading(false);
       });
   }, [id]);
+
+  const handleToggleStatus = async () => {
+    if (!product) return;
+    try {
+      const nextStatus = !(product.isActive ?? product.status !== "inactivo");
+      await updateInventoryStatus(product.id, nextStatus);
+      setProduct((prev) => ({
+        ...prev,
+        isActive: nextStatus,
+        status: nextStatus ? (Number(prev.quantity) > 0 ? "disponible" : "agotado") : "inactivo",
+      }));
+      await showSuccessAlert({
+        title: nextStatus ? "Producto habilitado" : "Producto deshabilitado",
+        text: `El estado de ${product.productName} fue actualizado.`,
+        timer: 2000,
+      });
+    } catch (err) {
+      await showErrorAlert({
+        title: "Error",
+        text: err.message || "No se pudo cambiar el estado del producto.",
+      });
+    }
+  };
+
+  const handleDisableProduct = async () => {
+    if (!product) return;
+    const confirm = await showDisableAlert({
+      title: "¿Deshabilitar producto?",
+      text: `¿Deseas deshabilitar ${product.productName}?`,
+      confirmButtonText: "Sí, deshabilitar",
+    });
+    if (!confirm.isConfirmed) return;
+
+    try {
+      await disableInventory(product.id);
+      setProduct((prev) => ({ ...prev, isActive: false, status: "inactivo" }));
+      await showSuccessAlert({
+        title: "Producto deshabilitado",
+        text: `${product.productName} fue deshabilitado correctamente.`,
+        timer: 2000,
+      });
+    } catch (err) {
+      await showErrorAlert({
+        title: "Error",
+        text: err.message || "No se pudo deshabilitar el producto.",
+      });
+    }
+  };
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Cargando datos...</div>;
@@ -677,6 +728,38 @@ export default function InventoryViewPage() {
                   </p>
 
                 </div>
+
+              </div>
+
+            </div>
+
+            {/* ACCIONES */}
+            <div className="bg-brand-light rounded-2xl shadow-md px-8 p-4">
+
+              <div className="flex flex-col gap-1.5">
+
+                <Link to={`/dashboard/inventory/${product.id}/edit`}>
+                  <Button>
+                    <span className="flex items-center justify-center gap-2">
+                      <Edit size={20} />
+                      Editar producto
+                    </span>
+                  </Button>
+                </Link>
+
+                <Button onClick={handleToggleStatus}>
+                  <span className="flex items-center justify-center gap-2">
+                    <ToggleRight size={20} />
+                    Cambiar estado
+                  </span>
+                </Button>
+
+                <Button onClick={handleDisableProduct}>
+                  <span className="flex items-center justify-center gap-2">
+                    <Ban size={20} />
+                    Deshabilitar producto
+                  </span>
+                </Button>
 
               </div>
 

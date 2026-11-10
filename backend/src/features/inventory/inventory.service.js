@@ -23,4 +23,16 @@ export const inventoryService = {
     async getById(id) {
         return await inventoryRepository.getById(id);
     },
+
+    async update(id, data) {
+        return await inventoryRepository.update(id, data);
+    },
+
+    async updateStatus(id, isActive) {
+        return await inventoryRepository.updateStatus(id, isActive);
+    },
+
+    async disable(id) {
+        return await inventoryRepository.disable(id);
+    },
 };

@@ -14,8 +14,8 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/shared";
-import { users } from "../data/users";
-import { getUserById} from "../services/userServices";
+import { getUserById, updateUserStatus, disableUser } from "../services/userServices";
+import { showSuccessAlert, showErrorAlert, showDisableAlert } from "@/shared/services/alertService";
 
 export default function UserViewPage() {
   const { id } = useParams();
@@ -34,6 +34,50 @@ export default function UserViewPage() {
         setLoading(false);
       });
   }, [id]);
+
+  const handleToggleStatus = async () => {
+    if (!user) return;
+    try {
+      const nextStatus = !user.isActive;
+      await updateUserStatus(user.id, nextStatus);
+      setUser((prev) => ({ ...prev, isActive: nextStatus, is_active: nextStatus }));
+      await showSuccessAlert({
+        title: nextStatus ? "Usuario habilitado" : "Usuario deshabilitado",
+        text: `El estado de ${user.userName} cambió a ${nextStatus ? "Activo" : "Inactivo"}.`,
+        timer: 2000,
+      });
+    } catch (err) {
+      await showErrorAlert({
+        title: "Error",
+        text: err.message || "No se pudo cambiar el estado del usuario.",
+      });
+    }
+  };
+
+  const handleDisableUser = async () => {
+    if (!user) return;
+    const confirm = await showDisableAlert({
+      title: "¿Deshabilitar usuario?",
+      text: `¿Deseas deshabilitar a ${user.userName}?`,
+      confirmButtonText: "Sí, deshabilitar",
+    });
+    if (!confirm.isConfirmed) return;
+
+    try {
+      await disableUser(user.id);
+      setUser((prev) => ({ ...prev, isActive: false, is_active: false }));
+      await showSuccessAlert({
+        title: "Usuario deshabilitado",
+        text: `${user.userName} fue deshabilitado correctamente.`,
+        timer: 2000,
+      });
+    } catch (err) {
+      await showErrorAlert({
+        title: "Error",
+        text: err.message || "No se pudo deshabilitar el usuario.",
+      });
+    }
+  };
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Cargando datos...</div>;
@@ -605,7 +649,7 @@ export default function UserViewPage() {
                 </Link>
 
 
-                <Button>
+                <Button onClick={handleToggleStatus}>
                   <span className="flex items-center justify-center gap-2">
 
                     <ToggleRight size={20} />
@@ -616,12 +660,12 @@ export default function UserViewPage() {
                 </Button>
 
 
-                <Button>
+                <Button onClick={handleDisableUser}>
                   <span className="flex items-center justify-center gap-2">
 
                     <Ban size={20} />
 
-                    Desactivar usuario
+                    Deshabilitar usuario
 
                   </span>
                 </Button>

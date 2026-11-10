@@ -75,5 +75,42 @@ export const userController = {
             res.status(500).json({ error: err.message });
         }
         },
+        async update(req, res) {
+            try {
+                const updated = await userService.update(req.params.id, req.body);
+                if (!updated) {
+                    return res.status(404).json({ message: "Usuario no encontrado" });
+                }
+                res.status(200).json({ message: "Usuario actualizado correctamente", userId: updated.id });
+            } catch (err) {
+                console.error("ERROR BACKEND:", err);
+                res.status(500).json({ error: err.message });
+            }
+        },
+        async updateStatus(req, res) {
+            try {
+                const { isActive } = req.body || {};
+                const updated = await userService.updateStatus(req.params.id, isActive);
+                if (!updated) {
+                    return res.status(404).json({ message: "Usuario no encontrado" });
+                }
+                res.status(200).json({ message: "Estado actualizado correctamente", user: updated });
+            } catch (err) {
+                console.error("ERROR BACKEND:", err);
+                res.status(500).json({ error: err.message });
+            }
+        },
+        async disable(req, res) {
+            try {
+                const updated = await userService.disable(req.params.id);
+                if (!updated) {
+                    return res.status(404).json({ message: "Usuario no encontrado" });
+                }
+                res.status(200).json({ message: "Usuario deshabilitado correctamente", user: updated });
+            } catch (err) {
+                console.error("ERROR BACKEND:", err);
+                res.status(500).json({ error: err.message });
+            }
+        },
 
     };
