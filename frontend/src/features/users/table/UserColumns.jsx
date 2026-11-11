@@ -1,30 +1,23 @@
 // src/feautures/
 
-// Componente reutilizable que muestra un switch para activar o desactivar estados
 import StatusSwitch from "@/shared/components/StatusSwitch";
-
-
-// Componente que contiene los botones de acciones (editar y eliminar) para cada usuario
 import UserRowActions from "@/features/users/components/UserRowActions";
+import { updateUserStatus } from "@/features/users/services/userServices";
+import { showSuccessAlert, showErrorAlert } from "@/shared/services/alertService";
 
 // Definición de las columnas de la tabla de usuarios
-// Este arreglo suele usarse en librerías de tablas como TanStack Table
 export const UserColumns = [
-
-
   // Columna ID
   {
-    accessorKey: "id", // Propiedad del objeto user que se mostrará en la columna
-    header: "Id",      // Título de la columna
+    accessorKey: "id",
+    header: "Id",
   },
-
 
   // Columna Nombre
   {
-    accessorKey: "userName", // Campo del objeto user
-    header: "Nombre",    // Encabezado visible
+    accessorKey: "userName",
+    header: "Nombre",
   },
-
 
   // Columna Email
   {
@@ -32,59 +25,51 @@ export const UserColumns = [
     header: "Email",
   },
 
-
   // Columna Telefono
   {
     accessorKey: "userPhone",
     header: "Telefono",
   },
 
-
   // Columna Estado (activo / inactivo)
   {
     accessorKey: "is_active",
     header: "Estado",
-
-
-    // Render personalizado de la celda
-    // Permite mostrar un componente en lugar de solo texto
     cell: ({ row }) => {
-
-
-      // Se obtiene el objeto completo del usuario de la fila
       const user = row.original;
+      const isChecked = Boolean(user.is_active ?? user.isActive);
 
-
-      // Función que se ejecuta cuando cambia el switch
-      const handleChange = (value) => {
-
-
-        // value representa el nuevo estado del switch (true o false)
-        console.log("Actualizar estado usuario:", user.user_id, value);
-
-
-        // Aquí normalmente se llamaría una API para actualizar el estado
-        // updateUserStatus(user.user_id, value)
+      const handleChange = async (value) => {
+        try {
+          await updateUserStatus(user.id, value);
+          window.dispatchEvent(new CustomEvent("users:updated"));
+          await showSuccessAlert({
+            title: value ? "Usuario habilitado" : "Usuario deshabilitado",
+            text: `El estado de ${user.userName || "el usuario"} fue actualizado.`,
+            timer: 1500,
+          });
+        } catch (error) {
+          console.error("Error actualizando estado:", error);
+          await showErrorAlert({
+            title: "Error",
+            text: error.message || "No se pudo actualizar el estado del usuario.",
+            timer: 2000,
+          });
+        }
       };
 
-
       return (
-        // Componente reutilizable para mostrar el switch
         <StatusSwitch
-          checked={user.is_active} // Estado actual del usuario
-          onChange={handleChange}  // Función que maneja el cambio
+          checked={isChecked}
+          onChange={handleChange}
         />
       );
     },
   },
 
-
-  // Columna de acciones (editar / eliminar)
+  // Columna de acciones (editar / deshabilitar)
   {
-    id: "actions", // No usa accessorKey porque no corresponde a un campo del usuario
-
-
-    // Renderiza el componente de acciones pasando el usuario completo
+    id: "actions",
     cell: ({ row }) => <UserRowActions user={row.original} />,
   },
 ];

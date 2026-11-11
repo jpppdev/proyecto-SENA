@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { providerSchema } from "../schemas/providerSchemas";
+import { getProviderById, updateProvider } from "../services/providerServices";
+import { showSuccessAlert, showErrorAlert } from "@/shared/services/alertService";
 import { Input, Button, Select, FileInput } from "@/shared";
 import { Store, ArrowLeft, Check, PencilLine } from "lucide-react";
-import { providers } from "../data/provider"; // Importamos los datos mockeados
 
 export default function ProviderEditForm() {
   const { id } = useParams();
@@ -14,7 +15,7 @@ export default function ProviderEditForm() {
   const [errors, setErrors] = useState({});
 
   const [formData, setFormData] = useState({
-    documentType: "",
+    documentType: "NIT",
     documentNumber: "",
     providerName: "",
     email: "",
@@ -41,24 +42,28 @@ export default function ProviderEditForm() {
     { label: "Insumos de Aseo", value: "aseo" }
   ];
 
-  // Precargar los datos del proveedor
+  // Precargar los datos del proveedor desde la base de datos
   useEffect(() => {
-    const supplier = providers.find((item) => String(item.id) === String(id));
-    
-    if (supplier) {
-      setFormData({
-        documentType: supplier.documentType || "",
-        documentNumber: String(supplier.documentNumber) || "",
-        providerName: supplier.providerName || "",
-        email: supplier.email || "",
-        phone: String(supplier.phone) || "",
-        address: supplier.address || "",
-        products: supplier.products || "",
-        isActive: supplier.isActive ? "true" : "false",
-        observations: supplier.observations || "",
-        providerImage: [], // En un caso real, aquí iría la URL de la imagen actual
-      });
-    }
+    getProviderById(id)
+      .then((supplier) => {
+        if (supplier) {
+          const cleanDocNum = String(supplier.documentNumber || "").replace(/\D/g, "") || "00000";
+          const cleanPhone = String(supplier.phone || "").replace(/\D/g, "");
+          setFormData({
+            documentType: supplier.documentType || "NIT",
+            documentNumber: cleanDocNum,
+            providerName: supplier.providerName || "",
+            email: supplier.email || "",
+            phone: cleanPhone,
+            address: supplier.address || "",
+            products: supplier.products || "",
+            isActive: supplier.isActive ? "true" : "false",
+            observations: supplier.observations || "",
+            providerImage: [],
+          });
+        }
+      })
+      .catch((err) => console.error("Error cargando proveedor:", err));
   }, [id]);
 
   const handleChange = (e) => {
@@ -86,6 +91,11 @@ export default function ProviderEditForm() {
         fieldErrors[issue.path[0]] = issue.message;
       });
       setErrors(fieldErrors);
+      await showErrorAlert({
+        title: "Error de validación",
+        text: "Por favor revisa los campos del proveedor.",
+        timer: 2500,
+      });
       return;
     }
 
@@ -93,12 +103,21 @@ export default function ProviderEditForm() {
     setIsSubmitting(true);
 
     try {
-      // await updateProvider(id, result.data); 
+      await updateProvider(id, result.data);
       setIsSuccess(true);
-      setTimeout(() => navigate(-1), 2500);
+      await showSuccessAlert({
+        title: "Proveedor actualizado",
+        text: "Los datos del proveedor fueron actualizados correctamente.",
+        timer: 2000,
+      });
+      navigate("/dashboard/providerList");
     } catch (error) {
       console.error("Error:", error.message);
-      alert(error.message);
+      await showErrorAlert({
+        title: "Error al actualizar proveedor",
+        text: error.message || "Ocurrió un error al actualizar el proveedor.",
+        timer: 3000,
+      });
     } finally {
       setIsSubmitting(false);
     }

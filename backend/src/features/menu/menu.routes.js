@@ -28,6 +28,22 @@ router.get(
     "/:id",
     menuController.getById
 );
+router.put(
+    "/:id",
+    menuController.update
+);
+router.patch(
+    "/:id/status",
+    menuController.updateStatus
+);
+router.patch(
+    "/:id/disable",
+    menuController.disable
+);
+router.delete(
+    "/:id",
+    menuController.disable
+);
 
 // Exportamos el router para ser registrado en la aplicacion principal
 // (ej: app.use("/api/menu", router))

@@ -48,10 +48,10 @@ export function showErrorAlert({
     buttonsStyling: false,
   });
 }
-export function showDeleteAlert({
+export function showDisableAlert({
   title = "¿Estás seguro?",
-  text = "Esta acción no se puede deshacer",
-  confirmButtonText = "Sí, eliminar",
+  text = "El registro quedará deshabilitado en el sistema",
+  confirmButtonText = "Sí, deshabilitar",
   cancelButtonText = "Cancelar",
 } = {}) {
   return Swal.fire({
@@ -72,9 +72,9 @@ export function showDeleteAlert({
   });
 }
 
-export function showCancelDeleteAlert({
-  title = "Eliminación cancelada",
-  text = "La eliminación del usuario fue cancelada.",
+export function showCancelDisableAlert({
+  title = "Deshabilitación cancelada",
+  text = "La deshabilitación fue cancelada.",
   confirmButtonText = "Aceptar",
   timer = 2000,
 } = {}) {
@@ -97,9 +97,9 @@ export function showCancelDeleteAlert({
   });
 }
 
-export function showConfirmDeleteAlert({
-  title = "Usuario eliminado",
-  text = "El usuario fue eliminado correctamente.",
+export function showConfirmDisableAlert({
+  title = "Registro deshabilitado",
+  text = "El registro fue deshabilitado correctamente.",
   confirmButtonText = "Aceptar",
   timer = 2000,
 } = {}) {
@@ -121,6 +121,10 @@ export function showConfirmDeleteAlert({
     buttonsStyling: false,
   });
 }
+
+export const showDeleteAlert = showDisableAlert;
+export const showCancelDeleteAlert = showCancelDisableAlert;
+export const showConfirmDeleteAlert = showConfirmDisableAlert;
 export function showCancelAlert({
   title = "Cancelado",
   text = "",

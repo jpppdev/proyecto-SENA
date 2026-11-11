@@ -3,8 +3,18 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Input, Button, Select, FileInput } from "@/shared";
 import { getDocumentTypes } from "@/services/selectService";
 import { userSchema } from "../schemas/userSchema";
+import { getUserById, updateUser } from "../services/userServices";
+import { showSuccessAlert, showErrorAlert } from "@/shared/services/alertService";
 import { ArrowLeft, Check, User, UserCog } from "lucide-react";
-import { users } from "../data/users"; 
+
+const userEditSchema = userSchema.partial({
+  userPassword: true,
+  userImage: true,
+  startDate: true,
+  userLastName: true,
+  isStaff: true,
+  isSuperUser: true,
+});
 
 export default function UserEditForm() {
   const { id } = useParams(); 
@@ -15,7 +25,6 @@ export default function UserEditForm() {
   const [errors, setErrors] = useState({});
   const [documentTypes, setDocumentTypes] = useState([]);
 
-  
   const [formData, setFormData] = useState({
     userName: "",
     userLastName: "",
@@ -30,28 +39,33 @@ export default function UserEditForm() {
     userPassword: "",
     userImage: [],
     isActive: "true",
-    role: "employee",
+    role: "empleado",
   });
 
-  
   useEffect(() => {
     getDocumentTypes().then(setDocumentTypes);
 
-   
-    const userToEdit = users.find((u) => String(u.id) === String(id));
-
-    if (userToEdit) {
-      setFormData((prev) => ({
-        ...prev,
-        userName: userToEdit.userName || "",
-        userEmail: userToEdit.userEmail || "",
-        userPhone: userToEdit.userPhone || "",
-        userDocumentTypes: userToEdit.userDocumentTypes || "",
-        userDocumentNumber: userToEdit.userDocumentNumber || "",
-        isActive: userToEdit.isActive ? "true" : "false",
-       
-      }));
-    }
+    getUserById(id)
+      .then((userToEdit) => {
+        if (userToEdit) {
+          setFormData((prev) => ({
+            ...prev,
+            userName: userToEdit.userName || "",
+            userLastName: userToEdit.userLastName || "",
+            userEmail: userToEdit.userEmail || "",
+            businessEmail: userToEdit.businessEmail || "",
+            userPhone: userToEdit.userPhone || "",
+            startDate: userToEdit.startDate || "",
+            endDate: userToEdit.endDate || "",
+            address: userToEdit.address || "",
+            userDocumentTypes: userToEdit.userDocumentTypes || "CC",
+            userDocumentNumber: userToEdit.userDocumentNumber || "",
+            isActive: userToEdit.isActive ? "true" : "false",
+            role: userToEdit.role || (userToEdit.isSuperUser ? "administrador" : "empleado"),
+          }));
+        }
+      })
+      .catch((err) => console.error("Error cargando usuario:", err));
   }, [id]);
 
   const handleChange = (e) => {
@@ -64,8 +78,16 @@ export default function UserEditForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-   
-    const result = userSchema.safeParse(formData);
+
+    const dataToValidate = {
+      ...formData,
+      userPassword: formData.userPassword?.trim() ? formData.userPassword : undefined,
+      userImage: formData.userImage?.length > 0 ? formData.userImage : undefined,
+      startDate: formData.startDate?.trim() ? formData.startDate : undefined,
+      userLastName: formData.userLastName?.trim() ? formData.userLastName : undefined,
+    };
+
+    const result = userEditSchema.safeParse(dataToValidate);
 
     if (!result.success) {
       const fieldErrors = {};
@@ -73,6 +95,11 @@ export default function UserEditForm() {
         fieldErrors[issue.path[0]] = issue.message;
       });
       setErrors(fieldErrors);
+      await showErrorAlert({
+        title: "Error de validación",
+        text: "Por favor revisa los campos marcados en rojo.",
+        timer: 2500,
+      });
       return;
     }
 
@@ -80,12 +107,21 @@ export default function UserEditForm() {
     setIsSubmitting(true);
 
     try {
-      
+      await updateUser(id, result.data);
       setIsSuccess(true);
-      setTimeout(() => navigate(-1), 2500);
+      await showSuccessAlert({
+        title: "Usuario actualizado",
+        text: "Los datos del usuario fueron actualizados correctamente.",
+        timer: 2000,
+      });
+      navigate("/dashboard/userList");
     } catch (error) {
       console.error("Error:", error.message);
-      alert(error.message);
+      await showErrorAlert({
+        title: "Error al actualizar usuario",
+        text: error.message || "Ocurrió un error al actualizar el usuario.",
+        timer: 3000,
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -188,7 +224,7 @@ export default function UserEditForm() {
                 SENSIBLES
               </h3>
               <Select label="Estado" htmlFor="isActive" name="isActive" value={formData.isActive} onChange={handleChange} error={errors.isActive} options={[{ label: "Activo", value: "true" }, { label: "Inactivo", value: "false" }]} />
-              <Select label="Tipo de Usuario" htmlFor="role" name="role" value={formData.role} onChange={handleChange} error={errors.role} options={[{ label: "Administrador", value: "admin" }, { label: "Empleado", value: "employee" }]} />
+              <Select label="Tipo de Usuario" htmlFor="role" name="role" value={formData.role} onChange={handleChange} error={errors.role} options={[{ label: "Administrador", value: "administrador" }, { label: "Mesero", value: "mesero" }, { label: "Empleado", value: "empleado" }, { label: "Cajero", value: "cajero" }, { label: "Usuario Normal", value: "usuario" }]} />
               <Input variant="primary" size="md" label="Contraseña (Opcional)" htmlFor="userPassword" name="userPassword" type="password" value={formData.userPassword} onChange={handleChange} error={errors.userPassword} placeholder="Dejar en blanco para no cambiar" />
             </div>
           </div>

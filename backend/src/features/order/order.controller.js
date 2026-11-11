@@ -69,4 +69,44 @@ export const orderController = {
             res.status(500).json({ error: err.message });
         }
     },
+
+    async update(req, res) {
+        try {
+            const updated = await orderService.update(req.params.id, req.body);
+            if (!updated) {
+                return res.status(404).json({ message: "Orden no encontrada" });
+            }
+            res.status(200).json({ message: "Orden actualizada correctamente", orderId: updated.id });
+        } catch (err) {
+            console.error("ERROR BACKEND:", err);
+            res.status(500).json({ error: err.message });
+        }
+    },
+
+    async updateStatus(req, res) {
+        try {
+            const { status } = req.body || {};
+            const updated = await orderService.updateStatus(req.params.id, status);
+            if (!updated) {
+                return res.status(404).json({ message: "Orden no encontrada" });
+            }
+            res.status(200).json({ message: "Estado de la orden actualizado correctamente", order: updated });
+        } catch (err) {
+            console.error("ERROR BACKEND:", err);
+            res.status(500).json({ error: err.message });
+        }
+    },
+
+    async disable(req, res) {
+        try {
+            const updated = await orderService.disable(req.params.id);
+            if (!updated) {
+                return res.status(404).json({ message: "Orden no encontrada" });
+            }
+            res.status(200).json({ message: "Orden deshabilitada correctamente", order: updated });
+        } catch (err) {
+            console.error("ERROR BACKEND:", err);
+            res.status(500).json({ error: err.message });
+        }
+    },
 };

@@ -72,10 +72,14 @@ export const inventoryRepository = {
             CONCAT('INV-', LPAD(id_item::TEXT, 3, '0')) AS barcode,
             item_name AS "productName",
             COALESCE(item_description, unit_of_measure) AS brand,
+            COALESCE(item_description, '') AS description,
+            unit_of_measure AS unit,
+            COALESCE(id_supplier::TEXT, 'dist_nac') AS provider,
             COALESCE(CAST(current_stock AS FLOAT), 0) AS quantity,
             COALESCE(CAST(minimum_stock AS FLOAT), 0) AS "minQuantity",
             COALESCE(CAST(cost_per_unit AS FLOAT), 0) AS "unitValue",
             CASE 
+              WHEN NOT is_active THEN 'inactivo'
               WHEN current_stock <= 0 THEN 'agotado'
               WHEN current_stock <= minimum_stock THEN 'bajo stock'
               ELSE 'disponible'
@@ -95,9 +99,11 @@ export const inventoryRepository = {
             CONCAT('INV-', LPAD(i.id_item::TEXT, 3, '0')) AS barcode,
             CONCAT('INV-', LPAD(i.id_item::TEXT, 3, '0')) AS "barCode",
             i.item_name AS "productName",
+            COALESCE(i.unit_of_measure, 'ud') AS unit,
             COALESCE(i.unit_of_measure, 'Unidad') AS brand,
-            i.item_description AS description,
-            COALESCE(s.company_name, 'Sin proveedor asignado') AS supplier,
+            COALESCE(i.item_description, '') AS description,
+            COALESCE(i.id_supplier::TEXT, 'dist_nac') AS provider,
+            COALESCE(s.supplier_name, 'Sin proveedor asignado') AS supplier,
             COALESCE(CAST(i.current_stock AS FLOAT), 0) AS quantity,
             COALESCE(CAST(i.current_stock AS FLOAT), 0) AS "totalQuantity",
             COALESCE(CAST(i.minimum_stock AS FLOAT), 0) AS "minQuantity",
@@ -105,6 +111,7 @@ export const inventoryRepository = {
             COALESCE(CAST(i.cost_per_unit AS FLOAT), 0) AS "unitValue",
             COALESCE(CAST(i.current_stock * i.cost_per_unit AS FLOAT), 0) AS "totalValue",
             CASE 
+              WHEN NOT i.is_active THEN 'inactivo'
               WHEN i.current_stock <= 0 THEN 'agotado'
               WHEN i.current_stock <= i.minimum_stock THEN 'bajo stock'
               ELSE 'disponible'
@@ -115,6 +122,69 @@ export const inventoryRepository = {
           WHERE i.id_item = $1;
         `;
         const result = await pool.query(query, [id]);
+        return result.rows[0];
+    },
+
+    async update(id, inventoryData) {
+        const {
+            provider,
+            productName,
+            description,
+            unit,
+            initialQuantity = 0,
+            minStock = 0,
+            costPerUnit,
+            status = true,
+        } = inventoryData;
+
+        const supplierId = Number.isInteger(Number(provider)) && provider !== "" ? Number(provider) : null;
+
+        const query = `
+          UPDATE inventory SET
+            id_supplier = COALESCE((SELECT id_supplier FROM suppliers WHERE id_supplier = $1), id_supplier),
+            item_name = $2,
+            item_description = $3,
+            unit_of_measure = $4,
+            current_stock = $5,
+            minimum_stock = $6,
+            cost_per_unit = COALESCE($7, cost_per_unit),
+            is_active = $8,
+            last_updated = CURRENT_TIMESTAMP
+          WHERE id_item = $9
+          RETURNING id_item AS id;
+        `;
+
+        const values = [
+            supplierId,
+            productName,
+            description || "",
+            unit || "ud",
+            Number(initialQuantity) || 0,
+            Number(minStock) || 0,
+            costPerUnit !== undefined ? Number(costPerUnit) : null,
+            Boolean(status),
+            id,
+        ];
+
+        const result = await pool.query(query, values);
+        return result.rows[0];
+    },
+
+    async updateStatus(id, isActive) {
+        const query =
+            typeof isActive === "boolean"
+                ? `UPDATE inventory SET is_active = $1, last_updated = CURRENT_TIMESTAMP WHERE id_item = $2 RETURNING id_item AS id, is_active AS "isActive";`
+                : `UPDATE inventory SET is_active = NOT is_active, last_updated = CURRENT_TIMESTAMP WHERE id_item = $1 RETURNING id_item AS id, is_active AS "isActive";`;
+        const values = typeof isActive === "boolean" ? [isActive, id] : [id];
+        const result = await pool.query(query, values);
+        return result.rows[0];
+    },
+
+    async disable(id) {
+        const result = await pool.query(
+            `UPDATE inventory SET is_active = FALSE, last_updated = CURRENT_TIMESTAMP WHERE id_item = $1 RETURNING id_item AS id, is_active AS "isActive";`,
+            [id]
+        );
         return result.rows[0];
     }
 };

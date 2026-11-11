@@ -1,4 +1,4 @@
-﻿// Libreria para generacion de PDFs en el cliente
+// Libreria para generacion de PDFs en el cliente
 import jsPDF from "jspdf";
 
 // Plugin para creacion de tablas dentro del PDF
@@ -10,13 +10,14 @@ export function generatePdfReport({
   headers, // Encabezados de la tabla (columnas)
   rows, // Datos (array de filas)
   fileName = "user-report.pdf", // Nombre del archivo de salida
+  title = "Reporte de Usuarios", // Titulo del documento
 }) {
   // Inicializa el documento PDF
   const doc = new jsPDF();
 
   // Configuracion del titulo
   doc.setFontSize(16);
-  doc.text("Reporte de Usuarios", 14, 20); // Posicion (x, y)
+  doc.text(title, 14, 20); // Posicion (x, y)
 
   // Generacion de tabla automatica
   autoTable(doc, {

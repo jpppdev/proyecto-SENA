@@ -1,9 +1,24 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { inventorySchema } from "../schemas/InventorySchema";
+import { getInventoryById, updateInventory } from "../services/inventoryServices";
+import { getProviders } from "@/features/provider/services/providerServices";
+import { showSuccessAlert, showErrorAlert } from "@/shared/services/alertService";
 import { Input, Button, Select } from "@/shared";
 import { ArrowLeft, Box, ClipboardList, Store, FileText, Check, PencilLine } from "lucide-react";
-import { inventory } from "../data/inventory"; 
+
+const CardSection = ({ icon, title, children }) => (
+  <div className="bg-white/30 backdrop-blur-md rounded-3xl p-6 shadow-sm border border-white/40 flex flex-col gap-5">
+    <div className="flex items-center gap-3 mb-2">
+      <div className="bg-[var(--color-secondary-500)] p-2 rounded-xl text-white">
+        {icon}
+      </div>
+      <h3 className="text-[var(--color-text-primary)] font-extrabold text-lg tracking-wide">{title}</h3>
+    </div>
+    {children}
+  </div>
+);
+
 export default function InventoryEditForm() {
   const { id } = useParams(); 
   const navigate = useNavigate();
@@ -11,18 +26,22 @@ export default function InventoryEditForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errors, setErrors] = useState({});
+  const [providersList, setProvidersList] = useState([
+    { label: "Distribuidora Nacional", value: "dist_nac" },
+    { label: "Granjas del Valle", value: "granjas" },
+  ]);
 
   const [formData, setFormData] = useState({
     productName: "",
-    category: "",
+    category: "carnicos",
     sku: "",
     description: "",
     initialQuantity: "",
-    unit: "",
+    unit: "ud",
     minStock: "",
     maxStock: "",
     status: true,
-    provider: "",
+    provider: "dist_nac",
     expirationDate: "",
     notes: "",
   });
@@ -30,7 +49,8 @@ export default function InventoryEditForm() {
   const categories = [
     { label: "Cárnicos", value: "carnicos" },
     { label: "Lácteos", value: "lacteos" },
-    { label: "Bebidas", value: "bebidas" }
+    { label: "Bebidas", value: "bebidas" },
+    { label: "Insumos Generales", value: "general" }
   ];
 
   const units = [
@@ -39,32 +59,42 @@ export default function InventoryEditForm() {
     { label: "Litros (L)", value: "l" }
   ];
 
-  const providers = [
-    { label: "Distribuidora Nacional", value: "dist_nac" },
-    { label: "Granjas del Valle", value: "granjas" }
-  ];
-
-  // Precargar los datos del producto
+  // Precargar los datos del producto desde la base de datos
   useEffect(() => {
-    // Buscamos comparando strings directamente
-    const product = inventory.find((item) => String(item.id) === String(id));
-    
-    if (product) {
-      setFormData({
-        productName: product.productName || "",
-        category: product.category || "", 
-        sku: product.barcode || "", 
-        description: product.description || "",
-        initialQuantity: String(product.quantity) || "",
-        unit: product.unit || "", 
-        minStock: String(product.minQuantity) || "",
-        maxStock: product.maxStock ? String(product.maxStock) : "",
-        status: product.status === "disponible",
-        provider: product.provider || "",
-        expirationDate: product.expirationDate || "",
-        notes: product.notes || "",
-      });
-    }
+    getProviders()
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setProvidersList([
+            ...data.map((p) => ({ label: p.providerName, value: String(p.id) })),
+            { label: "Distribuidora Nacional", value: "dist_nac" },
+            { label: "Granjas del Valle", value: "granjas" },
+          ]);
+        }
+      })
+      .catch(() => {});
+
+    getInventoryById(id)
+      .then((product) => {
+        if (product) {
+          setFormData({
+            productName: product.productName || "",
+            category: product.category || "carnicos",
+            sku: product.barcode || "",
+            description: product.description || "",
+            initialQuantity: String(Math.round(Number(product.quantity) || 0)),
+            unit: ["ud", "kg", "l"].includes(String(product.unit || "").toLowerCase())
+              ? String(product.unit).toLowerCase()
+              : "ud",
+            minStock: String(Math.round(Number(product.minQuantity ?? product.minimumQuantity) || 0)),
+            maxStock: product.maxStock ? String(product.maxStock) : "",
+            status: product.isActive !== undefined ? Boolean(product.isActive) : product.status === "disponible",
+            provider: product.provider ? String(product.provider) : "dist_nac",
+            expirationDate: product.expirationDate || "",
+            notes: product.notes || "",
+          });
+        }
+      })
+      .catch((err) => console.error("Error cargando producto de inventario:", err));
   }, [id]);
 
   const handleChange = (e) => {
@@ -86,6 +116,11 @@ export default function InventoryEditForm() {
         fieldErrors[issue.path[0]] = issue.message;
       });
       setErrors(fieldErrors);
+      await showErrorAlert({
+        title: "Error de validación",
+        text: "Por favor revisa los campos requeridos.",
+        timer: 2500,
+      });
       return;
     }
 
@@ -93,27 +128,25 @@ export default function InventoryEditForm() {
     setIsSubmitting(true);
 
     try {
+      await updateInventory(id, result.data);
       setIsSuccess(true);
-      setTimeout(() => navigate(-1), 2500);
+      await showSuccessAlert({
+        title: "Producto actualizado",
+        text: "El producto de inventario fue actualizado correctamente.",
+        timer: 2000,
+      });
+      navigate("/dashboard/inventoryList");
     } catch (error) {
       console.error("Error:", error.message);
-      alert(error.message);
+      await showErrorAlert({
+        title: "Error al actualizar producto",
+        text: error.message || "Ocurrió un error al actualizar el producto.",
+        timer: 3000,
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
-
-  const CardSection = ({ icon, title, children }) => (
-    <div className="bg-white/30 backdrop-blur-md rounded-3xl p-6 shadow-sm border border-white/40 flex flex-col gap-5">
-      <div className="flex items-center gap-3 mb-2">
-        <div className="bg-[var(--color-secondary-500)] p-2 rounded-xl text-white">
-          {icon}
-        </div>
-        <h3 className="text-[var(--color-text-primary)] font-extrabold text-lg tracking-wide">{title}</h3>
-      </div>
-      {children}
-    </div>
-  );
 
   return (
     <div className="relative w-full max-w-[1024px] mx-auto mt-10 text-[var(--color-text-primary)]">
@@ -211,7 +244,7 @@ export default function InventoryEditForm() {
           <CardSection icon={<Store size={20} />} title="3. Proveedor">
             <div className="flex flex-col sm:flex-row items-end gap-4 w-full">
               <div className="flex-1 w-full [&>div]:!w-full">
-                <Select label="Proveedor *" htmlFor="provider" name="provider" value={formData.provider} onChange={handleChange} error={errors.provider} options={providers} />
+                <Select label="Proveedor *" htmlFor="provider" name="provider" value={formData.provider} onChange={handleChange} error={errors.provider} options={providersList} />
               </div>
             </div>
           </CardSection>

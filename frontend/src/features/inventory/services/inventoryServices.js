@@ -54,3 +54,60 @@ export async function getInventoryById(id) {
 
   return response.json();
 }
+
+export async function updateInventory(id, inventoryData) {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(`${INVENTORY_URL}/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(inventoryData),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || error.error || "Error al actualizar producto de inventario");
+  }
+
+  return response.json();
+}
+
+export async function updateInventoryStatus(id, isActive) {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(`${INVENTORY_URL}/${id}/status`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ isActive }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || error.error || "Error al cambiar estado del producto");
+  }
+
+  return response.json();
+}
+
+export async function disableInventory(id) {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(`${INVENTORY_URL}/${id}/disable`, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || error.error || "Error al deshabilitar producto de inventario");
+  }
+
+  return response.json();
+}
+
+export const deleteInventory = disableInventory;

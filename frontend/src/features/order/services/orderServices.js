@@ -52,3 +52,60 @@ export async function getOrderById(id) {
 
   return response.json();
 }
+
+export async function updateOrder(id, orderData) {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(`${ORDERS_URL}/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(orderData),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || error.error || "Error al actualizar la orden");
+  }
+
+  return response.json();
+}
+
+export async function updateOrderStatus(id, status) {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(`${ORDERS_URL}/${id}/status`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ status }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || error.error || "Error al cambiar estado de la orden");
+  }
+
+  return response.json();
+}
+
+export async function disableOrder(id) {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(`${ORDERS_URL}/${id}/disable`, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || error.error || "Error al deshabilitar la orden");
+  }
+
+  return response.json();
+}
+
+export const deleteOrder = disableOrder;

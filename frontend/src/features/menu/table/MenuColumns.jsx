@@ -1,4 +1,5 @@
 import MenuRowActions from "../components/MenuRowActions";
+import { updateMenuStatus } from "../services/menuServices";
 
 export const MenuColumns = [
   {
@@ -37,16 +38,30 @@ export const MenuColumns = [
   {
     header: "Estado",
     accessorKey: "isActive",
-    cell: (info) => {
-      const isActive = info.getValue();
+    cell: ({ row }) => {
+      const product = row.original;
+      const isActive = Boolean(product.isActive);
+      const handleToggle = async () => {
+        try {
+          await updateMenuStatus(product.id, !isActive);
+          window.dispatchEvent(new CustomEvent("menu:updated"));
+        } catch (err) {
+          console.error("Error cambiando estado del platillo:", err);
+        }
+      };
       return (
-        <span className={`px-3 py-1 rounded-full text-xs font-bold tracking-wide ${
-          isActive 
-            ? "bg-green-100 text-green-700 border border-green-200" 
-            : "bg-red-100 text-red-700 border border-red-200"
-        }`}>
+        <button
+          type="button"
+          onClick={handleToggle}
+          title="Haz clic para cambiar el estado"
+          className={`px-3 py-1 rounded-full text-xs font-bold tracking-wide cursor-pointer transition-opacity hover:opacity-80 ${
+            isActive 
+              ? "bg-green-100 text-green-700 border border-green-200" 
+              : "bg-red-100 text-red-700 border border-red-200"
+          }`}
+        >
           {isActive ? "DISPONIBLE" : "AGOTADO"}
-        </span>
+        </button>
       );
     }
   },

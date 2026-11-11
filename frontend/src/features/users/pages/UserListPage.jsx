@@ -1,4 +1,4 @@
-﻿// src/users/pagesUserListPage.js
+// src/users/pagesUserListPage.js
 
 import { useState, useEffect } from "react";
 import { DataTable, Button } from "@/shared";
@@ -10,11 +10,17 @@ import ReportConfigModal from "../reports/components/ReportConfigModal";
 export default function UserListPage() {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [usersData, setUsersData] = useState([]);
-  
-  useEffect(() => {
+
+  const loadUsers = () => {
     getUsers()
       .then((data) => setUsersData(data))
       .catch((error) => console.error("Error cargando usuarios:", error));
+  };
+
+  useEffect(() => {
+    loadUsers();
+    window.addEventListener("users:updated", loadUsers);
+    return () => window.removeEventListener("users:updated", loadUsers);
   }, []);
 
   return (
@@ -44,6 +50,8 @@ export default function UserListPage() {
       <ReportConfigModal
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
+        module="users"
+        data={usersData}
       />
 
     </div>

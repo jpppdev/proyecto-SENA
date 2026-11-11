@@ -27,7 +27,23 @@ router.get(
 router.get(
     "/:id",
     userController.getById
-)
+);
+router.put(
+    "/:id",
+    userController.update
+);
+router.patch(
+    "/:id/status",
+    userController.updateStatus
+);
+router.patch(
+    "/:id/disable",
+    userController.disable
+);
+router.delete(
+    "/:id",
+    userController.disable
+);
 // Exportamos el router ára ser registrado en la aplicacion principal
 //(eje: app.use("/users", router))
 
