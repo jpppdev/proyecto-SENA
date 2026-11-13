@@ -76,7 +76,7 @@ function NewPassword() {
             />
 
             <h1 className="text-main font-heading text-text-negative text-center mb-3">
-              Renovar contraseña
+              Renovar Contraseña
             </h1>
 
             <p className="text-body text-text-secondary text-center mb-5">

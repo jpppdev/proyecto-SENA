@@ -17,11 +17,12 @@ import {
   DropdownItem,
 } from "@/shared";
 import logo from "@/assets/images/1-logo.png";
-import { Link } from "react-router-dom";
-import { showErrorAlert } from "@/shared/services/alertService";
+import { Link, useNavigate } from "react-router-dom";
+import { showErrorAlert, showDeleteAlert } from "@/shared/services/alertService";
 
 
 export default function Navbar({ onMenuClick }) {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [darkMode, setDarkMode] = useState(
     document.documentElement.classList.contains("dark")
@@ -60,6 +61,20 @@ export default function Navbar({ onMenuClick }) {
       text: "No tienes notificaciones nuevas.",
       timer: 2500,
     });
+  };
+
+  const handleLogout = async () => {
+    const result = await showDeleteAlert({
+      title: "¿Cerrar sesión?",
+      text: "¿Estás seguro de que deseas salir de tu cuenta?",
+      confirmButtonText: "Sí, cerrar sesión",
+      cancelButtonText: "Cancelar",
+    });
+    
+    if (result.isConfirmed) {
+      sessionStorage.removeItem("token");
+      navigate("/login");
+    }
   };
 
   return (
@@ -178,18 +193,20 @@ export default function Navbar({ onMenuClick }) {
                     Mi Perfil
                   </Link>
                 </DropdownItem>
+
                 <DropdownItem>
                   <Link to="permissions" className="block w-full">
                     Gestion de Permisos
                   </Link>
                 </DropdownItem>
 
-
                 <DropdownItem>
-                  <Link to="/login" className="block w-full">
+                  {/* Se cambió a button para ejecutar handleLogout */}
+                  <button onClick={handleLogout} className="block w-full text-left">
                     Cerrar sesión
-                  </Link>
+                  </button>
                 </DropdownItem>
+
               </DropdownContent>
             </Dropdown>
           </div>

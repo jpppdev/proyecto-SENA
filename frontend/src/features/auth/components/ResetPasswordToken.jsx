@@ -73,7 +73,7 @@ function ResetPasswordToken() {
           <img
             src={tokenPassword}
             alt="Restaurante"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain"
           />
         </div>
 
@@ -88,7 +88,7 @@ function ResetPasswordToken() {
           />
 
           <h1 className="text-main font-heading text-text-negative text-center mb-6">
-            Verificar token
+            Verificar Token
           </h1>
 
           <p className="text-body text-text-secondary text-center mb-8">

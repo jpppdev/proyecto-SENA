@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input, Button } from "@/shared";
 import restaurante from "../../../assets/images/Img-Restaurante.jpeg";
-import logo from "../../../assets/images/Img-Login.jpeg";
+import logo from "../../../assets/images/Img-Login.png";
 import title from "../../../assets/images/1-logo.png";
 import { loginSchema } from "../schemas/LoginSchema";
 import { login } from "../schemas/authService";

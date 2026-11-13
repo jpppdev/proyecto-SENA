@@ -78,7 +78,7 @@ function ForgotPassword() {
           />
 
           <h1 className="text-main font-heading text-text-negative text-center mb-6">
-            Recuperar contraseña
+            Recuperar Contraseña
           </h1>
 
           <p className="text-body text-text-secondary text-center mb-8">
