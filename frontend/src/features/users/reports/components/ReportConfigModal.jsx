@@ -1,8 +1,8 @@
-﻿// Hook para manejo de estado local en componentes funcionales
-import { useState } from "react";
+// Hook para manejo de estado local en componentes funcionales
+import { useState, useEffect } from "react";
 
-// Configuracion de campos disponibles para el reporte
-import { userReportFields } from "../config/userReportFields";
+// Configuracion de campos disponibles por modulo para el reporte
+import { reportModulesConfig } from "../config/userReportFields";
 
 // Caso de uso que orquesta la generacion del reporte
 import { generateUserReport } from "../services/generateUserReport";
@@ -10,21 +10,30 @@ import { generateUserReport } from "../services/generateUserReport";
 // Componentes UI reutilizables (design system)
 import { Button, Input, Select, Checkbox } from "@/shared";
 
-// Componente modal para configuracion de reportes
-export default function ReportConfigModal({ isOpen, onClose }) {
+// Componente modal para configuracion de reportes de todos los modulos
+export default function ReportConfigModal({ isOpen, onClose, module = "users", data = [] }) {
+  const moduleConfig = reportModulesConfig[module] || reportModulesConfig.users;
+  const availableFields = moduleConfig.fields;
+
   // Estado del formato de salida
   const [format, setFormat] = useState("pdf");
 
   // Estado del alcance del reporte
   const [scope, setScope] = useState("all");
 
-  // Estado para filtro por documento
+  // Estado para filtro
   const [documentNumber, setDocumentNumber] = useState("");
 
-  // Estado de campos seleccionados (inicializacion lazy)
+  // Estado de campos seleccionados
   const [selectedFields, setSelectedFields] = useState(() =>
-    userReportFields.filter((field) => field.default),
+    availableFields.filter((field) => field.default),
   );
+
+  useEffect(() => {
+    setSelectedFields(availableFields.filter((field) => field.default));
+    setScope("all");
+    setDocumentNumber("");
+  }, [module, availableFields]);
 
   // Control de render: si el modal no esta abierto, no se monta en el DOM
   if (!isOpen) return null;
@@ -40,9 +49,11 @@ export default function ReportConfigModal({ isOpen, onClose }) {
     }
   };
 
-  // Handler principal para generar el reporte
-  const handleGenerateReport = () => {
-    generateUserReport({
+  // Handler principal para generar el reporte conectado a la BD
+  const handleGenerateReport = async () => {
+    await generateUserReport({
+      module,
+      data,
       format,
       selectedFields,
       scope,
@@ -58,7 +69,7 @@ export default function ReportConfigModal({ isOpen, onClose }) {
       {/* Contenedor del modal */}
       <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg">
         {/* Titulo */}
-        <h2 className="mb-6 text-xl font-semibold">Generar reporte de usuarios</h2>
+        <h2 className="mb-6 text-xl font-semibold">{moduleConfig.modalTitle}</h2>
 
         {/* Seleccion de formato */}
         <div className="mb-4">
@@ -80,7 +91,7 @@ export default function ReportConfigModal({ isOpen, onClose }) {
 
           {/* Grid de checkboxes */}
           <div className="grid grid-cols-2 gap-2">
-            {userReportFields.map((field) => {
+            {availableFields.map((field) => {
               const checked = selectedFields.some((selectedField) => selectedField.key === field.key);
 
               return (
@@ -105,21 +116,21 @@ export default function ReportConfigModal({ isOpen, onClose }) {
             value={scope}
             onChange={(e) => setScope(e.target.value)}
             options={[
-              { label: "Todos los usuarios", value: "all" },
-              { label: "Filtrar por documento", value: "document" },
+              { label: moduleConfig.scopeAllLabel, value: "all" },
+              { label: moduleConfig.scopeFilterLabel, value: "document" },
             ]}
           />
         </div>
 
-        {/* Campo condicional para filtro por documento */}
+        {/* Campo condicional para filtro */}
         {scope === "document" && (
           <div className="mb-4">
             <Input
-              label="Numero de documento"
+              label={moduleConfig.filterInputLabel}
               name="documentNumber"
               value={documentNumber}
               onChange={(e) => setDocumentNumber(e.target.value)}
-              placeholder="Ingrese numero de documento"
+              placeholder={moduleConfig.filterPlaceholder}
               htmlFor="report-document-number"
             />
           </div>

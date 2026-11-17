@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { menuSchema } from "../schema/menuSchema";
+import { getMenuById, updateMenu } from "../services/menuServices";
+import { showSuccessAlert, showErrorAlert } from "@/shared/services/alertService";
 import { Input, Button, Select, FileInput } from "@/shared";
-import { Coffee, ArrowLeft, Check, UtensilsCrossed, PencilLine } from "lucide-react";
-import { menu } from "../data/menu";
+import { Coffee, ArrowLeft, Check, PencilLine } from "lucide-react";
 
 export default function MenuEditForm() {
   const { id } = useParams();
@@ -26,30 +27,34 @@ export default function MenuEditForm() {
   });
 
   const menuCategories = [
-    { label: "Bebidas Calientes", value: "calientes" },
-    { label: "Bebidas Frías", value: "frias" },
-    { label: "Panadería y Repostería", value: "panaderia" },
-    { label: "Desayunos", value: "desayunos" },
-    { label: "Snacks", value: "snacks" }
+    { label: "Bebidas Calientes", value: "Bebidas Calientes" },
+    { label: "Bebidas Frías", value: "Bebidas Frías" },
+    { label: "Panadería y Repostería", value: "Panadería y Repostería" },
+    { label: "Desayunos", value: "Desayunos" },
+    { label: "Snacks", value: "Snacks" },
+    { label: "Calientes", value: "calientes" },
+    { label: "Frías", value: "frias" },
+    { label: "Panadería", value: "panaderia" },
   ];
 
-
   useEffect(() => {
-    const dish = menu.find((item) => String(item.id) === String(id));
-    
-    if (dish) {
-      setFormData({
-        menuName: dish.menuName || "",
-        category: dish.category || "",
-        price: String(dish.price) || "",
-        prepTime: dish.prepTime || "",
-        ingredients: dish.ingredients || "",
-        description: dish.description || "",
-        allergens: dish.allergens || "",
-        isActive: dish.isActive ? "true" : "false",
-        menuImage: [],
-      });
-    }
+    getMenuById(id)
+      .then((dish) => {
+        if (dish) {
+          setFormData({
+            menuName: dish.menuName || "",
+            category: dish.category || "Bebidas Calientes",
+            price: String(Math.round(Number(dish.price) || 0)),
+            prepTime: dish.prepTime ? String(dish.prepTime) : "",
+            ingredients: dish.ingredients || "",
+            description: dish.description || "",
+            allergens: dish.allergens || "",
+            isActive: dish.isActive ? "true" : "false",
+            menuImage: [],
+          });
+        }
+      })
+      .catch((err) => console.error("Error cargando platillo:", err));
   }, [id]);
 
   const handleChange = (e) => {
@@ -77,6 +82,11 @@ export default function MenuEditForm() {
         fieldErrors[issue.path[0]] = issue.message;
       });
       setErrors(fieldErrors);
+      await showErrorAlert({
+        title: "Error de validación",
+        text: "Por favor revisa los campos del formulario.",
+        timer: 2500,
+      });
       return;
     }
 
@@ -84,11 +94,21 @@ export default function MenuEditForm() {
     setIsSubmitting(true);
 
     try {
+      await updateMenu(id, result.data);
       setIsSuccess(true);
-      setTimeout(() => navigate(-1), 2500);
+      await showSuccessAlert({
+        title: "Plato actualizado",
+        text: "El plato del menú fue actualizado correctamente.",
+        timer: 2000,
+      });
+      navigate("/dashboard/menuList");
     } catch (error) {
       console.error("Error:", error.message);
-      alert(error.message);
+      await showErrorAlert({
+        title: "Error al actualizar plato",
+        text: error.message || "Ocurrió un error al actualizar el plato.",
+        timer: 3000,
+      });
     } finally {
       setIsSubmitting(false);
     }

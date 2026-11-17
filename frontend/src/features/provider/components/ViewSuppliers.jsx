@@ -20,7 +20,8 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/shared";
-import { getProviderById } from "../services/providerServices";
+import { getProviderById, updateProviderStatus, disableProvider } from "../services/providerServices";
+import { showSuccessAlert, showErrorAlert, showDisableAlert } from "@/shared/services/alertService";
 
 export default function ViewSuppliers() {
   const { id } = useParams();
@@ -39,6 +40,50 @@ export default function ViewSuppliers() {
         setLoading(false);
       });
   }, [id]);
+
+  const handleToggleStatus = async () => {
+    if (!supplier) return;
+    try {
+      const nextStatus = !supplier.isActive;
+      await updateProviderStatus(supplier.id, nextStatus);
+      setSupplier((prev) => ({ ...prev, isActive: nextStatus }));
+      await showSuccessAlert({
+        title: nextStatus ? "Proveedor habilitado" : "Proveedor inhabilitado",
+        text: `El estado de ${supplier.providerName} cambió a ${nextStatus ? "Habilitado" : "Inhabilitado"}.`,
+        timer: 2000,
+      });
+    } catch (err) {
+      await showErrorAlert({
+        title: "Error",
+        text: err.message || "No se pudo cambiar el estado del proveedor.",
+      });
+    }
+  };
+
+  const handleDisableProvider = async () => {
+    if (!supplier) return;
+    const confirm = await showDisableAlert({
+      title: "¿Deshabilitar proveedor?",
+      text: `¿Deseas deshabilitar a ${supplier.providerName}?`,
+      confirmButtonText: "Sí, deshabilitar",
+    });
+    if (!confirm.isConfirmed) return;
+
+    try {
+      await disableProvider(supplier.id);
+      setSupplier((prev) => ({ ...prev, isActive: false }));
+      await showSuccessAlert({
+        title: "Proveedor deshabilitado",
+        text: `${supplier.providerName} fue deshabilitado correctamente.`,
+        timer: 2000,
+      });
+    } catch (err) {
+      await showErrorAlert({
+        title: "Error",
+        text: err.message || "No se pudo deshabilitar el proveedor.",
+      });
+    }
+  };
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Cargando datos...</div>;
@@ -677,18 +722,20 @@ export default function ViewSuppliers() {
 
               <div className="flex flex-col gap-1.5">
 
-                <Button>
-                  <span className="flex items-center justify-center gap-2">
+                <Link to={`/dashboard/providerEdit/${supplier.id}`}>
+                  <Button>
+                    <span className="flex items-center justify-center gap-2">
 
-                    <Edit size={20} />
+                      <Edit size={20} />
 
-                    Editar proveedor
+                      Editar proveedor
 
-                  </span>
-                </Button>
+                    </span>
+                  </Button>
+                </Link>
 
 
-                <Button>
+                <Button onClick={handleToggleStatus}>
                   <span className="flex items-center justify-center gap-2">
 
                     <ToggleRight size={20} />
@@ -699,12 +746,12 @@ export default function ViewSuppliers() {
                 </Button>
 
 
-                <Button>
+                <Button onClick={handleDisableProvider}>
                   <span className="flex items-center justify-center gap-2">
 
                     <Ban size={20} />
 
-                    Desactivar proveedor
+                    Deshabilitar proveedor
 
                   </span>
                 </Button>

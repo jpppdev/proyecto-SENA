@@ -3,14 +3,22 @@ import { Link } from "react-router-dom";
 import { Button, DataTable } from "@/shared";
 import { ProviderColumns } from "../table/ProviderColumns"; 
 import { getProviders } from "../services/providerServices";
+import ReportConfigModal from "@/features/users/reports/components/ReportConfigModal";
 
 export default function ProviderListPage() {
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [providersData, setProvidersData] = useState([]);
 
-  useEffect(() => {
+  const loadProviders = () => {
     getProviders()
       .then((data) => setProvidersData(data))
       .catch((error) => console.error("Error cargando proveedores:", error));
+  };
+
+  useEffect(() => {
+    loadProviders();
+    window.addEventListener("providers:updated", loadProviders);
+    return () => window.removeEventListener("providers:updated", loadProviders);
   }, []);
 
   return (
@@ -21,6 +29,10 @@ export default function ProviderListPage() {
       </h1>
       
       <div className="flex justify-end items-center gap-4 pb-10">
+        {/* botón de reportar proveedor */}
+        <Button onClick={() => setIsReportModalOpen(true)}>
+          Reportar proveedor
+        </Button>
         
         {/* botón de crear proveedor */}
         <Link to="/dashboard/providerCreate" className="text-h1 font-heading">
@@ -30,6 +42,13 @@ export default function ProviderListPage() {
       </div>
 
       <DataTable data={providersData} columns={ProviderColumns} />
+
+      <ReportConfigModal
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        module="providers"
+        data={providersData}
+      />
 
     </div>
   );

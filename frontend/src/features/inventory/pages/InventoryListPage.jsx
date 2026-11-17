@@ -11,10 +11,16 @@ export default function InventoryListPage() {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false)
   const [inventoryData, setInventoryData] = useState([]);
 
-  useEffect(() => {
+  const loadInventory = () => {
     getInventory()
       .then((data) => setInventoryData(data))
       .catch((error) => console.error("Error cargando inventario:", error));
+  };
+
+  useEffect(() => {
+    loadInventory();
+    window.addEventListener("inventory:updated", loadInventory);
+    return () => window.removeEventListener("inventory:updated", loadInventory);
   }, []);
 
   return (
@@ -43,6 +49,8 @@ export default function InventoryListPage() {
       <ReportConfigModal
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
+        module="inventory"
+        data={inventoryData}
       />
 
     </div>

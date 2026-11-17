@@ -28,6 +28,22 @@ router.get(
     "/:id",
     inventoryController.getById
 );
+router.put(
+    "/:id",
+    inventoryController.update
+);
+router.patch(
+    "/:id/status",
+    inventoryController.updateStatus
+);
+router.patch(
+    "/:id/disable",
+    inventoryController.disable
+);
+router.delete(
+    "/:id",
+    inventoryController.disable
+);
 
 // Exportamos el router para ser registrado en la aplicacion principal
 // (ej: app.use("/api/inventory", router))

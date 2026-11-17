@@ -17,8 +17,13 @@ import {
   DropdownItem,
 } from "@/shared";
 import logo from "@/assets/images/1-logo.png";
+
 import { Link, useNavigate } from "react-router-dom";
 import { showErrorAlert, showDeleteAlert } from "@/shared/services/alertService";
+
+import { Link } from "react-router-dom";
+import { showErrorAlert } from "@/shared/services/alertService";
+import { logout } from "@/features/auth/schemas/logoutService";
 
 
 export default function Navbar({ onMenuClick }) {
@@ -201,8 +206,12 @@ export default function Navbar({ onMenuClick }) {
                 </DropdownItem>
 
                 <DropdownItem>
+
                   {/* Se cambió a button para ejecutar handleLogout */}
                   <button onClick={handleLogout} className="block w-full text-left">
+
+                  <Link to="/login" replace onClick={logout} className="block w-full">
+
                     Cerrar sesión
                   </button>
                 </DropdownItem>

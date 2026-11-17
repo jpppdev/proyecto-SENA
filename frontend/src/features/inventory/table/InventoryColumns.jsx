@@ -1,7 +1,7 @@
 // src/features/inventory/table/InventoryColumns.jsx
 
-// Descomentaremos esto en el siguiente paso cuando creemos los botones del ojo, lápiz y basura para el inventario
 import InventoryRowActions from "../components/InventoryRowActions";
+import { updateInventoryStatus } from "../services/inventoryServices";
 
 export const InventoryColumns = [
   {
@@ -32,17 +32,33 @@ export const InventoryColumns = [
   {
     accessorKey: "status",
     header: "Estado",
-    // Aquí podrías agregar un diseño especial (como una pastilla de color verde o roja) dependiendo de si está "disponible" o "agotado"
     cell: ({ row }) => {
+      const product = row.original;
       const status = row.getValue("status");
+      const isActive = Boolean(product.isActive ?? status !== "inactivo");
+
+      const handleToggle = async () => {
+        try {
+          await updateInventoryStatus(product.id, !isActive);
+          window.dispatchEvent(new CustomEvent("inventory:updated"));
+        } catch (err) {
+          console.error("Error cambiando estado del producto:", err);
+        }
+      };
+
       return (
-        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-          status === 'disponible' ? 'bg-green-100 text-green-700' : 
-          status === 'agotado' ? 'bg-red-100 text-red-700' : 
-          'bg-yellow-100 text-yellow-700'
-        }`}>
-          {status.toUpperCase()}
-        </span>
+        <button
+          type="button"
+          onClick={handleToggle}
+          title="Haz clic para cambiar el estado"
+          className={`px-2 py-1 rounded-full text-xs font-semibold cursor-pointer transition-opacity hover:opacity-80 ${
+            status === 'disponible' ? 'bg-green-100 text-green-700' : 
+            status === 'agotado' || status === 'inactivo' ? 'bg-red-100 text-red-700' : 
+            'bg-yellow-100 text-yellow-700'
+          }`}
+        >
+          {String(status || "").toUpperCase()}
+        </button>
       );
     }
   },

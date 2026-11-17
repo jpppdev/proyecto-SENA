@@ -119,6 +119,7 @@ export const orderRepository = {
           SELECT 
             o.id_order AS id,
             COALESCE(o.customer_name, 'Cliente general') AS "customerName",
+            COALESCE(u.user_name, 'Mesero asignado') AS waiter,
             TO_CHAR(o.created_at, 'DD/MM/YYYY') AS date,
             TO_CHAR(o.created_at, 'HH12:MI AM') AS time,
             COALESCE(t.table_number, o.id_table, 0) AS "table",
@@ -126,9 +127,121 @@ export const orderRepository = {
             o.order_status AS status
           FROM orders o
           LEFT JOIN dining_tables t ON o.id_table = t.id_table
+          LEFT JOIN usuarios u ON o.id_usuario = u.id_usuario
           WHERE o.id_order = $1;
         `;
         const result = await pool.query(query, [id]);
+        const order = result.rows[0];
+        if (!order) return null;
+
+        try {
+            const detailsQuery = `
+              SELECT 
+                d.id_order_detail AS id,
+                d.id_menu_item AS "productId",
+                COALESCE(m.item_name, 'Producto') AS name,
+                d.quantity,
+                COALESCE(CAST(d.unit_price AS FLOAT), 0) AS price,
+                d.notes
+              FROM order_details d
+              LEFT JOIN menu_items m ON d.id_menu_item = m.id_menu_item
+              WHERE d.id_order = $1
+              ORDER BY d.id_order_detail ASC;
+            `;
+            const detailsRes = await pool.query(detailsQuery, [id]);
+            order.dishes = detailsRes.rows;
+            order.observations = detailsRes.rows[0]?.notes || "";
+        } catch {
+            order.dishes = [];
+            order.observations = "";
+        }
+
+        return order;
+    },
+
+    async update(id, orderData) {
+        const {
+            tableNumber,
+            customerName,
+            orderStatus,
+            total = 0,
+            items,
+            observations,
+        } = orderData;
+
+        let resolvedTableId = null;
+        if (tableNumber && Number(tableNumber) > 0) {
+            const tableRes = await pool.query(
+                `INSERT INTO dining_tables (table_number, capacity)
+                 VALUES ($1, 4)
+                 ON CONFLICT (table_number) DO UPDATE SET table_number = EXCLUDED.table_number
+                 RETURNING id_table;`,
+                [Number(tableNumber)]
+            );
+            resolvedTableId = tableRes.rows[0].id_table;
+        }
+
+        const query = `
+          UPDATE orders SET
+            id_table = $1,
+            customer_name = $2,
+            order_status = COALESCE($3, order_status),
+            total_amount = $4
+          WHERE id_order = $5
+          RETURNING id_order AS id;
+        `;
+
+        const result = await pool.query(query, [
+            resolvedTableId,
+            customerName || "Cliente general",
+            orderStatus || null,
+            Number(total) || 0,
+            id,
+        ]);
+
+        const updatedOrder = result.rows[0];
+
+        if (updatedOrder?.id && Array.isArray(items)) {
+            await pool.query(`DELETE FROM order_details WHERE id_order = $1`, [id]);
+
+            for (const item of items) {
+                const qty = Number(item.quantity) || 1;
+                const price = Number(item.price) || 0;
+                const menuRes = await pool.query(
+                    `SELECT id_menu_item FROM menu_items WHERE item_name ILIKE $1 OR id_menu_item::TEXT = $2 LIMIT 1`,
+                    [item.name || "", String(item.productId || "")]
+                );
+                const fallbackRes = menuRes.rows.length > 0
+                    ? menuRes
+                    : await pool.query(`SELECT id_menu_item FROM menu_items ORDER BY id_menu_item ASC LIMIT 1`);
+
+                if (fallbackRes.rows.length > 0) {
+                    await pool.query(
+                        `INSERT INTO order_details (id_order, id_menu_item, quantity, unit_price, subtotal, notes)
+                         VALUES ($1, $2, $3, $4, $5, $6)`,
+                        [id, fallbackRes.rows[0].id_menu_item, qty, price, qty * price, observations || null]
+                    );
+                }
+            }
+        }
+
+        return updatedOrder;
+    },
+
+    async updateStatus(id, status) {
+        const nextStatus = status || "Deshabilitada";
+        const result = await pool.query(
+            `UPDATE orders SET order_status = $1 WHERE id_order = $2 RETURNING id_order AS id, order_status AS status;`,
+            [nextStatus, id]
+        );
+        return result.rows[0];
+    },
+
+    async disable(id) {
+        const result = await pool.query(
+            `UPDATE orders SET order_status = 'Deshabilitada' WHERE id_order = $1 RETURNING id_order AS id, order_status AS status;`,
+            [id]
+        );
         return result.rows[0];
     }
 };

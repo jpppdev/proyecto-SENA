@@ -7,10 +7,12 @@ import {
   Tag,
   FileText,
   ToggleRight,
+  Ban,
 } from "lucide-react";
 
 import { Button } from "@/shared";
-import { getMenuById } from "../services/menuServices";
+import { getMenuById, updateMenuStatus, disableMenu } from "../services/menuServices";
+import { showSuccessAlert, showErrorAlert, showDisableAlert } from "@/shared/services/alertService";
 
 
 export default function ViewMenu() {
@@ -30,6 +32,50 @@ export default function ViewMenu() {
         setLoading(false);
       });
   }, [id]);
+
+  const handleToggleStatus = async () => {
+    if (!dish) return;
+    try {
+      const nextStatus = !dish.isActive;
+      await updateMenuStatus(dish.id, nextStatus);
+      setDish((prev) => ({ ...prev, isActive: nextStatus }));
+      await showSuccessAlert({
+        title: nextStatus ? "Platillo habilitado" : "Platillo deshabilitado",
+        text: `El estado de ${dish.menuName} cambió a ${nextStatus ? "Habilitado" : "Deshabilitado"}.`,
+        timer: 2000,
+      });
+    } catch (err) {
+      await showErrorAlert({
+        title: "Error",
+        text: err.message || "No se pudo cambiar el estado del platillo.",
+      });
+    }
+  };
+
+  const handleDisableDish = async () => {
+    if (!dish) return;
+    const confirm = await showDisableAlert({
+      title: "¿Deshabilitar platillo?",
+      text: `¿Deseas deshabilitar ${dish.menuName}?`,
+      confirmButtonText: "Sí, deshabilitar",
+    });
+    if (!confirm.isConfirmed) return;
+
+    try {
+      await disableMenu(dish.id);
+      setDish((prev) => ({ ...prev, isActive: false }));
+      await showSuccessAlert({
+        title: "Platillo deshabilitado",
+        text: `${dish.menuName} fue deshabilitado correctamente.`,
+        timer: 2000,
+      });
+    } catch (err) {
+      await showErrorAlert({
+        title: "Error",
+        text: err.message || "No se pudo deshabilitar el platillo.",
+      });
+    }
+  };
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Cargando datos...</div>;
@@ -364,9 +410,9 @@ export default function ViewMenu() {
             {/* ACCIONES */}
             <div className="bg-brand-light rounded-2xl shadow-md px-8 p-4">
 
-              <div className="flex flex-col gap-1.5 items-center">
+              <div className="flex flex-col gap-1.5">
 
-                <Link to={`/dashboard/menuUpdate/${dish.id}`}>
+                <Link to={`/dashboard/menuEdit/${dish.id}`}>
 
                   <Button>
 
@@ -381,6 +427,20 @@ export default function ViewMenu() {
                   </Button>
 
                 </Link>
+
+                <Button onClick={handleToggleStatus}>
+                  <span className="flex items-center justify-center gap-2">
+                    <ToggleRight size={20} />
+                    Cambiar estado
+                  </span>
+                </Button>
+
+                <Button onClick={handleDisableDish}>
+                  <span className="flex items-center justify-center gap-2">
+                    <Ban size={20} />
+                    Deshabilitar platillo
+                  </span>
+                </Button>
 
               </div>
 
