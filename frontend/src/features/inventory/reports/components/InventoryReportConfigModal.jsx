@@ -1,0 +1,294 @@
+
+import { useState } from "react";
+import { Button } from "@/shared";
+import { X, Check } from "lucide-react";
+import {
+  showSuccessAlert,
+  showErrorAlert,
+} from "@/shared/services/alertService";
+
+import * as XLSX from "xlsx";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+
+export default function InventoryReportConfigModal({
+  isOpen,
+  onClose,
+  data = [],
+}) {
+  const [format, setFormat] = useState("PDF");
+  const [scope, setScope] = useState("Todos los productos");
+
+  const [fields, setFields] = useState({
+    barcode: true,
+    productName: true,
+    brand: true,
+    quantity: true,
+    unitValue: true,
+    status: false,
+  });
+
+  if (!isOpen) return null;
+
+  const toggleField = (fieldName) => {
+    setFields((prev) => ({
+      ...prev,
+      [fieldName]: !prev[fieldName],
+    }));
+  };
+
+  const handleGenerate = async (e) => {
+    e.preventDefault();
+
+    if (!data || data.length === 0) {
+      showErrorAlert({
+        title: "Sin datos",
+        text: "No hay productos registrados para exportar.",
+      });
+      return;
+    }
+
+    try {
+      // Filtrar productos según el alcance seleccionado
+      let filteredProducts = [...data];
+
+      if (scope === "Solo disponibles") {
+        filteredProducts = data.filter(
+          (product) => product.status === "disponible"
+        );
+      } else if (scope === "Solo agotados") {
+        filteredProducts = data.filter(
+          (product) => product.status === "agotado"
+        );
+      } else if (scope === "Solo inactivos") {
+        filteredProducts = data.filter(
+          (product) => product.status === "inactivo"
+        );
+      }
+
+      if (filteredProducts.length === 0) {
+        showErrorAlert({
+          title: "Sin resultados",
+          text: "No hay productos que coincidan con el alcance seleccionado.",
+        });
+        return;
+      }
+
+      // Preparar los datos para exportar
+      const reportData = filteredProducts.map((product) => {
+        const row = {};
+
+        if (fields.barcode) row["Código"] = product.barcode || "";
+        if (fields.productName) row["Producto"] = product.productName || "";
+        if (fields.brand) row["Marca"] = product.brand || "";
+        if (fields.quantity) row["Stock"] = product.quantity ?? 0;
+
+        if (fields.unitValue) {
+          row["Valor Unitario"] = `$ ${Number(
+            product.unitValue || 0
+          ).toLocaleString("es-CO")}`;
+        }
+
+        if (fields.status) {
+          row["Estado"] = product.status || "";
+        }
+
+        return row;
+      });
+
+      if (Object.keys(reportData[0]).length === 0) {
+        showErrorAlert({
+          title: "Error",
+          text: "Debes seleccionar al menos un campo para exportar.",
+        });
+        return;
+      }
+
+      // Generar Excel
+      if (format === "EXCEL") {
+        const worksheet = XLSX.utils.json_to_sheet(reportData);
+        const workbook = XLSX.utils.book_new();
+
+        XLSX.utils.book_append_sheet(
+          workbook,
+          worksheet,
+          "Inventario Aurum"
+        );
+
+        XLSX.writeFile(
+          workbook,
+          "Reporte_Inventario_Aurum.xlsx"
+        );
+
+      // Generar PDF
+      } else if (format === "PDF") {
+        const doc = new jsPDF();
+
+        doc.setFontSize(18);
+        doc.text("Reporte de Inventario - Aurum", 14, 22);
+
+        const headers = Object.keys(reportData[0]);
+        const body = reportData.map((product) =>
+          Object.values(product)
+        );
+
+        autoTable(doc, {
+          startY: 30,
+          head: [headers],
+          body: body,
+          theme: "grid",
+          headStyles: {
+            fillColor: [217, 101, 2],
+          },
+        });
+
+        doc.save("Reporte_Inventario_Aurum.pdf");
+      }
+
+      onClose();
+
+      await showSuccessAlert({
+        title: "¡Reporte Generado!",
+        text: `Tu archivo ${format} se ha descargado correctamente.`,
+        timer: 2000,
+      });
+
+    } catch (error) {
+      console.error("Error generando reporte:", error);
+
+      showErrorAlert({
+        title: "Error",
+        text: "Hubo un problema al procesar los datos.",
+      });
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+      <form
+        onSubmit={handleGenerate}
+        className="relative w-full max-w-[560px] bg-background-div rounded-3xl shadow-2xl p-6"
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute top-4 right-4 h-12 w-12 flex items-center justify-center text-text-secondary hover:text-text-brand transition-colors rounded-full"
+        >
+          <X size={24} />
+        </button>
+
+        <h2 className="text-title font-heading text-text-negative mb-6">
+          Generar reporte de inventario
+        </h2>
+
+        {/* Formato del reporte */}
+        <div className="mb-6">
+          <label className="block text-medium font-weight-medium-custom text-text-secondary mb-2">
+            Formato del reporte
+          </label>
+
+          <select
+            value={format}
+            onChange={(e) => setFormat(e.target.value)}
+            className="w-full h-14 rounded-xl border border-border-strong bg-transparent px-4 text-body text-text-secondary focus:border-focus-border focus:outline-none focus:ring-1 focus:ring-focus-ring cursor-pointer"
+          >
+            <option value="PDF">Documento PDF (.pdf)</option>
+            <option value="EXCEL">Hoja de cálculo Excel (.xlsx)</option>
+          </select>
+        </div>
+
+        {/* Campos a exportar */}
+        <div className="mb-6">
+          <label className="block text-medium font-weight-medium-custom text-text-secondary mb-2">
+            Campos a exportar
+          </label>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
+            {Object.entries({
+              barcode: "Código de barras",
+              productName: "Producto",
+              brand: "Marca",
+              quantity: "Stock",
+              unitValue: "Valor unitario",
+              status: "Estado",
+            }).map(([key, label]) => (
+              <label
+                key={key}
+                className="flex items-center min-h-[48px] gap-4 cursor-pointer group rounded-lg hover:bg-surface-muted/30 px-2 -ml-2 transition-colors"
+              >
+                <div
+                  className={`flex h-5 w-5 items-center justify-center rounded border-2 transition-colors ${
+                    fields[key]
+                      ? "border-brand bg-brand text-text-primary"
+                      : "border-border-strong bg-transparent group-hover:border-brand"
+                  }`}
+                >
+                  {fields[key] && (
+                    <Check size={16} strokeWidth={3} />
+                  )}
+                </div>
+
+                <input
+                  type="checkbox"
+                  className="hidden"
+                  checked={fields[key]}
+                  onChange={() => toggleField(key)}
+                />
+
+                <span className="text-body text-text-secondary">
+                  {label}
+                </span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {/* Alcance del reporte */}
+        <div className="mb-8">
+          <label className="block text-medium font-weight-medium-custom text-text-secondary mb-2">
+            Alcance del reporte
+          </label>
+
+          <select
+            value={scope}
+            onChange={(e) => setScope(e.target.value)}
+            className="w-full h-14 rounded-xl border border-border-strong bg-transparent px-4 text-body text-text-secondary focus:border-focus-border focus:outline-none focus:ring-1 focus:ring-focus-ring cursor-pointer"
+          >
+            <option value="Todos los productos">
+              Todos los productos
+            </option>
+            <option value="Solo disponibles">
+              Solo productos disponibles
+            </option>
+            <option value="Solo agotados">
+              Solo productos agotados
+            </option>
+            <option value="Solo inactivos">
+              Solo productos inactivos
+            </option>
+          </select>
+        </div>
+
+        {/* Botones */}
+        <div className="w-full flex items-center justify-end gap-2 pt-2">
+          <Button
+            variant="secondary"
+            type="button"
+            size="md"
+            onClick={onClose}
+          >
+            Cancelar
+          </Button>
+
+          <Button
+            variant="primary"
+            type="submit"
+            size="md"
+          >
+            Generar reporte
+          </Button>
+        </div>
+      </form>
+    </div>
+  );
+}

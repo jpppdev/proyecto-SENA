@@ -5,7 +5,7 @@ import { DataTable, Button } from "@/shared";
 import { InventoryColumns } from "../table/InventoryColumns";
 import { getInventory } from "../services/inventoryServices";
 import { Link } from "react-router-dom";
-import ReportConfigModal from "@/features/users/reports/components/ReportConfigModal";
+import InventoryReportConfigModal from "@/features/inventory/reports/components/InventoryReportConfigModal";
 
 export default function InventoryListPage() {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false)
@@ -46,7 +46,7 @@ export default function InventoryListPage() {
 
       <DataTable data={inventoryData} columns={InventoryColumns} />
 
-      <ReportConfigModal
+      <InventoryReportConfigModal
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
         module="inventory"

@@ -5,7 +5,7 @@ import { DataTable, Button } from "@/shared";
 import { UserColumns } from "../table/UserColumns";
 import { getUsers } from "../services/userServices";
 import { Link } from "react-router-dom";
-import ReportConfigModal from "../reports/components/ReportConfigModal";
+import UserReportConfigModal from "../reports/components/ReportConfigModal";
 
 export default function UserListPage() {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
@@ -47,7 +47,7 @@ export default function UserListPage() {
 
       <DataTable data={usersData} columns={UserColumns} />
 
-      <ReportConfigModal
+      <UserReportConfigModal
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
         module="users"

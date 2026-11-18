@@ -3,7 +3,7 @@ import logo from "@/assets/images/1-logo.png";
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-white/20 backdrop-blur-md relative z-50">
+    <footer className="w-full bg-white/20 backdrop-blur-md">
       <div className="mx-auto max-w-7xl px-4">
 
         {/* Contenido del footer */}
