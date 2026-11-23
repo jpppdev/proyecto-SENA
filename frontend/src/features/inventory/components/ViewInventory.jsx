@@ -8,6 +8,7 @@ import {
   Boxes,
   AlertTriangle,
   DollarSign,
+  CircleDollarSign,
   ToggleRight,
   Layers,
   Calendar,
@@ -19,26 +20,44 @@ import {
   Ban,
 } from "lucide-react";
 
-import { Button } from "@/shared";
-import { getInventoryById, updateInventoryStatus, disableInventory } from "../services/inventoryServices";
-import { showSuccessAlert, showErrorAlert, showDisableAlert } from "@/shared/services/alertService";
+import { Breadcrumbs, Button } from "@/shared";
+import {
+  getInventoryById,
+  updateInventoryStatus,
+  disableInventory,
+} from "../services/inventoryServices";
+import {
+  showSuccessAlert,
+  showErrorAlert,
+  showDisableAlert,
+} from "@/shared/services/alertService";
 
 export default function InventoryViewPage() {
   const { id } = useParams();
+  return <InventoryDetails key={id} id={id} />;
+}
 
+function InventoryDetails({ id }) {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [imgError, setImgError] = useState(false);
 
   useEffect(() => {
+    let active = true;
     getInventoryById(id)
       .then((data) => {
+        if (!active) return;
         setProduct(data);
         setLoading(false);
       })
       .catch((err) => {
+        if (!active) return;
         console.error("Error al cargar producto:", err);
         setLoading(false);
       });
+    return () => {
+      active = false;
+    };
   }, [id]);
 
   const handleToggleStatus = async () => {
@@ -49,7 +68,11 @@ export default function InventoryViewPage() {
       setProduct((prev) => ({
         ...prev,
         isActive: nextStatus,
-        status: nextStatus ? (Number(prev.quantity) > 0 ? "disponible" : "agotado") : "inactivo",
+        status: nextStatus
+          ? Number(prev.quantity) > 0
+            ? "disponible"
+            : "agotado"
+          : "inactivo",
       }));
       await showSuccessAlert({
         title: nextStatus ? "Producto habilitado" : "Producto deshabilitado",
@@ -90,12 +113,16 @@ export default function InventoryViewPage() {
   };
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Cargando datos...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background-clear text-text-secondary">
+        Cargando datos...
+      </div>
+    );
   }
 
   if (!product) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-surface">
+      <div className="min-h-screen flex items-center justify-center bg-background-clear text-text-secondary">
         <p className="text-title font-title font-heading text-text-primary">
           Producto no encontrado
         </p>
@@ -103,675 +130,509 @@ export default function InventoryViewPage() {
     );
   }
 
+  const isActive = product.isActive ?? product.status !== "inactivo";
+  const hasValidImage = Boolean(product.image) && !imgError;
+  const formattedStatus = product.status
+    ? product.status.charAt(0).toUpperCase() + product.status.slice(1)
+    : isActive
+      ? "Disponible"
+      : "Inactivo";
+
   return (
-    <div className="min-h-screen bg-[url('/src/assets/images/fondo.png')] bg-cover bg-center p-6">
+    <div className="contenedor-1 mx-auto min-h-screen max-w-410 px-4 py-5 font-title text-medium text-text-coffee min-[801px]:px-8 min-[801px]:py-7">
+      <Breadcrumbs
+        items={[
+          { label: "Inicio", to: "/dashboard/home" },
+          { label: "Inventario", to: "/dashboard/inventoryList" },
+          { label: "Visualizar producto" },
+        ]}
+      />
 
-      <div className="max-w-6xl mx-auto">
-
-        {/* HEADER */}
-        <div className="flex justify-between items-center mb-6">
-
+      {/* HEADER */}
+      <header className="contenedor-2 mt-5 mb-6 flex flex-col items-start justify-between gap-5 min-[801px]:flex-row min-[801px]:items-center">
+        <div className="flex min-w-0 items-center gap-3">
           <div>
-            <h1 className="text-main font-title font-heading text-text-primary">
+            <h1 className="text-title leading-tight font-medium-custom tracking-tight text-text-primary min-[501px]:text-[28px] min-[801px]:text-[35px]">
               Visualizar Inventario
             </h1>
+            <p className="mt-1 text-medium text-text-coffee">
+              Consulta la información detallada del producto, sus existencias, lote y estado en el sistema.
+            </p>
           </div>
-
-          <Link to="/dashboard/inventoryList">
-            <Button>
-              Volver a la lista
-            </Button>
-          </Link>
-
         </div>
 
+        <Link to="/dashboard/inventoryList">
+          <Button className="inline-flex min-h-10 w-full items-center justify-center rounded-[10px] border border-brand px-5 py-2.5 text-medium font-medium-custom text-text-coffee transition-colors hover:bg-border-clear2/60 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand">
+            Volver a la lista
+          </Button>
+        </Link>
+      </header>
 
-        {/* TARJETA PRINCIPAL */}
-        <div className="bg-brand-light rounded-2xl shadow-md p-6 mb-5">
-
-          <div className="flex flex-col lg:flex-row lg:items-center gap-6">
-
-            {/* IMAGEN */}
-            <div className="flex-shrink-0">
-
-              <div className="w-32 h-32 rounded-2xl overflow-hidden border-4 border-black bg-surface flex items-center justify-center">
-
-                {product.image ? (
-                  <img
-                    src={product.image}
-                    alt={product.productName}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <Image
-                    size={32}
-                    className="text-text-secondary"
-                  />
-                )}
-
+      {/* TARJETA PRINCIPAL */}
+      <section className="contenedor-3 bg-background-positive/72 border border-solid border-background-clear rounded-xl shadow-[0_4px_18px] shadow-text-coffee/3 p-5 mb-6">
+        <div className="contenedor-4 grid items-center gap-5 min-[501px]:grid-cols-[auto_minmax(0,1fr)] min-[1151px]:grid-cols-[auto_minmax(0,1.65fr)_minmax(145px,0.7fr)_minmax(170px,1fr)]">
+          {/* IMAGEN */}
+          <div className="contenedor-5 shrink-0">
+            {hasValidImage ? (
+              <img
+                src={product.image}
+                alt={product.productName}
+                onError={() => setImgError(true)}
+                className="size-27.5 rounded-full bg-background-clear object-cover min-[501px]:size-36"
+              />
+            ) : (
+              <div className="flex size-27.5 items-center justify-center rounded-full bg-border-clear2 text-brand-hover min-[501px]:size-36">
+                <Package size={45} />
               </div>
+            )}
+          </div>
 
+          {/* INFORMACIÓN PRINCIPAL */}
+          <div className="contenedor-6 min-w-0">
+            <h2 className="contenedor-6.1 mb-2 text-title leading-tight font-medium-custom tracking-tight text-text-primary wrap-anywhere min-[801px]:text-[29px]">
+              {product.productName}
+            </h2>
+
+            <div className="contenedor-6.2 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-border-clear2 text-brand-hover text-small font-normal mb-4">
+              <Tag size={20} />
+              {product.brand || "Producto"}
             </div>
 
-
-            {/* INFORMACIÓN PRINCIPAL */}
-            <div className="flex-1">
-
-              <h2 className="text-title font-title font-heading text-text-secondary mb-2">
-                {product.productName}
-              </h2>
-
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand text-text-inverse text-small font-body">
-
-                <ToggleRight size={20} />
-
-                {product.status || "No registrado"}
-
-              </div>
-
-            </div>
-
-
-            {/* ID */}
-            <div className="lg:border-l lg:pl-8 min-w-[150px] border-border">
-
-              <p className="text-small text-text-secondary mb-2">
-                ID del producto
-              </p>
-
-              <div className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-surface">
-
-                <Hash
-                  size={20}
-                  className="text-text-secondary"
-                />
-
-                <span className="text-small font-body text-text-secondary">
-                  {product.id}
+            <div className="contenedor-6.3 space-y-3 text-medium text-text-secondary wrap-anywhere">
+              <div className="flex items-center gap-2">
+                <Boxes size={20} className="shrink-0 text-text-brand" />
+                <span>
+                  Cantidad total: {product.totalQuantity ?? product.quantity ?? "0"}
                 </span>
-
               </div>
 
-            </div>
-
-
-            {/* CANTIDAD TOTAL */}
-            <div className="lg:border-l lg:pl-8 min-w-[150px] border-border">
-
-              <p className="text-small text-text-secondary mb-2">
-                Cantidad total
-              </p>
-
-              <div className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-surface">
-
-                <Boxes
-                  size={20}
-                  className="text-text-secondary"
-                />
-
-                <span className="text-small font-body text-text-secondary">
-                  {product.totalQuantity ?? product.quantity}
-                </span>
-
+              <div className="flex items-center gap-2">
+                <MapPin size={20} className="shrink-0 text-text-brand" />
+                <span>Ubicación: {product.location || "No registrada"}</span>
               </div>
-
             </div>
-
           </div>
 
+          {/* ID */}
+          <div className="self-stretch border-background-clear min-[1151px]:border-l min-[1151px]:pl-6">
+            <p className="text-small text-text-muted mb-2">
+              ID del producto
+            </p>
+
+            <div className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-background-clear/75">
+              <Hash size={20} className="text-text-secondary" />
+
+              <span className="text-small font-medium-custom text-text-coffee">
+                INV-{String(product.id).padStart(5, "0")}
+              </span>
+            </div>
+          </div>
+
+          {/* ESTADO */}
+          <div className="self-stretch border-background-clear min-[1151px]:border-l min-[1151px]:pl-6">
+            <p className="text-small text-text-muted mb-2">
+              Estado del producto
+            </p>
+
+            <span
+              className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-medium font-medium-custom ${
+                isActive
+                  ? "bg-surface-muted/55 text-text-secondary"
+                  : "bg-brand-soft/30 text-text-coffee"
+              }`}
+            >
+              <span className="order-last size-2.5 rounded-full bg-current"></span>
+              {formattedStatus}
+            </span>
+          </div>
         </div>
+      </section>
 
-
-        {/* PESTAÑAS */}
-        <div className="bg-brand-light rounded-2xl shadow-md mb-5">
-
-          <div className="flex items-center">
-
-            <div className="px-6 py-4 text-text-secondary flex items-center gap-2">
-              <Package size={20} />
-              Información general
-            </div>
-
-            <div className="px-6 py-4 text-text-secondary flex items-center gap-2">
-              <Layers size={20} />
-              Lote
-            </div>
-
+      {/* PESTAÑAS */}
+      <div className="my-4 overflow-x-auto rounded-xl border border-background-clear bg-background-positive/68 px-1">
+        <div className="flex items-center">
+          <div className="flex shrink-0 items-center gap-2 whitespace-nowrap border-b-3 border-brand px-4 py-3.5 font-medium-custom text-text-brand min-[801px]:gap-4 min-[801px]:px-6">
+            <Package size={20} />
+            Información General
           </div>
 
+        
         </div>
-
-
-        {/* CONTENIDO */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-
-          {/* INFORMACIÓN DEL PRODUCTO */}
-          <div className="lg:col-span-2">
-
-            <div className="bg-brand-light rounded-2xl shadow-md p-6">
-
-              <div className="flex items-center gap-3 pb-4 mb-6">
-
-                <Package
-                  size={20}
-                  className="text-brand"
-                />
-
-                <div>
-
-                  <h2 className="font-title font-heading text-title text-text-secondary">
-                    Datos del producto
-                  </h2>
-
-                  <p className="text-body text-text-secondary">
-                    Información general del producto
-                  </p>
-
-                </div>
-
-              </div>
-
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
-
-                {/* ID */}
-                <div className="flex gap-3">
-
-                  <Hash
-                    className="text-brand mt-1"
-                    size={20}
-                  />
-
-                  <div>
-
-                    <p className="text-small text-text-secondary">
-                      ID
-                    </p>
-
-                    <p className="text-body font-body mt-1 text-text-secondary">
-                      {product.id || "No registrado"}
-                    </p>
-
-                  </div>
-
-                </div>
-
-
-                {/* MARCA */}
-                <div className="flex gap-3">
-
-                  <Tag
-                    className="text-brand mt-1"
-                    size={20}
-                  />
-
-                  <div>
-
-                    <p className="text-small text-text-secondary">
-                      Marca
-                    </p>
-
-                    <p className="text-body font-body mt-1 text-text-secondary">
-                      {product.brand || "No registrada"}
-                    </p>
-
-                  </div>
-
-                </div>
-
-
-                {/* NOMBRE */}
-                <div className="flex gap-3">
-
-                  <Package
-                    className="text-brand mt-1"
-                    size={20}
-                  />
-
-                  <div>
-
-                    <p className="text-small text-text-secondary">
-                      Nombre del producto
-                    </p>
-
-                    <p className="text-body font-body mt-1 text-text-secondary">
-                      {product.productName || "No registrado"}
-                    </p>
-
-                  </div>
-
-                </div>
-
-
-                {/* CÓDIGO DE BARRAS */}
-                <div className="flex gap-3">
-
-                  <Barcode
-                    className="text-brand mt-1"
-                    size={20}
-                  />
-
-                  <div>
-
-                    <p className="text-small text-text-secondary">
-                      Código de barras
-                    </p>
-
-                    <p className="text-body font-body mt-1 break-all text-text-secondary">
-                      {product.barCode || "No registrado"}
-                    </p>
-
-                  </div>
-
-                </div>
-
-
-                {/* CUENTADANTE */}
-                <div className="flex gap-3">
-
-                  <User
-                    className="text-brand mt-1"
-                    size={20}
-                  />
-
-                  <div>
-
-                    <p className="text-small text-text-secondary">
-                      Cuentadante
-                    </p>
-
-                    <p className="text-body font-body mt-1 text-text-secondary">
-                      {product.custodian || "No registrado"}
-                    </p>
-
-                  </div>
-
-                </div>
-
-
-                {/* CANTIDAD */}
-                <div className="flex gap-3">
-
-                  <Boxes
-                    className="text-brand mt-1"
-                    size={20}
-                  />
-
-                  <div>
-
-                    <p className="text-small text-text-secondary">
-                      Cantidad
-                    </p>
-
-                    <p className="text-body font-body mt-1 text-text-secondary">
-                      {product.quantity ?? "No registrada"}
-                    </p>
-
-                  </div>
-
-                </div>
-
-
-                {/* CANTIDAD TOTAL */}
-                <div className="flex gap-3">
-
-                  <Boxes
-                    className="text-brand mt-1"
-                    size={20}
-                  />
-
-                  <div>
-
-                    <p className="text-small text-text-secondary">
-                      Cantidad total
-                    </p>
-
-                    <p className="text-body font-body mt-1 text-text-secondary">
-                      {product.totalQuantity ?? product.quantity ?? "No registrada"}
-                    </p>
-
-                  </div>
-
-                </div>
-
-
-                {/* CANTIDAD MÍNIMA */}
-                <div className="flex gap-3">
-
-                  <AlertTriangle
-                    className="text-brand mt-1"
-                    size={20}
-                  />
-
-                  <div>
-
-                    <p className="text-small text-text-secondary">
-                      Cantidad mínima
-                    </p>
-
-                    <p className="text-body font-body mt-1 text-text-secondary">
-                      {product.minimumQuantity ?? "No registrada"}
-                    </p>
-
-                  </div>
-
-                </div>
-
-
-                {/* VALOR UNITARIO */}
-                <div className="flex gap-3">
-
-                  <DollarSign
-                    className="text-brand mt-1"
-                    size={20}
-                  />
-
-                  <div>
-
-                    <p className="text-small text-text-secondary">
-                      Valor unitario
-                    </p>
-
-                    <p className="text-body font-body mt-1 text-text-secondary">
-                      {product.unitValue !== undefined
-                        ? `$${Number(product.unitValue).toLocaleString("es-CO")}`
-                        : "No registrado"}
-                    </p>
-
-                  </div>
-
-                </div>
-
-
-                {/* VALOR TOTAL */}
-                <div className="flex gap-3">
-
-                  <DollarSign
-                    className="text-brand mt-1"
-                    size={20}
-                  />
-
-                  <div>
-
-                    <p className="text-small text-text-secondary">
-                      Valor total
-                    </p>
-
-                    <p className="text-body font-body mt-1 text-text-secondary">
-                      {product.totalValue !== undefined
-                        ? `$${Number(product.totalValue).toLocaleString("es-CO")}`
-                        : "No registrado"}
-                    </p>
-
-                  </div>
-
-                </div>
-
-
-                {/* ESTADO */}
-                <div className="flex gap-3">
-
-                  <ToggleRight
-                    className="text-brand mt-1"
-                    size={20}
-                  />
-
-                  <div>
-
-                    <p className="text-small text-text-secondary">
-                      Estado
-                    </p>
-
-                    <p className="text-body font-body mt-1 text-text-secondary">
-                      {product.status || "No registrado"}
-                    </p>
-
-                  </div>
-
-                </div>
-
-
-                {/* LOTE */}
-                <div className="flex gap-3">
-
-                  <Layers
-                    className="text-brand mt-1"
-                    size={20}
-                  />
-
-                  <div>
-
-                    <p className="text-small text-text-secondary">
-                      Lote
-                    </p>
-
-                    <p className="text-body font-body mt-1 text-text-secondary">
-                      {product.lot ?? "No registrado"}
-                    </p>
-
-                  </div>
-
-                </div>
-
-
-                {/* FECHA DE VENCIMIENTO */}
-                <div className="flex gap-3">
-
-                  <Calendar
-                    className="text-brand mt-1"
-                    size={20}
-                  />
-
-                  <div>
-
-                    <p className="text-small text-text-secondary">
-                      Fecha de vencimiento
-                    </p>
-
-                    <p className="text-body font-body mt-1 text-text-secondary">
-                      {product.expirationDate || "No registrada"}
-                    </p>
-
-                  </div>
-
-                </div>
-
-
-                {/* DESCRIPCIÓN */}
-                <div className="flex gap-3 md:col-span-2">
-
-                  <FileText
-                    className="text-brand mt-1"
-                    size={20}
-                  />
-
-                  <div>
-
-                    <p className="text-small text-text-secondary">
-                      Descripción
-                    </p>
-
-                    <p className="text-body font-body mt-1 break-all text-text-secondary">
-                      {product.description || "No registrada"}
-                    </p>
-
-                  </div>
-
-                </div>
-
-
-                {/* UBICACIÓN */}
-                <div className="flex gap-3">
-
-                  <MapPin
-                    className="text-brand mt-1"
-                    size={20}
-                  />
-
-                  <div>
-
-                    <p className="text-small text-text-secondary">
-                      Ubicación
-                    </p>
-
-                    <p className="text-body font-body mt-1 text-text-secondary">
-                      {product.location || "No registrada"}
-                    </p>
-
-                  </div>
-
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
-
-
-          {/* IMAGEN Y LOTE */}
-          <div className="space-y-5">
-
-            {/* IMAGEN */}
-            <div className="bg-brand-light rounded-2xl shadow-md p-6">
-
-              <div className="flex items-center gap-3 mb-5">
-
-                <Image
-                  size={20}
-                  className="text-brand"
-                />
-
-                <h2 className="font-title font-heading text-title text-text-secondary">
-                  Imagen del producto
-                </h2>
-
-              </div>
-
-
-              <div className="w-full aspect-square rounded-xl overflow-hidden border border-border bg-surface flex items-center justify-center">
-
-                {product.image ? (
-
-                  <img
-                    src={product.image}
-                    alt={product.productName}
-                    className="w-full h-full object-cover"
-                  />
-
-                ) : (
-
-                  <p className="text-body text-text-secondary">
-                    Sin imagen registrada
-                  </p>
-
-                )}
-
-              </div>
-
-            </div>
-
-
-            {/* LOTE */}
-            <div className="bg-brand-light rounded-2xl shadow-md p-6">
-
-              <div className="flex items-center gap-3 mb-5">
-
-                <Layers
-                  size={20}
-                  className="text-brand"
-                />
-
-                <h2 className="font-title font-heading text-title text-text-secondary">
-                  Información del lote
-                </h2>
-
-              </div>
-
-
-              <div className="space-y-4">
-
-                <div>
-
-                  <p className="text-small text-text-secondary">
-                    Lote
-                  </p>
-
-                  <p className="text-body font-body mt-1 text-text-secondary">
-                    {product.lot ?? "No registrado"}
-                  </p>
-
-                </div>
-
-
-                <div>
-
-                  <p className="text-small text-text-secondary">
-                    Estado del lote
-                  </p>
-
-                  <p className="text-body font-body mt-1 text-text-secondary">
-                    {product.status || "No registrado"}
-                  </p>
-
-                </div>
-
-
-                <div>
-
-                  <p className="text-small text-text-secondary">
-                    Vencimiento
-                  </p>
-
-                  <p className="text-body font-body mt-1 text-text-secondary">
-                    {product.expirationDate || "No registrada"}
-                  </p>
-
-                </div>
-
-              </div>
-
-            </div>
-
-            {/* ACCIONES */}
-            <div className="bg-brand-light rounded-2xl shadow-md px-8 p-4">
-
-              <div className="flex flex-col gap-1.5">
-
-                <Link to={`/dashboard/inventory/${product.id}/edit`}>
-                  <Button>
-                    <span className="flex items-center justify-center gap-2">
-                      <Edit size={20} />
-                      Editar producto
-                    </span>
-                  </Button>
-                </Link>
-
-                <Button onClick={handleToggleStatus}>
-                  <span className="flex items-center justify-center gap-2">
-                    <ToggleRight size={20} />
-                    Cambiar estado
-                  </span>
-                </Button>
-
-                <Button onClick={handleDisableProduct}>
-                  <span className="flex items-center justify-center gap-2">
-                    <Ban size={20} />
-                    Deshabilitar producto
-                  </span>
-                </Button>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
       </div>
 
+      {/* CONTENIDO */}
+      <div className="grid grid-cols-1 gap-4 min-[801px]:grid-cols-[minmax(0,1.86fr)_minmax(280px,1fr)]">
+        {/* COLUMNA PRINCIPAL */}
+        <div className="min-w-0 space-y-4">
+          {/* DATOS DEL PRODUCTO */}
+          <div className="rounded-xl border border-background-clear bg-background-positive/72 p-5 shadow-[0_4px_18px] shadow-text-coffee/3">
+            <div className="mb-5 flex items-center gap-4">
+              <Package size={20} className="shrink-0 text-text-brand" />
+
+              <div>
+                <h2 className="text-body font-medium-custom text-text-primary">
+                  Datos del producto
+                </h2>
+
+                <p className="text-medium text-text-secondary">
+                  Información general del producto
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-x-9 gap-y-6 min-[501px]:grid-cols-2">
+              {/* ID */}
+              <div className="flex min-w-0 items-start gap-3 [&>div]:min-w-0">
+                <Hash
+                  className="box-content shrink-0 rounded-full bg-border-clear2/45 p-2 text-text-brand"
+                  size={20}
+                />
+
+                <div>
+                  <p className="text-small text-text-muted">ID</p>
+
+                  <p className="mt-1 text-medium text-text-secondary wrap-anywhere">
+                    {product.id || "No registrado"}
+                  </p>
+                </div>
+              </div>
+
+              {/* MARCA */}
+              <div className="flex min-w-0 items-start gap-3 [&>div]:min-w-0">
+                <Tag
+                  className="box-content shrink-0 rounded-full bg-border-clear2/45 p-2 text-text-brand"
+                  size={20}
+                />
+
+                <div>
+                  <p className="text-small text-text-muted">Marca</p>
+
+                  <p className="mt-1 text-medium text-text-secondary wrap-anywhere">
+                    {product.brand || "No registrada"}
+                  </p>
+                </div>
+              </div>
+
+              {/* NOMBRE */}
+              <div className="flex min-w-0 items-start gap-3 [&>div]:min-w-0">
+                <Package
+                  className="box-content shrink-0 rounded-full bg-border-clear2/45 p-2 text-text-brand"
+                  size={20}
+                />
+
+                <div>
+                  <p className="text-small text-text-muted">
+                    Nombre del producto
+                  </p>
+
+                  <p className="mt-1 text-medium text-text-secondary wrap-anywhere">
+                    {product.productName || "No registrado"}
+                  </p>
+                </div>
+              </div>
+
+              {/* CÓDIGO DE BARRAS */}
+              <div className="flex min-w-0 items-start gap-3 [&>div]:min-w-0">
+                <Barcode
+                  className="box-content shrink-0 rounded-full bg-border-clear2/45 p-2 text-text-brand"
+                  size={20}
+                />
+
+                <div>
+                  <p className="text-small text-text-muted">
+                    Código de barras
+                  </p>
+
+                  <p className="mt-1 text-medium text-text-secondary wrap-anywhere">
+                    {product.barCode || "No registrado"}
+                  </p>
+                </div>
+              </div>
+
+              {/* CUENTADANTE */}
+              <div className="flex min-w-0 items-start gap-3 [&>div]:min-w-0">
+                <User
+                  className="box-content shrink-0 rounded-full bg-border-clear2/45 p-2 text-text-brand"
+                  size={20}
+                />
+
+                <div>
+                  <p className="text-small text-text-muted">Cuentadante</p>
+
+                  <p className="mt-1 text-medium text-text-secondary wrap-anywhere">
+                    {product.custodian || "No registrado"}
+                  </p>
+                </div>
+              </div>
+
+              {/* UBICACIÓN */}
+              <div className="flex min-w-0 items-start gap-3 [&>div]:min-w-0">
+                <MapPin
+                  className="box-content shrink-0 rounded-full bg-border-clear2/45 p-2 text-text-brand"
+                  size={20}
+                />
+
+                <div>
+                  <p className="text-small text-text-muted">Ubicación</p>
+
+                  <p className="mt-1 text-medium text-text-secondary wrap-anywhere">
+                    {product.location || "No registrada"}
+                  </p>
+                </div>
+              </div>
+
+              {/* ESTADO */}
+              <div className="flex min-w-0 items-start gap-3 [&>div]:min-w-0">
+                <ToggleRight
+                  className="box-content shrink-0 rounded-full bg-border-clear2/45 p-2 text-text-brand"
+                  size={20}
+                />
+
+                <div>
+                  <p className="text-small text-text-muted">Estado</p>
+
+                  <p className="mt-1 text-medium text-text-secondary wrap-anywhere">
+                    {formattedStatus}
+                  </p>
+                </div>
+              </div>
+
+              {/* DESCRIPCIÓN */}
+              <div className="flex min-w-0 items-start gap-3 min-[501px]:col-span-2 [&>div]:min-w-0">
+                <FileText
+                  className="box-content shrink-0 rounded-full bg-border-clear2/45 p-2 text-text-brand"
+                  size={20}
+                />
+
+                <div>
+                  <p className="text-small text-text-muted">Descripción</p>
+
+                  <p className="mt-1 text-medium text-text-secondary wrap-anywhere">
+                    {product.description || "No registrada"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* CONTROL DE INVENTARIO Y COSTOS */}
+          <div className="rounded-xl border border-background-clear bg-background-positive/72 p-5 shadow-[0_4px_18px] shadow-text-coffee/3">
+            <div className="mb-5 flex items-center gap-4">
+              <Boxes size={20} className="shrink-0 text-text-brand" />
+
+              <div>
+                <h2 className="text-body font-medium-custom text-text-primary">
+                  Existencias y valoración
+                </h2>
+
+                <p className="text-medium text-text-secondary">
+                  Control de cantidades, costos y lote del producto
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-x-5 gap-y-4 min-[501px]:grid-cols-2">
+              {/* CANTIDAD */}
+              <div className="flex min-w-0 items-start gap-3 [&>div]:min-w-0">
+                <Boxes className="shrink-0 text-text-brand" size={20} />
+
+                <div>
+                  <p className="text-small text-text-muted">Cantidad</p>
+
+                  <p className="mt-1 text-medium text-text-secondary wrap-anywhere">
+                    {product.quantity ?? "No registrada"}
+                  </p>
+                </div>
+              </div>
+
+              {/* CANTIDAD TOTAL */}
+              <div className="flex min-w-0 items-start gap-3 [&>div]:min-w-0">
+                <Boxes className="shrink-0 text-text-brand" size={20} />
+
+                <div>
+                  <p className="text-small text-text-muted">Cantidad total</p>
+
+                  <p className="mt-1 text-medium text-text-secondary wrap-anywhere">
+                    {product.totalQuantity ?? product.quantity ?? "No registrada"}
+                  </p>
+                </div>
+              </div>
+
+              {/* CANTIDAD MÍNIMA */}
+              <div className="flex min-w-0 items-start gap-3 [&>div]:min-w-0">
+                <AlertTriangle
+                  className="shrink-0 text-text-brand"
+                  size={20}
+                />
+
+                <div>
+                  <p className="text-small text-text-muted">Cantidad mínima</p>
+
+                  <p className="mt-1 text-medium text-text-secondary wrap-anywhere">
+                    {product.minimumQuantity ?? "No registrada"}
+                  </p>
+                </div>
+              </div>
+
+              {/* VALOR UNITARIO */}
+              <div className="flex min-w-0 items-start gap-3 [&>div]:min-w-0">
+                <DollarSign className="shrink-0 text-text-brand" size={20} />
+
+                <div>
+                  <p className="text-small text-text-muted">Valor unitario</p>
+
+                  <p className="mt-1 text-medium text-text-secondary wrap-anywhere">
+                    {product.unitValue !== undefined && product.unitValue !== null
+                      ? `$${Number(product.unitValue).toLocaleString("es-CO")}`
+                      : "No registrado"}
+                  </p>
+                </div>
+              </div>
+
+              {/* VALOR TOTAL */}
+              <div className="flex min-w-0 items-start gap-3 [&>div]:min-w-0">
+                <CircleDollarSign
+                  className="shrink-0 text-text-brand"
+                  size={20}
+                />
+
+                <div>
+                  <p className="text-small text-text-muted">Valor total</p>
+
+                  <p className="mt-1 text-medium text-text-secondary wrap-anywhere">
+                    {product.totalValue !== undefined &&
+                    product.totalValue !== null
+                      ? `$${Number(product.totalValue).toLocaleString("es-CO")}`
+                      : "No registrado"}
+                  </p>
+                </div>
+              </div>
+
+              {/* LOTE */}
+              <div className="flex min-w-0 items-start gap-3 [&>div]:min-w-0">
+                <Layers className="shrink-0 text-text-brand" size={20} />
+
+                <div>
+                  <p className="text-small text-text-muted">Lote</p>
+
+                  <p className="mt-1 text-medium text-text-secondary wrap-anywhere">
+                    {product.lot ?? "No registrado"}
+                  </p>
+                </div>
+              </div>
+
+              {/* FECHA DE VENCIMIENTO */}
+              <div className="flex min-w-0 items-start gap-3 [&>div]:min-w-0">
+                <Calendar className="shrink-0 text-text-brand" size={20} />
+
+                <div>
+                  <p className="text-small text-text-muted">
+                    Fecha de vencimiento
+                  </p>
+
+                  <p className="mt-1 text-medium text-text-secondary wrap-anywhere">
+                    {product.expirationDate || "No registrada"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* COLUMNA DERECHA */}
+        <div className="min-w-0 space-y-4">
+          {/* IMAGEN DEL PRODUCTO */}
+          <div className="rounded-xl border border-background-clear bg-background-positive/72 p-5 shadow-[0_4px_18px] shadow-text-coffee/3">
+            <div className="flex items-center gap-3 mb-5">
+              <Image size={20} className="shrink-0 text-text-brand" />
+
+              <h2 className="text-body font-medium-custom text-text-primary">
+                Imagen del producto
+              </h2>
+            </div>
+
+            <div className="w-full aspect-square rounded-xl overflow-hidden border border-background-clear bg-background-clear/45 flex items-center justify-center">
+              {hasValidImage ? (
+                <img
+                  src={product.image}
+                  alt={product.productName}
+                  onError={() => setImgError(true)}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <p className="text-medium text-text-muted">
+                  Sin imagen registrada
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* INFORMACIÓN DEL LOTE */}
+          <div className="rounded-xl border border-background-clear bg-background-positive/72 p-5 shadow-[0_4px_18px] shadow-text-coffee/3">
+            <div className="flex items-center gap-3 mb-5">
+              <Layers size={20} className="shrink-0 text-text-brand" />
+
+              <h2 className="text-body font-medium-custom text-text-primary">
+                Información del lote
+              </h2>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <p className="text-small text-text-muted">Lote</p>
+
+                <p className="mt-1 text-medium text-text-secondary">
+                  {product.lot ?? "No registrado"}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-small text-text-muted">Estado del lote</p>
+
+                <p className="mt-1 text-medium text-text-secondary">
+                  {formattedStatus}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-small text-text-muted">Vencimiento</p>
+
+                <p className="mt-1 text-medium text-text-secondary">
+                  {product.expirationDate || "No registrada"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* ACCIONES */}
+          <div className="rounded-xl border border-background-clear bg-background-positive/72 p-5 shadow-[0_4px_18px] shadow-text-coffee/3">
+            <div className="flex flex-col gap-2.5">
+              <Link to={`/dashboard/inventory/${product.id}/edit`}>
+                <Button className="flex min-h-10 w-full items-center rounded-lg border border-background-clear bg-border-clear2/30 px-4 py-2.5 text-left text-medium text-text-coffee transition-colors hover:bg-border-clear2/70 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand">
+                  <span className="flex w-full items-center gap-4 [&>svg]:shrink-0 [&>svg]:text-text-brand">
+                    <Edit size={20} />
+                    Editar producto
+                  </span>
+                </Button>
+              </Link>
+
+              <Button onClick={handleToggleStatus}>
+                <span className="flex items-center justify-center gap-2">
+                  <ToggleRight size={20} />
+                  Cambiar estado
+                </span>
+              </Button>
+
+              <Button onClick={handleDisableProduct}>
+                <span className="flex items-center justify-center gap-2">
+                  <Ban size={20} />
+                  Deshabilitar producto
+                </span>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
-
