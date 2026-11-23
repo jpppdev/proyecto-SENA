@@ -10,16 +10,18 @@ export default function Button ({
 }){
 
     const variants = {
-        primary : "bg-brand text-text-primary hover:bg-brand-hover ",
+        primary : "rounded-md bg-brand text-text-success hover:bg-brand-hover font-medium-custom ",
         
-        secondary : "bg-brand text-text-primary hover:bg-brand-hover",
+        secondary : "rounded-md bg-brand text-text-primary hover:bg-brand-hover",
+
+        tertiary : "rounded-md border border-border-clear2 bg-transparent text-text-coffee font-medium-custom hover:bg-brand-hover",
         
-     create: "rounded-full bg-[var(--color-text-primary)] !text-[var(--semantic-text-secondary)] px-10 py-3.5 text-sm font-bold shadow-lg hover:opacity-80 active:scale-95 transition-all !border-none disabled:opacity-50 disabled:active:scale-100"
+        create: "rounded bg-[var(--color-text-primary)] !text-[var(--semantic-text-secondary)] px-10 py-3.5 text-sm font-bold shadow-lg hover:opacity-80 active:scale-95 transition-all !border-none disabled:opacity-50 disabled:active:scale-100"
     };
 
     const sizes = {
         sm: `
-            h-8
+            h-8 
             px-4
             before:absolute before:content-['']
             before:-inset-y-[9px] before:-inset-x-[0px]
@@ -31,10 +33,8 @@ export default function Button ({
         <button
             type={type}
             className={`
-                text-text-inverse
                 relative
                 inline-flex items-center justify-center
-                rounded-md
                 transition-colors
                 ${variants[variant]}
                 ${sizes[size]}

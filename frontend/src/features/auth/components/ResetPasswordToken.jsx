@@ -110,7 +110,7 @@ function ResetPasswordToken() {
                 value={digit}
                 onChange={(e) => handleChange(e.target.value, index)}
                 onKeyDown={(e) => handleKeyDown(e, index)}
-                className="w-14 h-14 text-center text-title font-heading border border-border-clear rounded-xl bg-background-input text-text-secondary focus:border-brand focus:outline-none"
+                className="w-14 h-14 text-center text-title font-title font-heading border border-border-clear rounded-xl bg-background-input text-text-secondary focus:border-brand focus:outline-none"
               />
             ))}
 

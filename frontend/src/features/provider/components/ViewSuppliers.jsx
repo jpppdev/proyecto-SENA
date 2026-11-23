@@ -92,7 +92,7 @@ export default function ViewSuppliers() {
   if (!supplier) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background-div">
-        <p className="text-title font-heading text-text-primary">
+        <p className="text-title font-title font-heading text-text-primary">
           Proveedor no encontrado
         </p>
       </div>
@@ -108,7 +108,7 @@ export default function ViewSuppliers() {
 
           <div>
 
-            <h1 className="text-main font-heading text-text-primary">
+            <h1 className="text-main font-title font-heading text-text-primary">
               Visualizar Proveedor
             </h1>
 
@@ -146,7 +146,7 @@ export default function ViewSuppliers() {
             {/* INFORMACIÓN */}
             <div className="flex-1">
 
-              <h2 className="text-title font-heading text-text-secondary mb-2">
+              <h2 className="text-title font-title font-heading text-text-secondary mb-2">
                 {supplier.providerName}
               </h2>
 
@@ -282,7 +282,7 @@ export default function ViewSuppliers() {
 
                 <div>
 
-                  <h2 className="font-heading text-title text-text-secondary">
+                  <h2 className="font-title font-heading text-title text-text-secondary">
                     Datos del proveedor
                   </h2>
 
@@ -674,7 +674,7 @@ export default function ViewSuppliers() {
                   className="text-brand"
                 />
 
-                <h2 className="font-heading text-title text-text-secondary">
+                <h2 className="font-title font-heading text-title text-text-secondary">
                   Suministro principal
                 </h2>
 
@@ -702,7 +702,7 @@ export default function ViewSuppliers() {
                   className="text-brand"
                 />
 
-                <h2 className="font-heading text-title text-text-secondary">
+                <h2 className="font-title font-heading text-title text-text-secondary">
                   Observaciones
                 </h2>
 

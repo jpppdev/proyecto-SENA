@@ -20,9 +20,13 @@ import permissionRoutes from "./features/permissions/permission.routes.js";
 const app = express();
 
 // MIddleware de CORS
-// Permite solicitudes unicamiente desde el frontend en localhost:5173
-//(tipico proyecto Vite en desarrollo)
-app.use(cors({ origin: "http://localhost:5173"}));
+// Vite puede usar 5174 cuando 5173 ya esta ocupado.
+app.use(cors({ origin: [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:5174",
+]}));
 
 // Middleware para parsear el cuerpo de las peticiones como JSON
 //Sin este middleware, req, body, seria undefined

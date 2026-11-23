@@ -10,6 +10,7 @@ import {
 
 // Hook de React para manejar estado
 import { useState } from "react"
+import { ChevronDown } from "lucide-react"
 
 
 // Botón reutilizable del sistema de componentes
@@ -38,6 +39,8 @@ export default function DataTable({ data, columns }) {
 
 
   // ================== CONFIGURACIÓN DE LA TABLA ==================
+  // TanStack Table v8 no es compatible con la memorización de React Compiler.
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
 
 
@@ -77,46 +80,31 @@ export default function DataTable({ data, columns }) {
   })
 
 
-  return (
-    // <div className="space-y-4 bg-[var(--color-background-div)] ">
-
-    // cuadro total de toda la tabla
-    <div className=" 
-    
-    rounded-3xl
-    overflow-hidden
-    shadow-sm
-    p-4
-    bg-[#ECD5B9]">
-
-
-      {/* ================== TOOLBAR ================== */}
-      {/* Barra superior con buscador y selector de filas */}
-
-
-      <div className="flex items-center justify-between gap-4 m-4">
-
-
-        {/* ================== BUSCADOR ================== */}
-        {/* Filtra todas las columnas de la tabla */}
-        <Input
-          type="text"
-          variant="primary" // Usa la variante que tienes configurada en Input.jsx
-          size="md"         // Puedes usar "sm", "md" o "lg" según configuraste
-          placeholder="Buscar usuarios..."
-          value={globalFilter ?? ""}
-          onChange={(e) => setGlobalFilter(e.target.value)} 
-          
+return (
+  // cuadro total de toda la tabla,
+  <div className=" ">
+    {/* ================== TOOLBAR ================== */}
+    {/* Barra superior con buscador y selector de filas */}
+    <div className="contenedor-1 flex items-center justify-between gap-4 mb-5 rounded-[18px] bg-white/88 p-3.75 shadow-[0_12px_32px_rgba(116,59,17,.055)] ">
+      {/* ================== BUSCADOR ================== */}
+      {/* Filtra todas las columnas de la tabla */}
+      <Input
+        type="text"
+        variant="primary" // Usa la variante que tienes configurada en Input.jsx
+        size="md"         // Puedes usar "sm", "md" o "lg" según configuraste
+        placeholder="Buscar usuarios..."
+        value={globalFilter ?? ""}
+        onChange={(e) => setGlobalFilter(e.target.value)} 
         />
 
-
-        {/* ================== SELECTOR DE FILAS ================== */}
-        {/* Permite cambiar cuántas filas se muestran por página */}
+      {/* ================== SELECTOR DE FILAS ================== */}
+      {/* Permite cambiar cuántas filas se muestran por página */}
+      <div className="relative shrink-0">
         <select
+          aria-label="Filas por página"
           value={table.getState().pagination.pageSize}
           onChange={(e) => table.setPageSize(Number(e.target.value))}
-          className="h-12 px-6 rounded-2xl font-medium transition-all duration-200 border border-[var(--color-border-clear)]  
-            "
+          className="h-12 appearance-none pl-6 pr-10 rounded-2xl font-medium transition-all duration-200 border text-text-coffee border-border-button"
         >
           {[5, 7, 10, 20, 50].map(size => (
             <option key={size} value={size}>
@@ -124,34 +112,54 @@ export default function DataTable({ data, columns }) {
             </option>
           ))}
         </select>
-
-
+        <ChevronDown
+          aria-hidden="true"
+          className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-text-coffee"
+        />
       </div>
 
+    </div>
 
-      {/* ================== TABLA ================== */}
-      <div className="overflow-x-auto border border-[#D2B697] rounded">
+    {/* ================== TABLA ================== */}
+    <div className="contenedor-2
+      min-w-0
+      overflow-hidden 
+      rounded-[19px]
+      border border-t-0 border-[#f0e8df]
+      bg-white/92
+      pb-1
+      shadow-[0_12px_32px_rgba(116,59,17,.055)]
+      w-full
+      overflow-x-auto">
+      
+      {/* ================== description ================== 
 
-        <table className="w-full border-collapse ">
+      Restablece el ancho mínimo a cero.  evita que los elementos hijos se desborden cuando contienen texto largo
+      Oculta cualquier contenido que sobrepase los límites del contenedor.
+      redondeo 
+      borde de 1 píxel color del borde
+      padding-bottom Relleno inferior
+      Sombra personalizada difuminada hacia abajo con un tono marrón/tierra muy sutil y baja opacidad (5.5%).
+      Hace que el contenedor tome el 100% del ancho de su elemento padre.
+      Permite el desplazamiento horizontal únicamente cuando el contenido interno es más ancho que el contenedor.
+      
+      */}
+      
+      <table className="contenedor-3 w-full border-collapse ">
 
+        {/* ================== CABECERA ================== */}
+        <thead className=" bg-background-clear text-text-coffee">
 
-          {/* ================== CABECERA ================== */}
-          <thead className=" bg-[#E0CBB1] text-[#5D2505]">
+          {/* TanStack agrupa cabeceras automáticamente */}
+          {table.getHeaderGroups().map(headerGroup => (
 
-
-            {/* TanStack agrupa cabeceras automáticamente */}
-            {table.getHeaderGroups().map(headerGroup => (
-
-
-              <tr key={headerGroup.id} >
-
-
-                {headerGroup.headers.map(header => (
+            <tr key={headerGroup.id} >
+              {headerGroup.headers.map(header => (
 
 
                   <th
                     key={header.id}
-                    className="p-3 text-left  border-y border-[#D8C0A5]  "
+                    className="p-3 text-left border-b border-border-clear2"
                   >
 
 
@@ -179,22 +187,22 @@ export default function DataTable({ data, columns }) {
           </thead>
 
 
-          {/* ================== CUERPO DE LA TABLA ================== */}
-          <tbody>
+        {/* ================== CUERPO DE LA TABLA ================== */}
+        <tbody>
 
 
             {/* Filas generadas por TanStack */}
             {table.getRowModel().rows.map(row => (
 
 
-              <tr key={row.id} className="hover:bg-gray-50 bg-[#F1E0C9] border-[#D2B697]">
+              <tr key={row.id} className="bg-white hover:bg-gray-50 [&:last-child>td]:border-b-0">
 
 
                 {/* Celdas visibles de cada fila */}
                 {row.getVisibleCells().map(cell => (
 
 
-                  <td key={cell.id} className="p-3 border-b border-[#D2B697] text-[#5D2505]">
+                  <td key={cell.id} className="p-3 border-b border-border-clear2 text-[#5D2505]">
 
 
                     {/* Render dinámico del contenido de la celda */}
@@ -329,6 +337,7 @@ export default function DataTable({ data, columns }) {
       </div>
 
 
-    </div>
+  </div>
+    
   )
 }

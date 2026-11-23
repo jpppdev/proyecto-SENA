@@ -34,7 +34,6 @@ export const IconButton = React.forwardRef(function IconButton(
 ) {
     const baseStyles = `
         inline-flex items-center justify-center
-        rounded-full
         transition-colors duration-200
         focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
         disabled:opacity-50 disabled:pointer-events-none
@@ -42,19 +41,30 @@ export const IconButton = React.forwardRef(function IconButton(
 
     const variants = {
         default: `
+            rounded-full
             text-neutral-700 
             hover:bg-neutral-100
             focus-visible:ring-neutral-400
         `,
         ghost: `
+            rounded-full
             text-neutral-600 
             hover:bg-neutral-100
             focus-visible:ring-neutral-300
         `,
         primary: `
+            rounded-full
             text-white bg-blue-600 
             hover:bg-blue-700
             focus-visible:ring-blue-500
+        `,
+        action: `
+            rounded-[14px] text-[#ff6500] bg-[#fff2e6]
+            hover:bg-[#ffe5cc] focus-visible:ring-orange-400
+        `,
+        danger: `
+            rounded-[14px] text-[#ff3038] bg-[#ffeded]
+            hover:bg-[#ffdddd] focus-visible:ring-red-400
         `,
     };
 
