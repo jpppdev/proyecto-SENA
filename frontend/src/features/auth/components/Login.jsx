@@ -44,7 +44,6 @@ function Login() {
 
     try {
       const data = await login(result.data);
-      console.log("LOGIN RESPONSE:", data);
 
       sessionStorage.setItem("token", data.token);
 
@@ -63,7 +62,7 @@ function Login() {
       // lo mismo hacemos en el cath por si llega a fallar y no encuentra el usuario o la contraseña es incorrecta
       await showCancelAlert({
         title: "Error al iniciar sesión",
-        text: "Credenciales incorrectas",
+        text: error.message,
         timer: 2000,
       });
     }

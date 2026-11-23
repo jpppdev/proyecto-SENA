@@ -13,26 +13,34 @@ import {
   Calendars,
 } from "lucide-react";
 
-import { Button } from "@/shared";
+import { Breadcrumbs, Button } from "@/shared";
 import { getUserById, updateUserStatus, disableUser } from "../services/userServices";
 import { showSuccessAlert, showErrorAlert, showDisableAlert } from "@/shared/services/alertService";
 
 export default function UserViewPage() {
   const { id } = useParams();
+  return <UserDetails key={id} id={id} />;
+}
+
+function UserDetails({ id }) {
 
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let active = true;
     getUserById(id)
       .then((data) => {
+        if (!active) return;
         setUser(data);
         setLoading(false);
       })
       .catch((err) => {
+        if (!active) return;
         console.error("Error al cargar el usuario:", err);
         setLoading(false);
       });
+    return () => { active = false; };
   }, [id]);
 
   const handleToggleStatus = async () => {

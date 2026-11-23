@@ -1,7 +1,6 @@
 
 import { useState } from "react";
 import {
-  Menu,
   UserRound,
   Bell,
   Sun,
@@ -16,17 +15,14 @@ import {
   DropdownContent,
   DropdownItem,
 } from "@/shared";
-import logo from "@/assets/images/1-logo.png";
 
 import { Link, useNavigate } from "react-router-dom";
 import { showErrorAlert, showDeleteAlert } from "@/shared/services/alertService";
 
-import { Link } from "react-router-dom";
-import { showErrorAlert } from "@/shared/services/alertService";
 import { logout } from "@/features/auth/schemas/logoutService";
 
 
-export default function Navbar({ onMenuClick }) {
+export default function Navbar() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [darkMode, setDarkMode] = useState(
@@ -77,8 +73,8 @@ export default function Navbar({ onMenuClick }) {
     });
     
     if (result.isConfirmed) {
-      sessionStorage.removeItem("token");
-      navigate("/login");
+      logout();
+      navigate("/login", { replace: true });
     }
   };
 
@@ -178,28 +174,19 @@ export default function Navbar({ onMenuClick }) {
 
               <DropdownContent className="right-0 border-orange-100 bg-[#fff8f1]! text-[#713008]! [&_button:hover]:bg-orange-100">
 
-                <DropdownItem>
+                <DropdownItem asChild>
                   <Link to="/dashboard/userList" className="block w-full">
                     Mi Perfil
                   </Link>
                 </DropdownItem>
 
-                <DropdownItem>
-                  <Link to="permissions" className="block w-full">
+                <DropdownItem asChild>
+                  <Link to="/dashboard/permissions" className="block w-full">
                     Gestion de Permisos
                   </Link>
                 </DropdownItem>
 
-                <DropdownItem>
-
-                  {/* Se cambió a button para ejecutar handleLogout */}
-                  <button onClick={handleLogout} className="block w-full text-left">
-
-                  <Link to="/login" replace onClick={logout} className="block w-full">
-
-                    Cerrar sesión
-                  </button>
-                </DropdownItem>
+                <DropdownItem onClick={handleLogout}>Cerrar sesión</DropdownItem>
 
               </DropdownContent>
             </Dropdown>

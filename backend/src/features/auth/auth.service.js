@@ -10,7 +10,6 @@ export const authService = {
         const password = credentials.password || credentials.userPassword;
 
         const user = await authRepository.findByEmail(email); 
-        console.log("USER ENCONTRADO:", user); 
 
         if (!user) { 
             throw new Error("Credenciales inválidas"); 

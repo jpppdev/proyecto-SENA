@@ -13,11 +13,6 @@ export const userController = {
     // Se asume que este metodo sera usada como handler de una ruta Express.
     async create(req, res) {
 
-        //log del cuerpo de la peticion
-        // Util en desarrollo para validar que el frontend encia correctamente los datos
-        // en produccion suele reemplazarse por logging estructurado o eliminarse
-        console.log("BODY RECIBIDO", req.body); // CLAVE
-
         try {
             // llamamos al servicio de usuario, pasando los datos recividos
             // Aqui ocurre la logica real del negocia(validaciones, presistencia, etc.)

@@ -1,6 +1,6 @@
 // src/app/router.jsx
 import { createBrowserRouter, Navigate } from "react-router-dom";   
-import { AuthLayout, DashboardLayout, } from "@/shared";
+import { DashboardLayout } from "@/shared";
 import { UserListPage, UserRegisterForm, ViewUser} from "@/features/users";
 import  Login  from "@/features/auth/components/Login";
 import  ForgotPassword  from "@/features/auth/components/ForgotPassword";

@@ -1,29 +1,26 @@
-// frontend/src/features/auth/services/authService.js
-// Consumir API login
-// 🤣🤣
-// const API_URL = "http://localhost:4000/api/auth";
-
 import { API_URL } from "@/features/config";
 
-const AUTH_API_URL = `${API_URL}/auth`;
+export async function login({ email, userEmail, password, userPassword }) {
+  let response;
+  try {
+    response = await fetch(`${API_URL}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: email || userEmail,
+        password: password || userPassword,
+      }),
+    });
+  } catch {
+    throw new Error("No se pudo conectar con el servidor. Verifica que el backend esté iniciado.");
+  }
 
-export async function login(userData) {
-
-  const response = await fetch(`${AUTH_API_URL}/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-
-    body: JSON.stringify({
-      email: userData.email || userData.userEmail,
-      password: userData.password || userData.userPassword,
-    }),
-  });
+  if (response.status === 401) {
+    throw new Error("Revisa tus credenciales y verifica que tu cuenta esté activa.");
+  }
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Error login");
+    throw new Error("El servidor no pudo procesar el inicio de sesión. Inténtalo de nuevo.");
   }
 
   return response.json();

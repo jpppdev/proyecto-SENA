@@ -18,17 +18,42 @@ export default function UserListPage() {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [usersData, setUsersData] = useState([]);
 
-  const loadUsers = () => {
-    getUsers()
-      .then((data) => setUsersData(data))
-      .catch((error) => console.error("Error cargando usuarios:", error));
-  };
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
+    let active = true;
+    let latestRequest = 0;
+
+    const loadUsers = async () => {
+      const request = ++latestRequest;
+      try {
+        const data = await getUsers();
+        if (!active || request !== latestRequest) return;
+        setUsersData(data);
+        setError("");
+      } catch {
+        if (!active || request !== latestRequest) return;
+        setError("No se pudo cargar el listado de usuarios.");
+      } finally {
+        if (active && request === latestRequest) setIsLoading(false);
+      }
+    };
+
     loadUsers();
     window.addEventListener("users:updated", loadUsers);
-    return () => window.removeEventListener("users:updated", loadUsers);
-  }, []);
+    return () => {
+      active = false;
+      window.removeEventListener("users:updated", loadUsers);
+    };
+  }, [retryCount]);
+
+  const retryLoading = () => {
+    setError("");
+    setIsLoading(true);
+    setRetryCount((count) => count + 1);
+  };
 
   return (
     <div className="contenedor-1 min-w-0 p-4 sm:p-6">
@@ -82,10 +107,9 @@ export default function UserListPage() {
         )}
       </section>
 
-      <UserReportConfigModal
+      <ReportConfigModal
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
-        module="users"
         data={usersData}
       />
 

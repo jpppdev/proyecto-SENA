@@ -6,6 +6,18 @@ import { Input, Button, Select } from "@/shared";
 import { ArrowLeft, Box, ClipboardList, Store, FileText, Check, Plus, PackagePlus } from "lucide-react";
 import { showErrorAlert } from "@/shared/services/alertService";
 
+const CardSection = ({ icon, title, children }) => (
+    <div className="bg-white/30 backdrop-blur-md rounded-3xl p-6 shadow-sm border border-white/40 flex flex-col gap-5">
+      <div className="flex items-center gap-3 mb-2">
+        <div className="bg-[var(--color-secondary-500)] p-2 rounded-xl text-white">
+          {icon}
+        </div>
+        <h3 className="text-[var(--color-text-primary)] font-extrabold text-lg tracking-wide">{title}</h3>
+      </div>
+      {children}
+    </div>
+  );
+
 export default function InventoryCreateForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
@@ -93,18 +105,6 @@ export default function InventoryCreateForm() {
       setIsSubmitting(false);
     }
   };
-
- const CardSection = ({ icon, title, children }) => (
-    <div className="bg-white/30 backdrop-blur-md rounded-3xl p-6 shadow-sm border border-white/40 flex flex-col gap-5">
-      <div className="flex items-center gap-3 mb-2">
-        <div className="bg-[var(--color-secondary-500)] p-2 rounded-xl text-white">
-          {icon}
-        </div>
-        <h3 className="text-[var(--color-text-primary)] font-extrabold text-lg tracking-wide">{title}</h3>
-      </div>
-      {children}
-    </div>
-  );
 
   return (
    <div className="w-full max-w-[1024px] mx-auto mt-10 text-[var(--color-text-primary)]">

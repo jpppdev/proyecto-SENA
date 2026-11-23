@@ -1,3 +1,4 @@
+import fondo from "@/assets/images/fondo.png";
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
@@ -95,7 +96,7 @@ export default function OrderViewPage() {
 
 
   return (
-    <div className="min-h-screen bg-[url('/src/assets/images/imagen-fondo.png')] bg-cover bg-center p-6">
+    <div className="min-h-screen bg-cover bg-center p-6" style={{ backgroundImage: `url(${fondo})` }}>
 
       <div className="max-w-6xl mx-auto">
 
@@ -153,7 +154,7 @@ export default function OrderViewPage() {
 
 
             {/* ESTADO */}
-            <div className="lg:border-l lg:pl-8 min-w-[180px] border-border">
+            <div className="lg:border-l lg:pl-8 min-w-45 border-border">
 
               <p className="text-body text-text-secondary mb-2">
                 Estado
