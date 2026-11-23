@@ -11,7 +11,14 @@
     --semantic-brand-light: var(--color-gray-50);
 
 
-    /* =========BACKGROUND================= */
+/* =========================BACKGROUND============================================================== */
+
+    /* fondo blanco */
+    --semantic-background-positive: var(--white);
+
+    /* fondo claro color piel */
+    --semantic-background-clear: var(--color-tertiary-600);
+
     --semantic-background-input: var(--color-tertiary-300);/* fondo del input claro */
     
     --semantic-surface: var(--color-gray-400);/* fondo de modales, cards, containers */
@@ -21,28 +28,38 @@
     --semantic-background-div: var(--white);/* fondo para contenedores */
 
 
-    /* ===================TEXT===================== */
+/* ===================TEXT================================================ */
 
     /* color principal de lectura, títulos, texto base del documento */
-    --semantic-text-primary: var(--white);
-    
-/* Color de texto utilizado para parrafos */
+    --semantic-text-primary: var(--color-primary-950);
+
+    /* Color de texto utilizado para párrafos */
     --semantic-text-secondary: var(--color-gray-700);
 
-    
-    
+    /* texto oscuro */
+    --semantic-text-coffee: var(--color-primary-900);
+
+    /* texto positivo */
+    --semantic-text-success: var(--white);
 
     /* texto menos dominante */
     --semantic-text-muted: var(--color-gray-500);
+
     /* texto deshabilitado por ejemplo */
     --semantic-text-inverse: var(--white);
+
     /* texto invertido */
-    /* Color de Titulos negativo */
+    /* Color de Títulos negativo */
     --semantic-text-negative: var(--black);
     /* Color naranja para textos */
-    --semantic-text-brand: var(--color-secondary-950)
+    --semantic-text-brand: var(--color-secondary-900);
 
-    /* ============BORDER============== */
+
+
+/* =========================BORDER=========================================*/
+
+    /* color del borde de claro piel  */
+    --semantic-border-clear2: var(--color-tertiary-700);
 
     /* color del borde de blanco para los input */
     --semantic-border: var( --white);
@@ -50,16 +67,22 @@
     /* color del borde piel para los input claros */
     --semantic-border-clear: var(--color-tertiary-950);
 
+    /* color del borde oscuro (naranja oscuro) para el hover de los input  */
+    --semantic-border-hover: var(--color-secondary-950);
+
     /* borde principal de todos los componentes */
     --semantic-border-strong: var(--color-gray-700);
     /* bodes mas fuertes */
 
-    /* ===========FOCUS================== */
+
+
+/* ======================FOCUS========================================= */
     --semantic-focus-ring: var(--color-primary-700);
 
-    /* =============================STATE========================= */
 
-    --semantic-succes: var(--color-primary-950);
+/* =============================STATE========================= */
+
+    --semantic-success: var(--color-primary-950);
     --semantic-warning: var(--color-tertiary-950);
     --semantic-error: var(--color-secondary-950);
 
@@ -79,7 +102,7 @@
     --semantic-font-weight-heading: var(--font-weight-bold);
     --semantic-font-weight-body: var(--font-weight-regular);
     --semantic-font-weight-label: var(--font-weight-regular);
-    --semantic-font-weight-medium: var(--font-weight-medium-custom);
+    --semantic-font-weight-medium: var(--weight-medium-custom);
 
     /* ======================================================= */
                 /* YA NO DEPENDEMOS DE NOMBRES DE COLOR, 

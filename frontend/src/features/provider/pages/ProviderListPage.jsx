@@ -35,7 +35,7 @@ export default function ProviderListPage() {
         </Button>
         
         {/* botón de crear proveedor */}
-        <Link to="/dashboard/providerCreate" className="text-h1 font-heading">
+        <Link to="/dashboard/providerCreate" className="text-h1 font-title font-heading">
           <Button>Crear proveedor</Button>
         </Link>
 

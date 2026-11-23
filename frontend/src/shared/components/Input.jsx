@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
+
 export default function Input({
     label,
     error,
@@ -8,13 +11,17 @@ export default function Input({
     ...props
 }){
     
+     const [showPassword, setShowPassword] = useState(false);
+
     const variants = {
             //Estos valores deben ser con variables 
         primary: `
-            border border-[var(--color-border-clear)]
-            bg-[var(--color-background-input)]
-            text-[color:var(--text-inverse)] 
-            hover:bg-[var(--color-brand-hover)] 
+            border border-border-clear
+            text-text-secondary
+            hover:border-border-hover
+            focus:border-brand
+            
+
         `, 
         secondary: `
             border-red-300
@@ -28,7 +35,15 @@ export default function Input({
             focus:border-brand
             focus:bg-white
             focus:outline-none
-            `
+            `,
+         quaternary: `
+            border border-border-clear
+            bg-background-input
+            text-text-secondary
+            hover:border-brand
+            focus:border-brand
+            focus:outline-none
+        `
     }
     const sizes = {
         
@@ -43,6 +58,13 @@ export default function Input({
             h-12
         `
     }
+
+              const inputType =
+        variant === "quaternary"
+            ? showPassword
+                ? "text"
+                : "password"
+            : type;
 
 
     return(
@@ -106,7 +128,7 @@ export default function Input({
                 {/* Input visual */}
                 <input
                     id={htmlFor}
-                    type={type}
+                    type={inputType}
                     className={`
                         relative
                         w-full
@@ -128,6 +150,38 @@ export default function Input({
                         {...props}
                     />
 
+
+                     {variant === "quaternary" && (
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="
+                            absolute
+                            right-3
+                            flex
+                            items-center
+                            justify-center
+                            text-text-secondary
+                            hover:text-brand
+                        "
+                        aria-label={
+                            showPassword
+                                ? "Ocultar contraseña"
+                                : "Mostrar contraseña"
+                        }
+                        title={
+                            showPassword
+                                ? "Ocultar contraseña"
+                                : "Mostrar contraseña"
+                        }
+                    >
+                        {showPassword ? (
+                            <EyeOff size={20} />
+                        ) : (
+                            <Eye size={20} />
+                        )}
+                    </button>
+                )}
 
             </div>
 

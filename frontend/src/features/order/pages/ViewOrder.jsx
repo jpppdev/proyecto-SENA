@@ -86,7 +86,7 @@ export default function OrderViewPage() {
   if (!order) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <p className="text-title font-heading text-text-primary">
+        <p className="text-title font-title font-heading text-text-primary">
           Orden no encontrada
         </p>
       </div>
@@ -103,7 +103,7 @@ export default function OrderViewPage() {
         <div className="flex justify-between items-center mb-6">
 
           <div>
-            <h1 className="text-main font-heading text-text-primary">
+            <h1 className="text-main font-title font-heading text-text-primary">
               Visualizar Orden
             </h1>
           </div>
@@ -128,7 +128,7 @@ export default function OrderViewPage() {
               <div className="flex items-center gap-3">
 
                 <div>
-                  <h2 className="text-title font-heading text-text-secondary">
+                  <h2 className="text-title font-title font-heading text-text-secondary">
                     Orden #{order.id}
                   </h2>
 
@@ -217,7 +217,7 @@ export default function OrderViewPage() {
 
                 <div>
 
-                  <h2 className="font-heading text-title text-text-secondary">
+                  <h2 className="font-title font-heading text-title text-text-secondary">
                     Datos de la orden
                   </h2>
 
@@ -342,7 +342,7 @@ export default function OrderViewPage() {
                   className="text-brand"
                 />
 
-                <h2 className="font-heading text-title text-text-secondary">
+                <h2 className="font-title font-heading text-title text-text-secondary">
                   Resumen
                 </h2>
 
@@ -441,7 +441,7 @@ export default function OrderViewPage() {
 
             <div>
 
-              <h2 className="font-heading text-title text-text-secondary">
+              <h2 className="font-title font-heading text-title text-text-secondary">
                 Platillos seleccionados
               </h2>
 

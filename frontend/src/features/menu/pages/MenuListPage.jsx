@@ -35,7 +35,7 @@ export default function MenuListPage() {
         </Button>
         
         {/* botón de crear platillo */}
-        <Link to="/dashboard/menuCreate" className="text-h1 font-heading">
+        <Link to="/dashboard/menuCreate" className="text-h1 font-title font-heading">
           <Button>Agregar al menú</Button>
         </Link>
 

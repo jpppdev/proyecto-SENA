@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input, Button } from "@/shared";
 import restaurante from "../../../assets/images/Img-Restaurante.jpeg";
-import logo from "../../../assets/images/Img-Login.jpeg";
-import title from "../../../assets/images/Img-Titulo.png";
+import logo from "../../../assets/images/Img-Login.png";
+import title from "../../../assets/images/1-logo.png";
 import { loginSchema } from "../schemas/LoginSchema";
 import { login } from "../schemas/authService";
 import { showSuccessAlert, showCancelAlert } from "@/shared/services/alertService";
@@ -96,7 +96,7 @@ function Login() {
             className="w-48 mx-auto mb-6"
           />
 
-          <h1 className="text-main font-heading text-text-negative text-center mb-6">
+          <h1 className="text-main font-title font-heading text-text-negative text-center mb-6">
             Bienvenido
           </h1>
 
@@ -114,7 +114,7 @@ function Login() {
 
           <div className="mt-2">
             <Input
-              variant="tertiary"
+              variant="quaternary"
               htmlFor="password"
               name="password"
               type="password"
@@ -135,16 +135,6 @@ function Login() {
               Iniciar Sesión
             </Button>
           </div>
-
-          <p className="text-body text-text-secondary text-center mt-6">
-            ¿Aún no tienes una cuenta?{" "}
-            <span
-              className="text-medium font-medium-custom cursor-pointer text-brand"
-              onClick={() => navigate("/register")}
-            >
-              Regístrate
-            </span>
-          </p>
 
           <div className="text-center mt-6 mb-6">
             <p

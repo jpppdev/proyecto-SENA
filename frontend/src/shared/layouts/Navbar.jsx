@@ -17,12 +17,17 @@ import {
   DropdownItem,
 } from "@/shared";
 import logo from "@/assets/images/1-logo.png";
+
+import { Link, useNavigate } from "react-router-dom";
+import { showErrorAlert, showDeleteAlert } from "@/shared/services/alertService";
+
 import { Link } from "react-router-dom";
 import { showErrorAlert } from "@/shared/services/alertService";
 import { logout } from "@/features/auth/schemas/logoutService";
 
 
 export default function Navbar({ onMenuClick }) {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [darkMode, setDarkMode] = useState(
     document.documentElement.classList.contains("dark")
@@ -63,27 +68,26 @@ export default function Navbar({ onMenuClick }) {
     });
   };
 
+  const handleLogout = async () => {
+    const result = await showDeleteAlert({
+      title: "¿Cerrar sesión?",
+      text: "¿Estás seguro de que deseas salir de tu cuenta?",
+      confirmButtonText: "Sí, cerrar sesión",
+      cancelButtonText: "Cancelar",
+    });
+    
+    if (result.isConfirmed) {
+      sessionStorage.removeItem("token");
+      navigate("/login");
+    }
+  };
+
   return (
     <nav aria-label="Navegación superior" className="relative z-50 w-full bg-[linear-gradient(105deg,#f9e8cf_0%,#fff3e6_55%,#ffe3bd_100%)] text-[#713008]">
       <div className="mx-auto max-w-[1600px] px-3 sm:px-6 lg:px-8">
-        <div className="flex h-[72px] items-center justify-between gap-2 sm:h-20 sm:gap-4">
+        <div className="flex h-[72px] items-center justify-between gap-2 sm:gap-4">
 
-          <IconButton
-            onClick={onMenuClick}
-            ariaLabel="Abrir o cerrar menú lateral"
-            hitSize={44}
-            iconSize={22}
-            className="shrink-0 text-[#a14d0b]! hover:bg-white/60!"
-          >
-            <Menu />
-          </IconButton>
-
-          {/* Logo */}
-          <div className="hidden shrink-0 items-center xl:flex">
-            <Link to="/dashboard" className="text-h1 font-heading">
-              <img src={logo} alt="Logo" className="h-12" />
-            </Link>
-          </div>
+          
 
           {/* Enlaces de navegación */}
           <ul className="hidden shrink-0 items-center gap-5 xl:flex">
@@ -179,18 +183,24 @@ export default function Navbar({ onMenuClick }) {
                     Mi Perfil
                   </Link>
                 </DropdownItem>
+
                 <DropdownItem>
                   <Link to="permissions" className="block w-full">
                     Gestion de Permisos
                   </Link>
                 </DropdownItem>
 
-
                 <DropdownItem>
+
+                  {/* Se cambió a button para ejecutar handleLogout */}
+                  <button onClick={handleLogout} className="block w-full text-left">
+
                   <Link to="/login" replace onClick={logout} className="block w-full">
+
                     Cerrar sesión
-                  </Link>
+                  </button>
                 </DropdownItem>
+
               </DropdownContent>
             </Dropdown>
           </div>

@@ -20,10 +20,7 @@ const token = sessionStorage.getItem("token");
   }
   const response = await fetch(USERS_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      headers,
       body: JSON.stringify(userData),
     });
 
