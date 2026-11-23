@@ -23,7 +23,7 @@ export default function ProviderListPage() {
       <div className="flex justify-end items-center gap-4 pb-10">
         
         {/* botón de crear proveedor */}
-        <Link to="/dashboard/providerCreate" className="text-h1 font-heading">
+        <Link to="/dashboard/providerCreate" className="text-h1 font-title font-heading">
           <Button>Crear proveedor</Button>
         </Link>
 

@@ -27,7 +27,7 @@ export default function OrderListPage() {
           Reportar orden
         </Button>
 
-        <Link to="/dashboard/orderCreate" className="text-h1 font-heading">
+        <Link to="/dashboard/orderCreate" className="text-h1 font-title font-heading">
           <Button>Crear orden</Button>
         </Link>
       </div>

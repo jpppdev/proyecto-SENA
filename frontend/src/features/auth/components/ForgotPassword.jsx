@@ -77,7 +77,7 @@ function ForgotPassword() {
             className="w-48 mx-auto mb-6"
           />
 
-          <h1 className="text-main font-heading text-text-negative text-center mb-6">
+          <h1 className="text-main font-title font-heading text-text-negative text-center mb-6">
             Recuperar contraseña
           </h1>
 

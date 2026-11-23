@@ -19,6 +19,7 @@ export {IconButton} from "./components/IconButton";
 export {default as SearchField} from "./components/SearchField";
 export {default as StatusSwitch} from "./components/StatusSwitch";
 export {default as DataTable} from "./components/DataTable";
+export {default as Breadcrumbs} from "./components/Breadcrumbs";
 export {Dropdown,
         DropdownTrigger,
         DropdownItem,

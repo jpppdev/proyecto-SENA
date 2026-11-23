@@ -45,7 +45,7 @@ export default function InventoryViewPage() {
   if (!product) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-surface">
-        <p className="text-title font-heading text-text-primary">
+        <p className="text-title font-title font-heading text-text-primary">
           Producto no encontrado
         </p>
       </div>
@@ -61,7 +61,7 @@ export default function InventoryViewPage() {
         <div className="flex justify-between items-center mb-6">
 
           <div>
-            <h1 className="text-main font-heading text-text-primary">
+            <h1 className="text-main font-title font-heading text-text-primary">
               Visualizar Inventario
             </h1>
           </div>
@@ -106,7 +106,7 @@ export default function InventoryViewPage() {
             {/* INFORMACIÓN PRINCIPAL */}
             <div className="flex-1">
 
-              <h2 className="text-title font-heading text-text-secondary mb-2">
+              <h2 className="text-title font-title font-heading text-text-secondary mb-2">
                 {product.productName}
               </h2>
 
@@ -208,7 +208,7 @@ export default function InventoryViewPage() {
 
                 <div>
 
-                  <h2 className="font-heading text-title text-text-secondary">
+                  <h2 className="font-title font-heading text-title text-text-secondary">
                     Datos del producto
                   </h2>
 
@@ -591,7 +591,7 @@ export default function InventoryViewPage() {
                   className="text-brand"
                 />
 
-                <h2 className="font-heading text-title text-text-secondary">
+                <h2 className="font-title font-heading text-title text-text-secondary">
                   Imagen del producto
                 </h2>
 
@@ -631,7 +631,7 @@ export default function InventoryViewPage() {
                   className="text-brand"
                 />
 
-                <h2 className="font-heading text-title text-text-secondary">
+                <h2 className="font-title font-heading text-title text-text-secondary">
                   Información del lote
                 </h2>
 

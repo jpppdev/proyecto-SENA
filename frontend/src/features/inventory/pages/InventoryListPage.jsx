@@ -32,7 +32,7 @@ export default function InventoryListPage() {
 
 
         {/* botón de reportar crear usuario */}
-        <Link to="/dashboard/inventoryCreate" className="text-h1 font-heading">
+        <Link to="/dashboard/inventoryCreate" className="text-h1 font-title font-heading">
           <Button>Crear producto</Button>
         </Link>
 

@@ -1,3 +1,4 @@
+import logo from "@/assets/images/1-logo.png";
 import { NavLink } from "react-router-dom";
 import {
   Users,
@@ -7,7 +8,7 @@ import {
   Package,
 } from "lucide-react";
 
-export default function Sidebar() {
+export default function Sidebar({ collapsed = false }) {
 
   const modules = [
     {
@@ -38,19 +39,11 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="w-52 min-h-screen bg-[linear-gradient(163deg,#ffa932_0%,#ee8115_27%,#cf6207_67%,#bd5100_100%)] border-r border-white/20 p-3 text-white">
+    <aside id="dashboard-sidebar" aria-label="Menú lateral" className={`${collapsed ? "w-[72px]" : "w-[238px]"} h-full min-h-screen bg-[linear-gradient(163deg,#ff8b13_0%,#ff6800_23%,#c84200_57%,#ff6800_100%)] border-r border-white/20 p-3 text-white transition-[width] duration-300 motion-reduce:transition-none`}>
 
-      {/* Encabezado */}
-      <div className="mb-5 border-b border-white/20 pb-3">
-        <h2 className="text-title font-heading text-white">
-          Módulos
-        </h2>
-
-        <p className="mt-1 text-small text-orange-100">
-          Restaurante Aurum
-        </p>
-      </div>
-
+      <NavLink to="/dashboard" aria-label="Aurum — Inicio" className="mb-5 flex h-24 items-center justify-center border-b border-white/20 pb-3 focus-visible:outline-2 focus-visible:outline-white">
+        <img src={logo} alt="Restaurante Aurum" className={`${collapsed ? "w-12" : "w-40"} max-h-20 object-contain transition-[width] duration-300 motion-reduce:transition-none`} />
+      </NavLink>
       {/* Navegación */}
       <nav className="flex flex-col gap-2">
         {modules.map((module) => {
@@ -59,20 +52,22 @@ export default function Sidebar() {
           return (
             <NavLink
               key={module.path}
+              title={collapsed ? module.name : undefined}
+              aria-label={module.name}
               to={module.path}
               className={({ isActive }) =>
-                `flex items-center gap-3 rounded-lg px-3 py-2
+                `flex min-h-11 items-center ${collapsed ? "justify-center px-0" : "gap-3 px-3"} rounded-lg py-2
                 transition-colors duration-300
                 ${
                   isActive
-                    ? "bg-[linear-gradient(110deg,rgba(255,193,95,.65),rgba(255,146,37,.67))] text-white"
-                    : "text-white hover:bg-[linear-gradient(110deg,rgba(255,193,95,.65),rgba(255,146,37,.67))]"
+                    ? "bg-[linear-gradient(110deg,rgba(255,177,58,.95),rgba(255,142,35,.9))] text-white"
+                    : "text-white hover:bg-[linear-gradient(110deg,rgba(255,177,58,.95),rgba(255,142,35,.9))]"
                 }`
               }
             >
-              <Icon size={18} />
+              <Icon size={22} className="shrink-0" aria-hidden="true" />
 
-              <span className="text-body">
+              <span className={collapsed ? "sr-only" : "text-body whitespace-nowrap"}>
                 {module.name}
               </span>
             </NavLink>

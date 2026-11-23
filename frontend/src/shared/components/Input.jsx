@@ -11,10 +11,12 @@ export default function Input({
     const variants = {
             //Estos valores deben ser con variables 
         primary: `
-            border border-[var(--color-border-clear)]
-            bg-[var(--color-background-input)]
-            text-[color:var(--text-inverse)] 
-            hover:bg-[var(--color-brand-hover)] 
+            border border-border-clear
+            text-text-secondary
+            hover:border-border-hover
+            focus:border-brand
+            
+
         `, 
         secondary: `
             border-red-300

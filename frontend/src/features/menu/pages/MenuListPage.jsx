@@ -23,7 +23,7 @@ export default function MenuListPage() {
       <div className="flex justify-end items-center gap-4 pb-10">
         
         {/* botón de crear platillo */}
-        <Link to="/dashboard/menuCreate" className="text-h1 font-heading">
+        <Link to="/dashboard/menuCreate" className="text-h1 font-title font-heading">
           <Button>Agregar al menú</Button>
         </Link>
 
