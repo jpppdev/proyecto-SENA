@@ -1,13 +1,15 @@
 // src/features/users/components/UserRowActions.jsx
 
-import { Pencil, Eye, Trash } from "lucide-react";
+import { Pencil, Eye, Ban } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { IconButton } from "@/shared/components/IconButton";
 import { 
-  showDeleteAlert, 
-  showCancelDeleteAlert, 
-  showConfirmDeleteAlert 
+  showDisableAlert, 
+  showCancelDisableAlert, 
+  showConfirmDisableAlert,
+  showErrorAlert
 } from "@/shared/services/alertService";
+import { disableUser } from "../services/userServices";
 
 export default function UserRowActions({ user }) {
   const navigate = useNavigate();
@@ -26,23 +28,32 @@ export default function UserRowActions({ user }) {
     }
   };
 
-  // Diálogo para eliminar con dos botones
-  const handleDelete = async () => {
-    const result = await showDeleteAlert({
-      title: "¿Eliminar usuario?",
-      text: `¿Deseas eliminar a ${user?.userName || "este usuario"}?`,
+  // Diálogo para deshabilitar usuario en la base de datos
+  const handleDisable = async () => {
+    const result = await showDisableAlert({
+      title: "¿Deshabilitar usuario?",
+      text: `¿Deseas deshabilitar a ${user?.userName || "este usuario"}?`,
+      confirmButtonText: "Sí, deshabilitar",
     });
 
     if (result.isConfirmed) {
-      console.log("Usuario eliminado:", user?.id);
-      await showConfirmDeleteAlert({
-        title: "Usuario eliminado",
-        text: `El usuario ${user?.userName ? `"${user.userName}" ` : ""}ha sido eliminado correctamente.`,
-      });
+      try {
+        await disableUser(user.id);
+        window.dispatchEvent(new CustomEvent("users:updated"));
+        await showConfirmDisableAlert({
+          title: "Usuario deshabilitado",
+          text: `El usuario ${user?.userName ? `"${user.userName}" ` : ""}ha sido deshabilitado correctamente.`,
+        });
+      } catch (error) {
+        await showErrorAlert({
+          title: "Error",
+          text: error.message || "No se pudo deshabilitar el usuario.",
+        });
+      }
     } else if (result.dismiss) {
-      await showCancelDeleteAlert({
-        title: "Eliminación cancelada",
-        text: "El usuario no fue eliminado.",
+      await showCancelDisableAlert({
+        title: "Acción cancelada",
+        text: "El usuario no fue modificado.",
       });
     }
   };
@@ -71,16 +82,14 @@ export default function UserRowActions({ user }) {
         <Pencil size={20} />
       </IconButton>
 
-      <IconButton
-        ariaLabel="Eliminar usuario"
-        variant="danger"
-        hitSize={46}
-        iconSize={20}
-        onClick={handleDelete} 
-        title="Eliminar usuario"
+      <button 
+        type="button"
+        onClick={handleDisable} 
+        className="p-1 rounded hover:bg-gray-100 text-red-600 transition-colors"
+        title="Deshabilitar usuario"
       >
-        <Trash size={20} />
-      </IconButton>
+        <Ban size={16} /> 
+      </button>
     </div>
   );
 }

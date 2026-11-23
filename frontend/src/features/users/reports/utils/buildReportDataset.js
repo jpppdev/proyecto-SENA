@@ -1,32 +1,47 @@
-﻿// Funcion utilitaria para construir el dataset de un reporte (tabla)
+// Funcion utilitaria para construir el dataset de un reporte (tabla)
 // Patron: transformacion de datos (input -> output listo para exportar)
 export function buildReportDataset({
-  users, // Array de usuarios origen
+  users = [], // Array de registros origen
+  data, // Alias opcional para registros de cualquier modulo
   selectedFields, // Campos seleccionados para el reporte [{ key, label }]
   scope, // Alcance del reporte: "all" | "document"
-  documentNumber, // Numero de documento para filtrar (si aplica)
+  documentNumber, // Valor de filtro (si aplica)
+  filterKey = "userDocumentNumber",
 }) {
-  // Copia inmutable del array original (evita mutaciones)
-  let filteredUsers = [...users];
+  const sourceItems = Array.isArray(data) && data.length > 0 ? data : users;
+  let filteredItems = [...sourceItems];
 
-  // Filtro por alcance: si es por documento, se aplica filtro especifico
-  if (scope === "document" && documentNumber) {
-    filteredUsers = filteredUsers.filter(
-      (user) => user.userDocumentNumber === documentNumber,
-    );
+  // Filtro por alcance
+  if (scope === "document" && documentNumber && String(documentNumber).trim() !== "") {
+    const query = String(documentNumber).trim().toLowerCase();
+    filteredItems = filteredItems.filter((item) => {
+      const primaryVal = String(item[filterKey] ?? "").toLowerCase();
+      if (primaryVal.includes(query)) return true;
+
+      // Busqueda flexible en campos identificadores comunes del registro
+      return [
+        item.userDocumentNumber,
+        item.userName,
+        item.barcode,
+        item.productName,
+        item.customerName,
+        item.menuName,
+        item.category,
+        item.documentNumber,
+        item.providerName,
+        item.id,
+      ].some((val) => String(val ?? "").toLowerCase().includes(query));
+    });
   }
 
   // Construccion de encabezados del reporte
-  // Se toma el label de cada campo seleccionado
   const headers = selectedFields.map((field) => field.label);
 
   // Construccion de filas del reporte
-  // Cada usuario se transforma en un array de valores segun los campos seleccionados
-  const rows = filteredUsers.map((user) =>
+  const rows = filteredItems.map((item) =>
     selectedFields.map((field) => {
-      const value = user[field.key]; // Acceso dinamico a la propiedad
+      const value = item[field.key];
 
-      //ADICION NUEVA PARA EVITAR QUE APAREZCA TRUE O FALSE, AHORA APARECE SI OH NO 
       // Normalizacion: convierte booleanos a texto legible
       if (typeof value === "boolean") {
         return value ? "Si" : "No";
@@ -37,9 +52,8 @@ export function buildReportDataset({
     }),
   );
 
-  // Lista para exportar a Excel, PDF o renderizar en tabla
   return {
-    headers, // Array de strings (columnas)
-    rows, // Array de arrays (filas)
+    headers,
+    rows,
   };
 }

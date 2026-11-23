@@ -100,8 +100,8 @@ export const menuRepository = {
             m.item_name AS "menuName",
             COALESCE(c.category_name, m.id_category::TEXT) AS category,
             COALESCE(CAST(m.price AS FLOAT), 0) AS price,
-            m.preparation_time AS "prepTime",
-            m.item_description AS description,
+            COALESCE(m.preparation_time::TEXT, '') AS "prepTime",
+            COALESCE(m.item_description, '') AS description,
             COALESCE(m.image_url, 'https://via.placeholder.com/48?text=Sin+Foto') AS "menuImage",
             m.is_active AS "isActive"
           FROM menu_items m
@@ -109,6 +109,76 @@ export const menuRepository = {
           WHERE m.id_menu_item = $1;
         `;
         const result = await pool.query(query, [id]);
+        return result.rows[0];
+    },
+
+    async update(id, menuData) {
+        const {
+            category = "General",
+            menuName,
+            description,
+            price,
+            prepTime,
+            imageUrl = null,
+            isActive = true,
+            isAvailable = true,
+        } = menuData;
+
+        const categoryRes = await pool.query(
+            `INSERT INTO menu_categories (category_name)
+             VALUES ($1)
+             ON CONFLICT (category_name) DO UPDATE SET category_name = EXCLUDED.category_name
+             RETURNING id_category;`,
+            [String(category)]
+        );
+        const idCategory = categoryRes.rows[0].id_category;
+
+        const query = `
+          UPDATE menu_items SET
+            id_category = $1,
+            item_name = $2,
+            item_description = $3,
+            price = $4,
+            preparation_time = $5,
+            image_url = COALESCE($6, image_url),
+            is_active = $7,
+            is_available = $8
+          WHERE id_menu_item = $9
+          RETURNING id_menu_item AS id;
+        `;
+
+        const activeBool = isActive === "true" ? true : isActive === "false" ? false : Boolean(isActive);
+        const values = [
+            idCategory,
+            menuName,
+            description || "",
+            Number(price) || 0,
+            prepTime ? Number(prepTime) : null,
+            imageUrl || null,
+            activeBool,
+            Boolean(isAvailable),
+            id,
+        ];
+
+        const result = await pool.query(query, values);
+        return result.rows[0];
+    },
+
+    async updateStatus(id, isActive) {
+        const query =
+            typeof isActive === "boolean"
+                ? `UPDATE menu_items SET is_active = $1, is_available = $1 WHERE id_menu_item = $2 RETURNING id_menu_item AS id, is_active AS "isActive";`
+                : `UPDATE menu_items SET is_active = NOT is_active, is_available = NOT is_active WHERE id_menu_item = $1 RETURNING id_menu_item AS id, is_active AS "isActive";`;
+        const values = typeof isActive === "boolean" ? [isActive, id] : [id];
+        const result = await pool.query(query, values);
+        return result.rows[0];
+    },
+
+    async disable(id) {
+        const result = await pool.query(
+            `UPDATE menu_items SET is_active = FALSE, is_available = FALSE WHERE id_menu_item = $1 RETURNING id_menu_item AS id, is_active AS "isActive";`,
+            [id]
+        );
         return result.rows[0];
     }
 };

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Input, Button } from "@/shared";
 import restaurante from "../../../assets/images/Img-Restaurante.jpeg";
 import savePassword from "../../../assets/images/SavePassword.png";
-import title from "../../../assets/images/Img-Titulo.png";
+import title from "../../../assets/images/1-logo.png";
 import { forgotPasswordSchema } from "../schemas/ForgotPasswordSchema";
 import { showSuccessAlert } from "@/shared/services/alertService";
 
@@ -77,8 +77,9 @@ function ForgotPassword() {
             className="w-48 mx-auto mb-6"
           />
 
-          <h1 className="text-main font-title font-heading text-text-negative text-center mb-6">
-            Recuperar contraseña
+
+          <h1 className="text-main font-heading text-text-negative text-center mb-6">
+            Recuperar Contraseña
           </h1>
 
           <p className="text-body text-text-secondary text-center mb-8">

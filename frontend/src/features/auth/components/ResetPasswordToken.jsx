@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/shared";
 import restaurante from "../../../assets/images/Img-Restaurante.jpeg";
 import tokenPassword from "../../../assets/images/TokenPassword.png";
-import title from "../../../assets/images/Img-Titulo.png";
+import title from "../../../assets/images/1-logo.png";
 import { resetPasswordTokenSchema } from "../schemas/ResetPasswordTokenSchema";
 
 function ResetPasswordToken() {
@@ -73,7 +73,7 @@ function ResetPasswordToken() {
           <img
             src={tokenPassword}
             alt="Restaurante"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain"
           />
         </div>
 
@@ -87,8 +87,8 @@ function ResetPasswordToken() {
             className="w-48 mx-auto mb-6"
           />
 
-          <h1 className="text-main font-title font-heading text-text-negative text-center mb-6">
-            Verificar token
+          <h1 className="text-main font-heading text-text-negative text-center mb-6">
+            Verificar Token
           </h1>
 
           <p className="text-body text-text-secondary text-center mb-8">

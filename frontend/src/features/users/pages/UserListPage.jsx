@@ -1,4 +1,4 @@
-﻿// src/users/pagesUserListPage.js
+// src/users/pagesUserListPage.js
 
 import { useState, useEffect } from "react";
 import { FileDown, Users } from "lucide-react";
@@ -17,31 +17,18 @@ export default function UserListPage() {
   const navigate = useNavigate();
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [usersData, setUsersData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [requestVersion, setRequestVersion] = useState(0);
-  
-  useEffect(() => {
-    let active = true;
-    getUsers()
-      .then((data) => {
-        if (!Array.isArray(data)) throw new Error("Formato de usuarios inválido");
-        if (active) setUsersData(data);
-      })
-      .catch(() => {
-        if (active) setError("No se pudieron cargar los usuarios. Inténtalo de nuevo.");
-      })
-      .finally(() => {
-        if (active) setIsLoading(false);
-      });
-    return () => { active = false; };
-  }, [requestVersion]);
 
-  const retryLoading = () => {
-    setError("");
-    setIsLoading(true);
-    setRequestVersion((version) => version + 1);
+  const loadUsers = () => {
+    getUsers()
+      .then((data) => setUsersData(data))
+      .catch((error) => console.error("Error cargando usuarios:", error));
   };
+
+  useEffect(() => {
+    loadUsers();
+    window.addEventListener("users:updated", loadUsers);
+    return () => window.removeEventListener("users:updated", loadUsers);
+  }, []);
 
   return (
     <div className="contenedor-1 min-w-0 p-4 sm:p-6">
@@ -98,6 +85,8 @@ export default function UserListPage() {
       <ReportConfigModal
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
+        module="users"
+        data={usersData}
       />
 
     </div>

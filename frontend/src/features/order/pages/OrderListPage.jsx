@@ -10,10 +10,16 @@ export default function OrderListPage() {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [ordersData, setOrdersData] = useState([]);
 
-  useEffect(() => {
+  const loadOrders = () => {
     getOrders()
       .then((data) => setOrdersData(data))
       .catch((error) => console.error("Error cargando ordenes:", error));
+  };
+
+  useEffect(() => {
+    loadOrders();
+    window.addEventListener("orders:updated", loadOrders);
+    return () => window.removeEventListener("orders:updated", loadOrders);
   }, []);
 
   return (
@@ -37,6 +43,8 @@ export default function OrderListPage() {
       <ReportConfigModal
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
+        module="orders"
+        data={ordersData}
       />
     </div>
   );

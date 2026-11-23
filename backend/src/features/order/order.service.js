@@ -23,4 +23,16 @@ export const orderService = {
     async getById(id) {
         return await orderRepository.getById(id);
     },
+
+    async update(id, data) {
+        return await orderRepository.update(id, data);
+    },
+
+    async updateStatus(id, status) {
+        return await orderRepository.updateStatus(id, status);
+    },
+
+    async disable(id) {
+        return await orderRepository.disable(id);
+    },
 };

@@ -23,4 +23,16 @@ export const menuService = {
     async getById(id) {
         return await menuRepository.getById(id);
     },
+
+    async update(id, data) {
+        return await menuRepository.update(id, data);
+    },
+
+    async updateStatus(id, isActive) {
+        return await menuRepository.updateStatus(id, isActive);
+    },
+
+    async disable(id) {
+        return await menuRepository.disable(id);
+    },
 };

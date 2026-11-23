@@ -23,4 +23,16 @@ export const providerService = {
     async getById(id) {
         return await providerRepository.getById(id);
     },
+
+    async update(id, data) {
+        return await providerRepository.update(id, data);
+    },
+
+    async updateStatus(id, isActive) {
+        return await providerRepository.updateStatus(id, isActive);
+    },
+
+    async disable(id) {
+        return await providerRepository.disable(id);
+    },
 };

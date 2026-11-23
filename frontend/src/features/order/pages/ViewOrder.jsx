@@ -8,10 +8,13 @@ import {
   MessageSquare,
   ToggleRight,
   Package,
+  Edit,
+  Ban,
 } from "lucide-react";
 
 import { Button } from "@/shared";
-import { getOrderById } from "../services/orderServices";
+import { getOrderById, updateOrderStatus, disableOrder } from "../services/orderServices";
+import { showSuccessAlert, showErrorAlert, showDisableAlert } from "@/shared/services/alertService";
 
 
 export default function OrderViewPage() {
@@ -31,6 +34,50 @@ export default function OrderViewPage() {
         setLoading(false);
       });
   }, [id]);
+
+  const handleToggleStatus = async () => {
+    if (!order) return;
+    try {
+      const nextStatus = order.status === "Deshabilitada" ? "En preparación" : "Deshabilitada";
+      await updateOrderStatus(order.id, nextStatus);
+      setOrder((prev) => ({ ...prev, status: nextStatus }));
+      await showSuccessAlert({
+        title: "Estado actualizado",
+        text: `El estado de la orden #${order.id} cambió a ${nextStatus}.`,
+        timer: 2000,
+      });
+    } catch (err) {
+      await showErrorAlert({
+        title: "Error",
+        text: err.message || "No se pudo cambiar el estado de la orden.",
+      });
+    }
+  };
+
+  const handleDisableOrder = async () => {
+    if (!order) return;
+    const confirm = await showDisableAlert({
+      title: "¿Deshabilitar orden?",
+      text: `¿Deseas deshabilitar la orden #${order.id}?`,
+      confirmButtonText: "Sí, deshabilitar",
+    });
+    if (!confirm.isConfirmed) return;
+
+    try {
+      await disableOrder(order.id);
+      setOrder((prev) => ({ ...prev, status: "Deshabilitada" }));
+      await showSuccessAlert({
+        title: "Orden deshabilitada",
+        text: `La orden #${order.id} fue deshabilitada correctamente.`,
+        timer: 2000,
+      });
+    } catch (err) {
+      await showErrorAlert({
+        title: "Error",
+        text: err.message || "No se pudo deshabilitar la orden.",
+      });
+    }
+  };
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Cargando datos...</div>;
@@ -340,6 +387,38 @@ export default function OrderViewPage() {
                   </p>
 
                 </div>
+
+              </div>
+
+            </div>
+
+            {/* ACCIONES */}
+            <div className="bg-brand-light rounded-2xl shadow-md px-8 p-4">
+
+              <div className="flex flex-col gap-1.5">
+
+                <Link to={`/dashboard/orders/${order.id}/edit`}>
+                  <Button>
+                    <span className="flex items-center justify-center gap-2">
+                      <Edit size={20} />
+                      Editar orden
+                    </span>
+                  </Button>
+                </Link>
+
+                <Button onClick={handleToggleStatus}>
+                  <span className="flex items-center justify-center gap-2">
+                    <ToggleRight size={20} />
+                    Cambiar estado
+                  </span>
+                </Button>
+
+                <Button onClick={handleDisableOrder}>
+                  <span className="flex items-center justify-center gap-2">
+                    <Ban size={20} />
+                    Deshabilitar orden
+                  </span>
+                </Button>
 
               </div>
 
