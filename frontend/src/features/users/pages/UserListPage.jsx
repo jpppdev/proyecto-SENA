@@ -82,7 +82,7 @@ export default function UserListPage() {
         )}
       </section>
 
-      <ReportConfigModal
+      <UserReportConfigModal
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
         module="users"

@@ -4,7 +4,7 @@ import { OrderColumns } from "../table/OrderColumns";
 import { getOrders } from "../services/orderServices";
 import { Link } from "react-router-dom";
 // CORRECCIÓN 2: Importamos el modal desde el módulo de usuarios donde ya existe
-import { ReportConfigModal } from "@/features/users";
+import  OrderReportConfigModal  from "@/features/order/reports/components/OrderReportConfigModal";
 
 export default function OrderListPage() {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
@@ -40,7 +40,7 @@ export default function OrderListPage() {
 
       <DataTable data={ordersData} columns={OrderColumns} />
 
-      <ReportConfigModal
+      <OrderReportConfigModal
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
         module="orders"

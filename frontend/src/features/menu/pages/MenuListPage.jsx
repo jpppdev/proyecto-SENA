@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Button, DataTable } from "@/shared";
 import { MenuColumns } from "../table/MenuColumns";
 import { getMenu } from "../services/menuServices";
-import ReportConfigModal from "@/features/users/reports/components/ReportConfigModal";
+import MenuReportConfigModal from "@/features/menu/reports/components/MenuReportConfigModal";
 
 export default function MenuListPage() {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
@@ -43,7 +43,7 @@ export default function MenuListPage() {
 
       <DataTable data={menuData} columns={MenuColumns} />
 
-      <ReportConfigModal
+      <MenuReportConfigModal
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
         module="menu"

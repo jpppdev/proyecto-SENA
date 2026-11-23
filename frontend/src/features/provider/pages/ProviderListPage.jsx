@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Button, DataTable } from "@/shared";
 import { ProviderColumns } from "../table/ProviderColumns"; 
 import { getProviders } from "../services/providerServices";
-import ReportConfigModal from "@/features/users/reports/components/ReportConfigModal";
+import ProviderReportConfigModal from "@/features/provider/reports/components/ProviderReportConfigModal";
 
 export default function ProviderListPage() {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
@@ -43,7 +43,7 @@ export default function ProviderListPage() {
 
       <DataTable data={providersData} columns={ProviderColumns} />
 
-      <ReportConfigModal
+      <ProviderReportConfigModal
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
         module="providers"
