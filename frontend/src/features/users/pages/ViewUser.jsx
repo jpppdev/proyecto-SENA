@@ -110,7 +110,7 @@ return (
       <div className="flex min-w-0 items-center gap-3">
         <div>
           <h1 className="text-title leading-tight font-medium-custom tracking-tight text-text-primary min-[501px]:text-[28px] min-[801px]:text-[35px]">
-            Visualizar usuario
+            Visualizar Usuario
           </h1>
           <p className="mt-1 text-medium text-text-coffee">Consulta la información detallada del usuario y su estado en el sistema.</p>
         </div>
@@ -248,14 +248,6 @@ return (
               <User size={20} />
 
               Información General
-
-            </div>
-
-            <div className="flex shrink-0 items-center gap-2 whitespace-nowrap border-b-3 border-transparent px-4 py-3.5 text-text-coffee [&>svg]:text-text-brand min-[801px]:gap-4 min-[801px]:px-6">
-
-              <Shield size={20} />
-
-              Roles y Permisos
 
             </div>
 
