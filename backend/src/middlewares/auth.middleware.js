@@ -1,6 +1,8 @@
     // backend/src/middlewares/auth.middleware.js
     import jwt from "jsonwebtoken";
 
+    const DEFAULT_JWT_SECRET = "ee8TMRCy2AqKoWblBOFgK824RZ9MMUh1lcyvgi4pR6g";
+
     export const authenticateToken = (req, res, next) => {
     const authHeader = req.headers.authorization;
 
@@ -15,7 +17,7 @@
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || DEFAULT_JWT_SECRET);
 
         req.user = decoded;
 
