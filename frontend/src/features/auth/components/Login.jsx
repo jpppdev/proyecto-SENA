@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Input, Button } from "@/shared";
 import restaurante from "../../../assets/images/Img-Restaurante.jpeg";
 import logo from "../../../assets/images/Img-Login.png";
@@ -69,30 +69,30 @@ function Login() {
   };
 
   return (
-    <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
+    <section className="relative flex min-h-dvh items-center justify-center overflow-hidden px-4 py-6 sm:px-6 sm:py-8">
       <div
         className="absolute inset-0 bg-cover bg-center blur-md scale-110"
         style={{ backgroundImage: `url(${restaurante})` }}
       ></div>
 
-      <div className="relative z-10 w-[1000px] h-[600px] bg-background-div rounded-4xl shadow-2xl flex overflow-hidden">
+      <div className="relative z-10 grid w-full max-w-md overflow-hidden rounded-2xl bg-background-div shadow-2xl md:min-h-[600px] md:max-w-[1000px] md:grid-cols-2 md:rounded-4xl">
 
-        <div className="w-1/2">
+        <div className="relative hidden md:block">
           <img
             src={logo}
-            alt="Restaurante"
-            className="w-full h-full object-cover"
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
           />
         </div>
 
         <form
           onSubmit={handleLogin}
-          className="w-1/2 flex flex-col justify-center items-center px-14"
+          className="flex min-w-0 flex-col items-center justify-center px-5 py-8 sm:px-8 sm:py-10 lg:px-14"
         >
           <img
             src={title}
-            alt="Title"
-            className="w-48 mx-auto mb-6"
+            alt="Restaurante Aurum"
+            className="mb-4 w-36 sm:mb-6 sm:w-48"
           />
 
           <h1 className="text-main font-title font-heading text-text-negative text-center mb-6">
@@ -104,6 +104,8 @@ function Login() {
             htmlFor="email"
             name="email"
             type="email"
+            size="lg"
+            autoComplete="username"
             label="Correo electrónico"
             placeholder="Ingresa tu correo"
             value={formData.email}
@@ -111,12 +113,14 @@ function Login() {
             error={errors.email}
           />
 
-          <div className="mt-2">
+          <div className="mt-3 flex w-full justify-center">
             <Input
               variant="quaternary"
               htmlFor="password"
               name="password"
               type="password"
+              size="lg"
+              autoComplete="current-password"
               label="Contraseña"
               placeholder="Ingresa tu contraseña"
               value={formData.password}
@@ -125,7 +129,7 @@ function Login() {
             />
           </div>
 
-          <div className="w-full mt-8 flex justify-center">
+          <div className="mt-6 flex w-full justify-center sm:mt-8">
             <Button
               variant="primary"
               type="submit"
@@ -135,13 +139,13 @@ function Login() {
             </Button>
           </div>
 
-          <div className="text-center mt-6 mb-6">
-            <p
-              className="text-medium font-medium-custom cursor-pointer text-brand"
-              onClick={() => navigate("/forgotPassword")}
+          <div className="mt-6 text-center">
+            <Link
+              className="inline-flex min-h-11 items-center text-medium font-medium-custom text-text-brand hover:underline focus-visible:outline-2 focus-visible:outline-focus-ring"
+              to="/forgotPassword"
             >
               ¿Olvidaste tu contraseña?
-            </p>
+            </Link>
           </div>
         </form>
 

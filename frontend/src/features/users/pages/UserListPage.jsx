@@ -57,10 +57,10 @@ export default function UserListPage() {
 
   return (
     <div className="contenedor-1 min-w-0 p-4 sm:p-6">
-      <Breadcrumbs items={breadcrumbs} />
+      
       <header className="contenedor-2 mb-6 flex flex-wrap items-center justify-between gap-4">
         <div className="contenedor-3 flex min-w-0 items-center gap-4">
-          <Users className="size-9 shrink-0 text-text-brand sm:size-13" aria-hidden="true" />
+          
           <div className="contenedor-4 min-w-0"> 
             <h1 className=" contenedor-5
               text-text-primary

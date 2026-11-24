@@ -8,7 +8,10 @@ import {
 import { useNavigate } from "react-router-dom";
 import { disableMenu } from "../services/menuServices";
 
-export default function MenuRowActions({ product }) {
+const catalogAction = "flex min-h-8 flex-1 items-center justify-center rounded-lg border transition-colors focus-visible:outline-2 focus-visible:outline-focus-ring";
+const catalogSecondaryAction = `${catalogAction} border-border-clear2 text-text-brand hover:bg-brand-soft [.dark_&]:text-brand-soft [.dark_&]:hover:bg-background-inverse`;
+
+export default function MenuRowActions({ product, catalog = false }) {
   const navigate = useNavigate();
 
   const handleView = () => {
@@ -49,16 +52,16 @@ export default function MenuRowActions({ product }) {
     }
   };
   return (
-    <div className="flex gap-2">
-      <button type="button" onClick={handleView} title="Visualizar platillo" className="p-1 rounded hover:bg-gray-100 text-blue-600 transition-colors">
+    <div className={catalog ? "mt-2 flex gap-2" : "flex gap-2"}>
+      <button type="button" onClick={handleView} aria-label={`Ver ${product.menuName}`} title="Visualizar platillo" className={catalog ? `${catalogAction} border-brand bg-brand text-text-success hover:bg-brand-hover` : "p-1 rounded hover:bg-gray-100 text-blue-600 transition-colors"}>
         <Eye size={16} /> 
       </button>
       
-      <button type="button" onClick={handleEdit} title="Editar platillo" className="p-1 rounded hover:bg-gray-100 text-orange-500 transition-colors">
+      <button type="button" onClick={handleEdit} aria-label={`Editar ${product.menuName}`} title="Editar platillo" className={catalog ? catalogSecondaryAction : "p-1 rounded hover:bg-gray-100 text-orange-500 transition-colors"}>
         <Pencil size={16} /> 
       </button>
 
-      <button type="button" onClick={handleDisable} title="Deshabilitar platillo" className="p-1 rounded hover:bg-red-50 text-red-600 transition-colors">
+      <button type="button" onClick={handleDisable} aria-label={`Deshabilitar ${product.menuName}`} title="Deshabilitar platillo" disabled={catalog && product.isActive === false} className={catalog ? `${catalogSecondaryAction} disabled:opacity-50` : "p-1 rounded hover:bg-red-50 text-red-600 transition-colors"}>
         <Ban size={16} /> 
       </button>
     </div>
