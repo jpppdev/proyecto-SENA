@@ -23,7 +23,11 @@ function getMailConfig() {
     console.error("Aviso al leer configuración de correo:", err.message);
   }
 
-  const read = (key) => (env[key] ?? process.env[key] ?? "").trim();
+  const read = (key) =>
+    (env[key] ?? process.env[key] ?? "")
+      .split("//")[0]
+      .split("#")[0]
+      .trim();
 
   // Credenciales SMTP de la cuenta institucional (EMAIL_USER / EMAIL_PASS se mantienen por compatibilidad)
   const smtpUser = read("SMTP_USER") || read("EMAIL_USER");

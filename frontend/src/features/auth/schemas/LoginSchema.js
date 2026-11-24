@@ -1,11 +1,6 @@
 import { z } from "zod";
 
 export const loginSchema = z.object({
-<<<<<<< Updated upstream
-  email: z.string().trim().email("Ingresa un correo electrónico válido"),
-  password: z.string().min(1, "Ingresa tu contraseña"),
-});
-=======
   email: z
         .string()
         .trim()
@@ -21,4 +16,3 @@ export const loginSchema = z.object({
         .regex(/[^A-Za-z0-9]/, " Debe contener al menos un caracter especial"),
     
 });
->>>>>>> Stashed changes

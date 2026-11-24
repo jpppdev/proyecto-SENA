@@ -1,47 +1,36 @@
 import { API_URL } from "@/features/config";
 
-export async function login({ email, userEmail, password, userPassword }) {
+const AUTH_API_URL = `${API_URL}/auth`;
+
+export async function login(userData) {
+  const email = String(userData.email || userData.userEmail || "").trim();
+  const password = String(userData.password || userData.userPassword || "");
+
   let response;
   try {
-    response = await fetch(`${API_URL}/auth/login`, {
+    response = await fetch(`${AUTH_API_URL}/login`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
-        email: email || userEmail,
-        password: password || userPassword,
+        email,
+        password,
       }),
     });
   } catch {
     throw new Error("No se pudo conectar con el servidor. Verifica que el backend esté iniciado.");
   }
 
-<<<<<<< Updated upstream
-  if (response.status === 401) {
-    throw new Error("Revisa tus credenciales y verifica que tu cuenta esté activa.");
-  }
-
-  if (!response.ok) {
-    throw new Error("El servidor no pudo procesar el inicio de sesión. Inténtalo de nuevo.");
-=======
-export async function login(userData) {
-  const email = String(userData.email || userData.userEmail || "").trim();
-  const password = String(userData.password || userData.userPassword || "");
-
-  const response = await fetch(`${AUTH_API_URL}/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-
-    body: JSON.stringify({
-      email,
-      password,
-    }),
-  });
-
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
-    throw new Error(error.error || error.message || "Credenciales incorrectas");
+    throw new Error(
+      error.error ||
+      error.message ||
+      (response.status === 401
+        ? "Revisa tus credenciales y verifica que tu cuenta esté activa."
+        : "El servidor no pudo procesar el inicio de sesión. Inténtalo de nuevo.")
+    );
   }
 
   return response.json();
@@ -102,7 +91,6 @@ export async function resetPassword({ email, token, password }) {
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
     throw new Error(error.error || error.message || "Error al actualizar la contraseña");
->>>>>>> Stashed changes
   }
 
   return response.json();

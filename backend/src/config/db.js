@@ -9,23 +9,15 @@ const { Pool } = pkg;
 
 // Importamos detonv para poder leer variables de entorno desde un archivo.env
 import dotenv from "dotenv";
-<<<<<<< Updated upstream
-import { fileURLToPath } from "node:url";
-=======
 import { fileURLToPath } from "url";
 import path from "path";
->>>>>>> Stashed changes
 
 //Cargamos las variables de entorno desde el archivo .env
 
 // Esto debe ejecutarse antes de acceder a process.env
-<<<<<<< Updated upstream
-dotenv.config({ path: fileURLToPath(new URL("../../.env", import.meta.url)), quiet: true });
-=======
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, "../../.env") });
->>>>>>> Stashed changes
 
 // Creamos y exportamos una instancia unica del Pool de PostgreSQL
 // Esta instancia se reutiliza en toda la aplicacion
@@ -69,8 +61,6 @@ pool.on('error', (err) => {
     console.error('Error en la conexion con PostgreSQL:', err);
 });
 
-<<<<<<< Updated upstream
-=======
 // Inicializacion automatica de tablas y datos semilla si estan vacias
 async function initDatabaseTables() {
     try {
@@ -371,4 +361,3 @@ async function initDatabaseTables() {
 }
 
 initDatabaseTables();
->>>>>>> Stashed changes

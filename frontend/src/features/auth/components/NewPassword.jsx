@@ -157,28 +157,16 @@ function NewPassword() {
               />
             </div>
 
-<<<<<<< Updated upstream
             <div className="flex justify-center mb-5">
               <Button
                 variant="primary"
                 type="submit"
                 size="md"
+                disabled={isSubmitting}
               >
-                Renovar contraseña
+                {isSubmitting ? "Guardando..." : "Renovar contraseña"}
               </Button>
             </div>
-=======
-          <div className="w-full mt-8 flex justify-center">
-            <Button
-              variant="primary"
-              type="submit"
-              size="md"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Guardando..." : "Renovar contraseña"}
-            </Button>
-          </div>
->>>>>>> Stashed changes
 
             <p
               className="text-center text-medium font-medium-custom cursor-pointer text-brand hover:underline"
