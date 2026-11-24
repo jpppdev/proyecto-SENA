@@ -68,7 +68,7 @@ export default function Input({
 
 
     return(
-        <div className="w-80">
+        <div className="w-80 max-w-full">
 
 
                 {/*Label */}
@@ -143,6 +143,7 @@ export default function Input({
                         focus:ring-ring
                         focus:ring-brand
                         ${variants[variant]}
+                        ${variant === "quaternary" ? "pr-11" : ""}
                         ${sizes[size]}
 
                         ${error ? "border-red-800" : ""}

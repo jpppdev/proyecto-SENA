@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
-  ArrowLeft, 
   Check, 
   ShoppingCart, 
   User, 
@@ -18,7 +17,7 @@ import { createOrder } from "../services/orderServices";
 import { showErrorAlert } from "@/shared/services/alertService";
 
 // =====================================================================
-// 1. CONSTANTES MOCK (Fuera del componente para evitar re-renderizados)
+// 1. CONSTANTES MOCK (Fuera del componente para evitar re-renderizar)
 // =====================================================================
 const ORDER_TYPES = [
   { label: "Consumo en Mesa", value: "mesa" },
@@ -195,21 +194,20 @@ export default function OrderCreateForm() {
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 px-4">
         <div>
-          <h1 className="text-3xl font-extrabold text-[var(--color-text-inverse)] mb-1 drop-shadow-sm">
+          <h1 className="text-3xl font-extrabold  mb-1 drop-shadow-sm">
             Crear Nueva Orden
           </h1>
           <p className="text-sm font-medium text-[var(--color-text-inverse)] opacity-90">
             Registra los datos del cliente y los productos a facturar
           </p>
         </div>
-        <button 
-          type="button" 
+        <Button
+          type="button"
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 rounded-xl border-2 border-[var(--color-text-inverse)] text-[var(--color-text-inverse)] px-5 py-2.5 text-sm font-bold hover:bg-white/20 transition-all shadow-sm"
+          className="inline-flex min-h-10 items-center justify-center self-start rounded-[10px] border border-brand px-5 py-2.5 text-medium font-medium-custom text-text-coffee transition-colors hover:bg-border-clear2/60 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand md:self-center"
         >
-          <ArrowLeft className="h-4 w-4" />
           Volver a órdenes
-        </button>
+        </Button>
       </div>
 
       <form 
@@ -306,14 +304,7 @@ export default function OrderCreateForm() {
           <Button type="button" onClick={() => navigate(-1)} variant="secondary" size="md" className="rounded-xl border-[var(--color-border-strong)] text-[var(--color-text-primary)] hover:bg-white/40 transition-all">
             Cancelar
           </Button>
-          <Button 
-                type="submit" 
-                disabled={isSubmitting} 
-                variant="create" 
-                size="md" 
-               
-                >
-            <Check size={18} />
+          <Button type="submit" variant="primary" disabled={isSubmitting}>
             {isSubmitting ? "PROCESANDO..." : "Confirmar Orden"}
           </Button>
         </div>

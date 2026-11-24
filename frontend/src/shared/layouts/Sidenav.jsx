@@ -1,4 +1,3 @@
-import logo from "@/assets/images/1-logo.png";
 import { NavLink } from "react-router-dom";
 import {
   Users,
@@ -39,13 +38,10 @@ export default function Sidebar({ collapsed = false }) {
   ];
 
   return (
-    <aside id="dashboard-sidebar" aria-label="Menú lateral" className={`${collapsed ? "w-[72px]" : "w-[238px]"} h-full min-h-screen bg-[linear-gradient(163deg,#ff8b13_0%,#ff6800_23%,#c84200_57%,#ff6800_100%)] border-r border-white/20 p-3 text-white transition-[width] duration-300 motion-reduce:transition-none`}>
+    <aside id="dashboard-sidebar" className={`${collapsed ? "w-16" : "w-52"} flex min-h-[436px] rounded-[32px] bg-linear-to-b from-[#ff8000] to-[#d65300] px-2.5 pb-6 pt-[27px] text-white shadow-[0_4px_10px_rgba(148,61,0,0.16)] transition-[width] duration-300 motion-reduce:transition-none`}>
 
-      <NavLink to="/dashboard" aria-label="Aurum — Inicio" className="mb-5 flex h-24 items-center justify-center border-b border-white/20 pb-3 focus-visible:outline-2 focus-visible:outline-white">
-        <img src={logo} alt="Restaurante Aurum" className={`${collapsed ? "w-12" : "w-40"} max-h-20 object-contain transition-[width] duration-300 motion-reduce:transition-none`} />
-      </NavLink>
       {/* Navegación */}
-      <nav className="flex flex-col gap-2">
+      <nav aria-label="Menú lateral" className="flex w-full flex-col gap-1">
         {modules.map((module) => {
           const Icon = module.icon;
 
@@ -56,16 +52,16 @@ export default function Sidebar({ collapsed = false }) {
               aria-label={module.name}
               to={module.path}
               className={({ isActive }) =>
-                `flex min-h-11 items-center ${collapsed ? "justify-center px-0" : "gap-3 px-3"} rounded-lg py-2
-                transition-colors duration-300
+                `flex h-11 items-center ${collapsed ? "justify-center" : "gap-3 px-3"} overflow-hidden rounded-[17px]
+                transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white
                 ${
                   isActive
-                    ? "bg-[linear-gradient(110deg,rgba(255,177,58,.95),rgba(255,142,35,.9))] text-white"
-                    : "text-white hover:bg-[linear-gradient(110deg,rgba(255,177,58,.95),rgba(255,142,35,.9))]"
+                    ? "bg-[#fff2db] text-[#b84000] shadow-sm"
+                    : "text-white hover:bg-white/20"
                 }`
               }
             >
-              <Icon size={22} className="shrink-0" aria-hidden="true" />
+              <Icon size={18} className="shrink-0" aria-hidden="true" />
 
               <span className={collapsed ? "sr-only" : "text-body whitespace-nowrap"}>
                 {module.name}

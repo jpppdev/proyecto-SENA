@@ -25,7 +25,6 @@ import { OrderEditForm } from "../features/order";
 import MenuEditForm from "../features/menu/components/MenuEditForm";
 import ProviderEditForm from "../features/provider/components/ProviderEditForm";
 
-import { HomePage } from "../features/home";
 import { AdminHomePage } from "../features/home";
 import { PermissionsPage } from "@/features/permissions";
 import { ProtectedRoute, PublicRoute } from "@/features/auth/components/ProtectedRoute";
@@ -70,13 +69,7 @@ const  router = createBrowserRouter([
     children: [
     {
         path: "/Home",
-        element: <DashboardLayout/>,
-        children:[
-            {
-                index: true,
-                element: <HomePage/>
-            },
-        ],
+        element: <Navigate to="/dashboard/home" replace />,
     },
 
     {
