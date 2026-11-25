@@ -62,7 +62,7 @@ function Login() {
       // lo mismo hacemos en el cath por si llega a fallar y no encuentra el usuario o la contraseña es incorrecta
       await showCancelAlert({
         title: "Error al iniciar sesión",
-        text: error.message,
+        text: error.message || "Credenciales incorrectas",
         timer: 2000,
       });
     }

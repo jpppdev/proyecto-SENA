@@ -5,12 +5,15 @@ import restaurante from "../../../assets/images/Img-Restaurante.jpeg";
 import tokenPassword from "../../../assets/images/TokenPassword.png";
 import title from "../../../assets/images/1-logo.png";
 import { resetPasswordTokenSchema } from "../schemas/ResetPasswordTokenSchema";
+import { verifyResetToken } from "../schemas/authService";
+import { showSuccessAlert, showCancelAlert } from "@/shared/services/alertService";
 
 function ResetPasswordToken() {
   const navigate = useNavigate();
 
   const [token, setToken] = useState(["", "", "", ""]);
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const inputRefs = useRef([]);
 
@@ -40,7 +43,7 @@ function ResetPasswordToken() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const tokenValue = token.join("");
@@ -55,8 +58,37 @@ function ResetPasswordToken() {
     }
 
     setErrors({});
+    setIsSubmitting(true);
 
-    navigate("/newPassword");
+    try {
+      const email = sessionStorage.getItem("resetEmail") || "";
+      const response = await verifyResetToken({
+        email,
+        token: tokenValue,
+      });
+
+      if (response.email) {
+        sessionStorage.setItem("resetEmail", response.email);
+      }
+      sessionStorage.setItem("resetToken", tokenValue);
+
+      await showSuccessAlert({
+        title: "Código verificado",
+        text: "El código es válido. Ahora puedes ingresar tu nueva contraseña.",
+        timer: 2000,
+      });
+
+      navigate("/newPassword");
+    } catch (error) {
+      console.error("Error al verificar token:", error.message);
+      await showCancelAlert({
+        title: "Código inválido",
+        text: error.message || "El código ingresado es inválido o ha expirado.",
+        timer: 2500,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -127,8 +159,9 @@ function ResetPasswordToken() {
               variant="primary"
               type="submit"
               size="md"
+              disabled={isSubmitting}
             >
-              Verificar token
+              {isSubmitting ? "Verificando..." : "Verificar token"}
             </Button>
           </div>
 

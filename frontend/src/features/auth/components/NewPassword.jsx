@@ -5,7 +5,8 @@ import restaurante from "../../../assets/images/Img-Restaurante.jpeg";
 import newPassword from "../../../assets/images/NewPassword.png";
 import title from "../../../assets/images/1-logo.png";
 import { newPasswordSchema } from "../schemas/NewPasswordSchema";
-import { showSuccessAlert } from "@/shared/services/alertService";
+import { resetPassword } from "../schemas/authService";
+import { showSuccessAlert, showCancelAlert } from "@/shared/services/alertService";
 
 function NewPassword() {
   const navigate = useNavigate();
@@ -13,8 +14,9 @@ function NewPassword() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const formData = {
@@ -30,14 +32,48 @@ function NewPassword() {
     }
 
     setErrors({});
+    setIsSubmitting(true);
 
-    showSuccessAlert({
-      title: "Contraseña cambiada",
-      text: "Tu contraseña fue cambiada con éxito.",
-      timer: 3000,
-    });
+    try {
+      const email = sessionStorage.getItem("resetEmail") || "";
+      const token = sessionStorage.getItem("resetToken") || "";
 
-    navigate("/login");
+      if (!token) {
+        await showCancelAlert({
+          title: "Token no encontrado",
+          text: "Por favor solicita y verifica nuevamente tu código de recuperación.",
+          timer: 2500,
+        });
+        navigate("/forgotPassword");
+        return;
+      }
+
+      const response = await resetPassword({
+        email,
+        token,
+        password: result.data.password,
+      });
+
+      sessionStorage.removeItem("resetEmail");
+      sessionStorage.removeItem("resetToken");
+
+      await showSuccessAlert({
+        title: "Contraseña cambiada",
+        text: response.message || "Tu contraseña fue cambiada con éxito.",
+        timer: 2500,
+      });
+
+      navigate("/login");
+    } catch (error) {
+      console.error("Error al restablecer contraseña:", error.message);
+      await showCancelAlert({
+        title: "Error al cambiar contraseña",
+        text: error.message || "No se pudo actualizar la contraseña.",
+        timer: 2500,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -126,8 +162,9 @@ function NewPassword() {
                 variant="primary"
                 type="submit"
                 size="md"
+                disabled={isSubmitting}
               >
-                Renovar contraseña
+                {isSubmitting ? "Guardando..." : "Renovar contraseña"}
               </Button>
             </div>
 
