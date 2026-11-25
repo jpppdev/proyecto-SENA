@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button, Checkbox, Select } from "@/shared";
-import { Shield, Save, Users, Package, ShoppingCart, Coffee, Store, UserCheck } from "lucide-react";
+import { Shield, Users, Package, ShoppingCart, Coffee, Store, UserCheck } from "lucide-react";
 import { showSuccessAlert, showErrorAlert } from "@/shared/services/alertService";
 import { useNavigate } from "react-router-dom";
 import {
@@ -332,20 +332,21 @@ export default function PermissionsPage() {
         <div className="relative w-full max-w-[1200px] min-h-[600px] mx-auto mt-10 text-[var(--color-text-primary)]">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 px-4">
                 <div>
-                    <h1 className="text-3xl font-extrabold text-[var(--color-text-inverse)] mb-1 drop-shadow-sm flex items-center gap-3">
+                    <h1 className="text-3xl font-extrabold text-[#4a1d04] mb-1 drop-shadow-sm flex items-center gap-3">
                         <Shield className="text-[var(--color-secondary-500)]" size={32} />
                         Gestión de Permisos
                     </h1>
-                    <p className="text-sm font-medium text-[var(--color-text-inverse)] opacity-90">
+                    <p className="text-sm font-medium text-[#713008]">
                         Configura los niveles de acceso por rol o asigna permisos específicos a cualquier usuario de la base de datos.
                     </p>
                 </div>
             </div>
 
             <div className="bg-white/30 backdrop-blur-md rounded-[2.5rem] shadow-md border border-white/40 p-8 md:p-10">
-                <div className="mb-8 flex flex-col lg:flex-row lg:items-end gap-6 [&_label]:!text-[#4a1d04] [&_label]:!font-bold [&_select]:!bg-white/90 [&_select]:!text-gray-900 [&_select]:!border-orange-200 [&_option]:!bg-white [&_option]:!text-gray-900">
-                    <div>
+                <div className="mb-8 flex flex-col lg:flex-row lg:items-end gap-6">
+                    <div className="w-full min-w-0 max-w-100">
                         <Select
+                            variant="create"
                             label={selectedUserId ? "Rol asignado al Usuario" : "Seleccionar Rol a Configurar"}
                             name="selectedRole"
                             value={selectedRole}
@@ -355,8 +356,9 @@ export default function PermissionsPage() {
                         />
                     </div>
 
-                    <div>
+                    <div className="w-full min-w-0 max-w-100">
                         <Select
+                            variant="create"
                             label="Asignar Permiso Específico a Usuario (BD)"
                             name="selectedUser"
                             value={selectedUserId}
@@ -451,11 +453,8 @@ export default function PermissionsPage() {
                         type="button"
                         onClick={handleSavePermissions}
                         disabled={isSubmitting}
-                        variant="create"
-                        size="md"
-                        className="flex items-center gap-2"
+                        variant="primary"
                     >
-                        <Save size={18} />
                         {isSubmitting ? "GUARDANDO..." : "GUARDAR PERMISOS"}
                     </Button>
                 </div>

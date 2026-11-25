@@ -1,4 +1,4 @@
-import { Pencil, Eye, Ban } from "lucide-react";
+import RowActions from "@/shared/components/RowActions";
 import { 
   showDisableAlert, 
   showCancelDisableAlert, 
@@ -49,18 +49,11 @@ export default function OrderRowActions({ order }) {
   };
 
   return (
-    <div className="flex gap-2">
-      <button type="button" onClick={handleView} title="Visualizar orden" className="p-1 rounded hover:bg-gray-100 text-blue-600">
-        <Eye size={16} /> 
-      </button>
-      
-      <button type="button" onClick={handleEdit} title="Editar orden" className="p-1 rounded hover:bg-gray-100 text-orange-500">
-        <Pencil size={16} /> 
-      </button>
-
-      <button type="button" onClick={handleDisable} title="Deshabilitar orden" className="p-1 rounded hover:bg-gray-100 text-red-600">
-        <Ban size={16} /> 
-      </button>
-    </div>
+    <RowActions
+      entity="orden"
+      onView={handleView}
+      onEdit={handleEdit}
+      onDisable={handleDisable}
+    />
   );
 }

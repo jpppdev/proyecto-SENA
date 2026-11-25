@@ -270,7 +270,7 @@ const handleCancel = async () => {
               </h3>
               <Input variant="primary" size="md" label="Nombres" htmlFor="userName" name="userName" value={formData.userName} onChange={handleChange} error={errors.userName} placeholder="Ej: Juan" />
               <Input variant="primary" size="md" label="Apellidos" htmlFor="userLastName" name="userLastName" value={formData.userLastName} onChange={handleChange} error={errors.userLastName} placeholder="Ej: Pérez" />
-              <Select label="Tipo de Documento" htmlFor="userDocumentTypes" name="userDocumentTypes" value={formData.userDocumentTypes} onChange={handleChange} error={errors.userDocumentTypes} options={documentTypes} />
+              <Select variant="create" label="Tipo de Documento" htmlFor="userDocumentTypes" name="userDocumentTypes" value={formData.userDocumentTypes} onChange={handleChange} error={errors.userDocumentTypes} options={documentTypes} />
               <Input variant="primary" size="md" label="Número de Documento" htmlFor="userDocumentNumber" name="userDocumentNumber" value={formData.userDocumentNumber} onChange={handleChange} error={errors.userDocumentNumber} placeholder="Ingresa el documento" />
               <Input variant="primary" size="md" label="Correo Electrónico" htmlFor="userEmail" name="userEmail" type="email" value={formData.userEmail} onChange={handleChange} error={errors.userEmail} placeholder="correo@ejemplo.com" />
             </div>
@@ -294,8 +294,8 @@ const handleCancel = async () => {
                 <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/40 backdrop-blur-md border border-white/60 text-[var(--color-text-primary)] text-base shadow-sm">3</span>
                 SENSIBLES
               </h3>
-              <Select label="Estado" htmlFor="isActive" name="isActive" value={formData.isActive} onChange={handleChange} error={errors.isActive} options={[{ label: "Activo", value: "true" }, { label: "Inactivo", value: "false" }]} />
-              <Select label="Tipo de Usuario" htmlFor="role" name="role" value={formData.role} onChange={handleChange} error={errors.role} options={[{ label: "Administrador", value: "administrador" }, { label: "Mesero", value: "mesero" }, { label: "Empleado", value: "empleado" }, { label: "Cajero", value: "cajero" }, { label: "Usuario Normal", value: "usuario" }]} />
+              <Select variant="create" label="Estado" htmlFor="isActive" name="isActive" value={formData.isActive} onChange={handleChange} error={errors.isActive} options={[{ label: "Activo", value: "true" }, { label: "Inactivo", value: "false" }]} />
+              <Select variant="create" label="Tipo de Usuario" htmlFor="role" name="role" value={formData.role} onChange={handleChange} error={errors.role} options={[{ label: "Administrador", value: "administrador" }, { label: "Mesero", value: "mesero" }, { label: "Empleado", value: "empleado" }, { label: "Cajero", value: "cajero" }, { label: "Usuario Normal", value: "usuario" }]} />
               <Input variant="primary" size="md" label="Contraseña" htmlFor="userPassword" name="userPassword" type="password" value={formData.userPassword} onChange={handleChange} error={errors.userPassword} placeholder="Mínimo 8 caracteres" />
             </div>
 

@@ -176,7 +176,7 @@ export default function ProviderRegisterForm() {
                 <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--color-surface-muted)] border border-[var(--color-border-clear)] text-[var(--color-text-primary)] text-base shadow-sm">1</span>
                 IDENTIFICACIÓN
               </h3>
-              <Select label="Tipo de Documento" htmlFor="documentType" name="documentType" value={formData.documentType} onChange={handleChange} error={errors.documentType} options={documentTypes} />
+              <Select variant="create" label="Tipo de Documento" htmlFor="documentType" name="documentType" value={formData.documentType} onChange={handleChange} error={errors.documentType} options={documentTypes} />
               <Input variant="primary" size="md" label="Número de Documento" htmlFor="documentNumber" name="documentNumber" value={formData.documentNumber} onChange={handleChange} error={errors.documentNumber} placeholder="Sin puntos ni guiones" />
               <Input variant="primary" size="md" label="Nombre de la Empresa" htmlFor="providerName" name="providerName" value={formData.providerName} onChange={handleChange} error={errors.providerName} placeholder="Ej: Distribuidora S.A." />
             </div>
@@ -198,11 +198,11 @@ export default function ProviderRegisterForm() {
                 <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--color-surface-muted)] border border-[var(--color-border-clear)] text-[var(--color-text-primary)] text-base shadow-sm">3</span>
                 DETALLES
               </h3>
-              <Select label="Estado del Proveedor" htmlFor="isActive" name="isActive" value={formData.isActive} onChange={handleChange} error={errors.isActive} options={[
+              <Select variant="create" label="Estado del Proveedor" htmlFor="isActive" name="isActive" value={formData.isActive} onChange={handleChange} error={errors.isActive} options={[
                 { label: "Habilitado", value: "true" },
                 { label: "Inhabilitado", value: "false" }
               ]} />
-              <Select label="Productos (Opcional)" htmlFor="products" name="products" value={formData.products} onChange={handleChange} error={errors.products} options={inventoryProducts} />
+              <Select variant="create" label="Productos (Opcional)" htmlFor="products" name="products" value={formData.products} onChange={handleChange} error={errors.products} options={inventoryProducts} />
               <Input variant="primary" size="md" label="Observaciones Internas" htmlFor="observations" name="observations" value={formData.observations} onChange={handleChange} error={errors.observations} placeholder="Notas adicionales..." />
             </div>
 
@@ -211,8 +211,7 @@ export default function ProviderRegisterForm() {
           <div className="flex justify-end mt-10 border-t-2 border-[var(--color-border-strong)] pt-6">
             <Button 
               type="submit" 
-              variant="create" 
-              size="md" 
+              variant="primary"
               disabled={isSubmitting} 
             >
               {isSubmitting ? "GUARDANDO..." : "GUARDAR PROVEEDOR"}

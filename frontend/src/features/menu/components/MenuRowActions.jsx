@@ -1,4 +1,5 @@
 import { Pencil, Eye, Ban } from "lucide-react";
+import RowActions from "@/shared/components/RowActions";
 import { 
   showDisableAlert, 
   showCancelDisableAlert, 
@@ -51,18 +52,29 @@ export default function MenuRowActions({ product, catalog = false }) {
       });
     }
   };
+  if (!catalog) {
+    return (
+      <RowActions
+        entity="platillo"
+        onView={handleView}
+        onEdit={handleEdit}
+        onDisable={handleDisable}
+      />
+    );
+  }
+
   return (
-    <div className={catalog ? "mt-2 flex gap-2" : "flex gap-2"}>
-      <button type="button" onClick={handleView} aria-label={`Ver ${product.menuName}`} title="Visualizar platillo" className={catalog ? `${catalogAction} border-brand bg-brand text-text-success hover:bg-brand-hover` : "p-1 rounded hover:bg-gray-100 text-blue-600 transition-colors"}>
-        <Eye size={16} /> 
+    <div className="mt-2 flex gap-2">
+      <button type="button" onClick={handleView} aria-label={`Ver ${product.menuName}`} title="Visualizar platillo" className={`${catalogAction} border-brand bg-brand text-text-success hover:bg-brand-hover`}>
+        <Eye size={16} />
       </button>
       
-      <button type="button" onClick={handleEdit} aria-label={`Editar ${product.menuName}`} title="Editar platillo" className={catalog ? catalogSecondaryAction : "p-1 rounded hover:bg-gray-100 text-orange-500 transition-colors"}>
-        <Pencil size={16} /> 
+      <button type="button" onClick={handleEdit} aria-label={`Editar ${product.menuName}`} title="Editar platillo" className={catalogSecondaryAction}>
+        <Pencil size={16} />
       </button>
 
-      <button type="button" onClick={handleDisable} aria-label={`Deshabilitar ${product.menuName}`} title="Deshabilitar platillo" disabled={catalog && product.isActive === false} className={catalog ? `${catalogSecondaryAction} disabled:opacity-50` : "p-1 rounded hover:bg-red-50 text-red-600 transition-colors"}>
-        <Ban size={16} /> 
+      <button type="button" onClick={handleDisable} aria-label={`Deshabilitar ${product.menuName}`} title="Deshabilitar platillo" disabled={product.isActive === false} className={`${catalogSecondaryAction} disabled:opacity-50`}>
+        <Ban size={16} />
       </button>
     </div>
   );

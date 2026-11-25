@@ -1,4 +1,4 @@
-import { Pencil, Eye, Ban } from "lucide-react";
+import RowActions from "@/shared/components/RowActions";
 import { useNavigate } from "react-router-dom";
 import { 
   showDisableAlert, 
@@ -50,21 +50,11 @@ export default function InventoryRowActions({ product }) {
     }
   };
   return (
-    <div className="flex gap-2">
-      {/* Botón Visualizar (Ojo) */}
-      <button type="button" onClick={handleView} title="Visualizar producto" className="p-1 rounded hover:bg-gray-100 text-blue-600">
-        <Eye size={16} /> 
-      </button>
-      
-      {/* Botón Editar (Lápiz) */}
-      <button type="button" onClick={handleEdit} title="Editar producto" className="p-1 rounded hover:bg-gray-100 text-orange-500">
-        <Pencil size={16} /> 
-      </button>
-
-      {/* Botón Deshabilitar */}
-      <button type="button" onClick={handleDisable} title="Deshabilitar producto" className="p-1 rounded hover:bg-gray-100 text-red-600">
-        <Ban size={16} /> 
-      </button>
-    </div>
+    <RowActions
+      entity="producto"
+      onView={handleView}
+      onEdit={handleEdit}
+      onDisable={handleDisable}
+    />
   );
 }

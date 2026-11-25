@@ -54,6 +54,7 @@
 import { useEffect } from "react";
 import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { readSessionPayload } from "../session";
 import {
   showInactivityWarningAlert,
   showSessionExpiredAlert,
@@ -67,21 +68,12 @@ function hasValidToken() {
     return false;
   }
 
-  try {
-    const payload = JSON.parse(
-      atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))
-    );
-
-    if (payload.exp && payload.exp * 1000 < Date.now()) {
-      sessionStorage.removeItem("token");
-      return false;
-    }
-
-    return true;
-  } catch {
+  const payload = readSessionPayload();
+  if (!payload || (payload.exp && payload.exp * 1000 < Date.now())) {
     sessionStorage.removeItem("token");
     return false;
   }
+  return true;
 }
 
 // Rutas privadas: si no hay sesión, redirige al login

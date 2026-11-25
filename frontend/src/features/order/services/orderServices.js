@@ -15,9 +15,20 @@ export async function createOrder(orderData) {
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.message || error.error || "Error al crear la orden");
+    throw Object.assign(new Error(error.message || error.error || "Error al crear la orden"), { status: response.status });
   }
 
+  return response.json();
+}
+
+export async function getAvailableTables(signal) {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(`${ORDERS_URL}/available-tables`, {
+    headers: { Authorization: `Bearer ${token}` },
+    signal,
+  });
+
+  if (!response.ok) throw new Error("No se pudieron cargar las mesas disponibles.");
   return response.json();
 }
 
