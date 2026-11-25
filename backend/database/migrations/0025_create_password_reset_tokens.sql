@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+    id_token SERIAL PRIMARY KEY,
+    user_email VARCHAR(150) NOT NULL,
+    token VARCHAR(10) NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    used BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

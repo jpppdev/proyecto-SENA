@@ -13,151 +13,201 @@ import {
   Calendars,
 } from "lucide-react";
 
-import { Button } from "@/shared";
-import { users } from "../data/users";
-import { getUserById} from "../services/userServices";
+import { Breadcrumbs, Button } from "@/shared";
+import { getUserById, updateUserStatus, disableUser } from "../services/userServices";
+import { showSuccessAlert, showErrorAlert, showDisableAlert } from "@/shared/services/alertService";
 
 export default function UserViewPage() {
   const { id } = useParams();
+  return <UserDetails key={id} id={id} />;
+}
+
+function UserDetails({ id }) {
 
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let active = true;
     getUserById(id)
       .then((data) => {
+        if (!active) return;
         setUser(data);
         setLoading(false);
       })
       .catch((err) => {
+        if (!active) return;
         console.error("Error al cargar el usuario:", err);
         setLoading(false);
       });
+    return () => { active = false; };
   }, [id]);
 
+  const handleToggleStatus = async () => {
+    if (!user) return;
+    try {
+      const nextStatus = !user.isActive;
+      await updateUserStatus(user.id, nextStatus);
+      setUser((prev) => ({ ...prev, isActive: nextStatus, is_active: nextStatus }));
+      await showSuccessAlert({
+        title: nextStatus ? "Usuario habilitado" : "Usuario deshabilitado",
+        text: `El estado de ${user.userName} cambió a ${nextStatus ? "Activo" : "Inactivo"}.`,
+        timer: 2000,
+      });
+    } catch (err) {
+      await showErrorAlert({
+        title: "Error",
+        text: err.message || "No se pudo cambiar el estado del usuario.",
+      });
+    }
+  };
+
+  const handleDisableUser = async () => {
+    if (!user) return;
+    const confirm = await showDisableAlert({
+      title: "¿Deshabilitar usuario?",
+      text: `¿Deseas deshabilitar a ${user.userName}?`,
+      confirmButtonText: "Sí, deshabilitar",
+    });
+    if (!confirm.isConfirmed) return;
+
+    try {
+      await disableUser(user.id);
+      setUser((prev) => ({ ...prev, isActive: false, is_active: false }));
+      await showSuccessAlert({
+        title: "Usuario deshabilitado",
+        text: `${user.userName} fue deshabilitado correctamente.`,
+        timer: 2000,
+      });
+    } catch (err) {
+      await showErrorAlert({
+        title: "Error",
+        text: err.message || "No se pudo deshabilitar el usuario.",
+      });
+    }
+  };
+
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Cargando datos...</div>;
+    return <div className="min-h-screen flex items-center justify-center bg-background-clear text-text-secondary">Cargando datos...</div>;
   }
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-surface">
-        <p className="text-title font-heading text-text-primary">
+      <div className="min-h-screen flex items-center justify-center bg-background-clear text-text-secondary">
+        <p className="text-title font-title font-heading text-text-primary">
           Usuario no encontrado
         </p>
       </div>
     );
   }
-  
-  return (
-    <div className="min-h-screen bg-[url('/src/assets/images/fondo.png')] bg-cover bg-center p-6">
 
-      <div className="max-w-6xl mx-auto">
+return (
+  <div className="contenedor-1 mx-auto min-h-screen max-w-410 px-4 py-5 font-title text-medium text-text-coffee min-[801px]:px-8 min-[801px]:py-7">
+    <Breadcrumbs items={[{ label: "Inicio", to: "/dashboard/home" }, { label: "Usuarios", to: "/dashboard/userList" }, { label: "Visualizar usuario" }]} />
+    {/* HEADER */}
+    <header className="contenedor-2 mt-5 mb-6 flex flex-col items-start justify-between gap-5 min-[801px]:flex-row min-[801px]:items-center">
 
-        {/* HEADER */}
-        <div className="flex justify-between items-center mb-6">
+      <div className="flex min-w-0 items-center gap-3">
+        <div>
+          <h1 className="text-title leading-tight font-medium-custom tracking-tight text-text-primary min-[501px]:text-[28px] min-[801px]:text-[35px]">
+            Visualizar Usuario
+          </h1>
+          <p className="mt-1 text-medium text-text-coffee">Consulta la información detallada del usuario y su estado en el sistema.</p>
+        </div>
+      </div>
 
-          <div>
-            <div className="flex items-center gap-3">
+      <Link to="/dashboard/userList">
+        <Button className="inline-flex min-h-10 w-full items-center justify-center rounded-[10px] border border-brand px-5 py-2.5 text-medium font-medium-custom text-text-coffee transition-colors hover:bg-border-clear2/60 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand">
+          Volver a la lista
+        </Button>
+      </Link>
 
-              <div>
+    </header>
 
-                <h1 className="text-main font-heading text-text-primary">
-                  Visualizar usuario
-                </h1>
 
-              </div>
+    {/* TARJETA PRINCIPAL */}
+    <section className="
+        contenedor-3
+        bg-background-positive/72
+        border border-solid
+        border-background-clear
+        rounded-xl
+        shadow-[0_4px_18px] shadow-text-coffee/3
+        p-5
+        mb-6">
 
-            </div>
-          </div>
+      {/* contenedor que tiene la primera information, tiene 4 contenedores */}
+      <div className="contenedor-4 grid items-center gap-5 min-[501px]:grid-cols-[auto_minmax(0,1fr)] min-[1151px]:grid-cols-[auto_minmax(0,1.65fr)_minmax(145px,0.7fr)_minmax(170px,1fr)]">
 
-          <Link to="/dashboard/userList">
-            <Button>
-              Volver a la lista
-            </Button>
-          </Link>
+        {/* FOTO */}
+        <div className=" contenedor-5 shrink-0">
 
+          <img
+            src={user.userImage}
+            alt="Foto del usuario"
+            className="size-27.5 rounded-full bg-background-clear object-cover min-[501px]:size-36"
+          />
         </div>
 
 
-        {/* TARJETA PRINCIPAL */}
-        <div className="bg-brand-light rounded-2xl shadow-md p-6 mb-5">
+        {/* INFORMACIÓN */}
+        <div className="contenedor-6 min-w-0">
 
-          <div className="flex flex-col lg:flex-row lg:items-center gap-6">
+          {/* nombre del usuario */}
+          <h2 className="contenedor-6.1 mb-2 text-title leading-tight font-medium-custom tracking-tight text-text-primary wrap-anywhere min-[801px]:text-[29px]">
+            {user.userName}
+          </h2>
 
-            {/* FOTO */}
-            <div className="flex-shrink-0">
-
-              <img
-                src={user.userImage}
-                alt="Foto del usuario"
-                className="w-32 h-32 object-cover rounded-full border-4 border-black"
-              />
-
-            </div>
-
-
-            {/* INFORMACIÓN */}
-            <div className="flex-1">
-
-              <h2 className="text-title font-heading text-text-secondary mb-2">
-                {user.userName}
-              </h2>
-
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand text-text-inverse text-small font-body mb-4">
-
+          {/* contenedor del rol */}
+          <div className="contenedor-6.2 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-border-clear2 text-brand-hover text-small font-normal mb-4">
                 <Shield size={20} />
 
                 {user.isSuperUser
                   ? "Administrador"
                   : "Usuario"}
+          </div>
 
-              </div>
+          <div className="contenedor-6.3 space-y-3 text-medium text-text-secondary wrap-anywhere">
 
-              <div className="space-y-2 text-body text-text-secondary">
-
-                <div className="flex items-center gap-2">
-
-                  <Mail
-                    size={20}
-                    className="text-brand"
+            {/* contenedor del correo electrónico */}
+            <div className="flex items-center gap-2">
+              <Mail
+                  size={20}
+                  className="shrink-0 text-text-brand"
                   />
+                <span>{user.userEmail}</span>
+            </div>
 
-                  <span>{user.userEmail}</span>
-
-                </div>
-
-                <div className="flex items-center gap-2">
-
-                  <Phone
-                    size={20}
-                    className="text-brand"
+            {/* contenedor del numero telefónico */}
+            <div className="flex items-center gap-2">
+              <Phone
+                  size={20}
+                  className="shrink-0 text-text-brand"
                   />
-
-                  <span>{user.userPhone}</span>
-
-                </div>
-
-              </div>
+              <span>{user.userPhone}</span>
 
             </div>
 
+          </div>
+
+        </div>
+
 
             {/* ID */}
-            <div className="lg:border-l lg:pl-8 min-w-[150px] border-border">
+            <div className="self-stretch border-background-clear min-[1151px]:border-l min-[1151px]:pl-6">
 
-              <p className="text-small text-text-secondary mb-2">
+              <p className="text-small text-text-muted mb-2">
                 ID de usuario
               </p>
 
-              <div className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-surface">
+              <div className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-background-clear/75">
 
                 <Hash
                   size={20}
                   className="text-text-secondary"
                 />
 
-                <span className="text-small font-body text-text-secondary">
+                <span className="text-small font-medium-custom text-text-coffee">
                   USR-{String(user.id).padStart(5, "0")}
                 </span>
 
@@ -167,15 +217,15 @@ export default function UserViewPage() {
 
 
             {/* ESTADO */}
-            <div className="lg:border-l lg:pl-8 min-w-[150px] border-border">
+            <div className="self-stretch border-background-clear min-[1151px]:border-l min-[1151px]:pl-6">
 
-              <p className="text-small text-text-secondary mb-2">
+              <p className="text-small text-text-muted mb-2">
                 Estado de la cuenta
               </p>
 
-              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-small font-body bg-brand text-text-inverse">
+              <span className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-medium font-medium-custom ${user.isActive ? "bg-surface-muted/55 text-text-secondary" : "bg-brand-soft/30 text-text-coffee"}`}>
 
-                <span className="w-2 h-2 rounded-full bg-text-inverse"></span>
+                <span className="order-last size-2.5 rounded-full bg-current"></span>
 
                 {user.isActive ? "Activo" : "Inactivo"}
 
@@ -185,27 +235,19 @@ export default function UserViewPage() {
 
           </div>
 
-        </div>
+        </section>
 
 
         {/* PESTAÑAS */}
-        <div className="bg-brand-light rounded-2xl shadow-md mb-5">
+        <div className="my-4 overflow-x-auto rounded-xl border border-background-clear bg-background-positive/68 px-1">
 
           <div className="flex items-center">
 
-            <div className="px-6 py-4 text-text-secondary flex items-center gap-2">
+            <div className="flex shrink-0 items-center gap-2 whitespace-nowrap border-b-3 border-brand px-4 py-3.5 font-medium-custom text-text-brand min-[801px]:gap-4 min-[801px]:px-6">
 
               <User size={20} />
 
               Información General
-
-            </div>
-
-            <div className="px-6 py-4 text-text-secondary flex items-center gap-2">
-
-              <Shield size={20} />
-
-              Roles y Permisos
 
             </div>
 
@@ -215,28 +257,28 @@ export default function UserViewPage() {
 
 
         {/* CONTENIDO */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 gap-4 min-[801px]:grid-cols-[minmax(0,1.86fr)_minmax(280px,1fr)]">
 
           {/* COLUMNA PRINCIPAL */}
-          <div className="lg:col-span-2 space-y-5">
+          <div className="min-w-0 space-y-4">
 
             {/* DATOS PERSONALES */}
-            <div className="bg-brand-light rounded-2xl shadow-md p-6">
+            <div className="rounded-xl border border-background-clear bg-background-positive/72 p-5 shadow-[0_4px_18px] shadow-text-coffee/3">
 
-              <div className="flex items-center gap-3 pb-4 mb-6">
+              <div className="mb-5 flex items-center gap-4">
 
                 <User
                   size={20}
-                  className="text-brand"
+                  className="shrink-0 text-text-brand"
                 />
 
                 <div>
 
-                  <h2 className="font-heading text-title text-text-secondary">
+                  <h2 className="text-body font-medium-custom text-text-primary">
                     Datos personales
                   </h2>
 
-                  <p className="text-body text-text-secondary">
+                  <p className="text-medium text-text-secondary">
                     Información personal del usuario
                   </p>
 
@@ -245,23 +287,23 @@ export default function UserViewPage() {
               </div>
 
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
+              <div className="grid grid-cols-1 gap-x-9 gap-y-6 min-[501px]:grid-cols-2">
 
                 {/* NOMBRE */}
-                <div className="flex gap-3">
+                <div className="flex min-w-0 items-start gap-3 [&>div]:min-w-0">
 
                   <User
-                    className="text-brand mt-1"
+                    className="box-content shrink-0 rounded-full bg-border-clear2/45 p-2 text-text-brand"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-small text-text-secondary">
+                    <p className="text-small text-text-muted">
                       Nombre completo
                     </p>
 
-                    <p className="text-body font-body mt-1 text-text-secondary">
+                    <p className="mt-1 text-medium text-text-secondary wrap-anywhere">
                       {user.userName || "No registrado"}
                     </p>
 
@@ -271,20 +313,20 @@ export default function UserViewPage() {
 
 
                 {/* TIPO DOCUMENTO */}
-                <div className="flex gap-3">
+                <div className="flex min-w-0 items-start gap-3 [&>div]:min-w-0">
 
                   <FileText
-                    className="text-brand mt-1"
+                    className="box-content shrink-0 rounded-full bg-border-clear2/45 p-2 text-text-brand"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-small text-text-secondary">
+                    <p className="text-small text-text-muted">
                       Tipo de documento
                     </p>
 
-                    <p className="text-body font-body mt-1 text-text-secondary">
+                    <p className="mt-1 text-medium text-text-secondary wrap-anywhere">
                       {user.userDocumentType || "No registrado"}
                     </p>
 
@@ -294,20 +336,20 @@ export default function UserViewPage() {
 
 
                 {/* DOCUMENTO */}
-                <div className="flex gap-3">
+                <div className="flex min-w-0 items-start gap-3 [&>div]:min-w-0">
 
                   <FileText
-                    className="text-brand mt-1"
+                    className="box-content shrink-0 rounded-full bg-border-clear2/45 p-2 text-text-brand"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-small text-text-secondary">
+                    <p className="text-small text-text-muted">
                       Documento de identidad
                     </p>
 
-                    <p className="text-body font-body mt-1 text-text-secondary">
+                    <p className="mt-1 text-medium text-text-secondary wrap-anywhere">
                       {user.userDocumentNumber || "No registrado"}
                     </p>
 
@@ -317,20 +359,20 @@ export default function UserViewPage() {
 
 
                 {/* CORREO */}
-                <div className="flex gap-3">
+                <div className="flex min-w-0 items-start gap-3 [&>div]:min-w-0">
 
                   <Mail
-                    className="text-brand mt-1"
+                    className="box-content shrink-0 rounded-full bg-border-clear2/45 p-2 text-text-brand"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-small text-text-secondary">
+                    <p className="text-small text-text-muted">
                       Correo electrónico
                     </p>
 
-                    <p className="text-body font-body mt-1 break-all text-text-secondary">
+                    <p className="mt-1 text-medium text-text-secondary wrap-anywhere">
                       {user.userEmail || "No registrado"}
                     </p>
 
@@ -340,20 +382,20 @@ export default function UserViewPage() {
 
 
                 {/* CONFIRMACIÓN CORREO */}
-                <div className="flex gap-3">
+                <div className="flex min-w-0 items-start gap-3 [&>div]:min-w-0">
 
                   <Mail
-                    className="text-brand mt-1"
+                    className="box-content shrink-0 rounded-full bg-border-clear2/45 p-2 text-text-brand"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-small text-text-secondary">
+                    <p className="text-small text-text-muted">
                       Confirmación correo electrónico
                     </p>
 
-                    <p className="text-body font-body mt-1 break-all text-text-secondary">
+                    <p className="mt-1 text-medium text-text-secondary wrap-anywhere">
                       {user.confirmEmail || "No registrado"}
                     </p>
 
@@ -363,20 +405,20 @@ export default function UserViewPage() {
 
 
                 {/* TELÉFONO */}
-                <div className="flex gap-3">
+                <div className="flex min-w-0 items-start gap-3 [&>div]:min-w-0">
 
                   <Phone
-                    className="text-brand mt-1"
+                    className="box-content shrink-0 rounded-full bg-border-clear2/45 p-2 text-text-brand"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-small text-text-secondary">
+                    <p className="text-small text-text-muted">
                       Teléfono
                     </p>
 
-                    <p className="text-body font-body mt-1 text-text-secondary">
+                    <p className="mt-1 text-medium text-text-secondary wrap-anywhere">
                       {user.userPhone || "No registrado"}
                     </p>
 
@@ -386,20 +428,20 @@ export default function UserViewPage() {
 
 
                 {/* SEGUNDO TELÉFONO */}
-                <div className="flex gap-3">
+                <div className="flex min-w-0 items-start gap-3 [&>div]:min-w-0">
 
                   <Phone
-                    className="text-brand mt-1"
+                    className="box-content shrink-0 rounded-full bg-border-clear2/45 p-2 text-text-brand"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-small text-text-secondary">
+                    <p className="text-small text-text-muted">
                       Segundo teléfono
                     </p>
 
-                    <p className="text-body font-body mt-1 text-text-secondary">
+                    <p className="mt-1 text-medium text-text-secondary wrap-anywhere">
                       {user.secondUserPhone || "No registrado"}
                     </p>
 
@@ -413,22 +455,22 @@ export default function UserViewPage() {
 
 
             {/* DATOS DE LA EMPRESA */}
-            <div className="bg-brand-light rounded-2xl shadow-md p-6">
+            <div className="rounded-xl border border-background-clear bg-background-positive/72 p-5 shadow-[0_4px_18px] shadow-text-coffee/3">
 
-              <div className="flex items-center gap-3 pb-4 mb-6">
+              <div className="mb-5 flex items-center gap-4">
 
                 <Shield
                   size={20}
-                  className="text-brand"
+                  className="shrink-0 text-text-brand"
                 />
 
                 <div>
 
-                  <h2 className="font-heading text-title text-text-secondary">
+                  <h2 className="text-body font-medium-custom text-text-primary">
                     Datos de la empresa
                   </h2>
 
-                  <p className="text-body text-text-secondary">
+                  <p className="text-medium text-text-secondary">
                     Información laboral del usuario
                   </p>
 
@@ -437,23 +479,23 @@ export default function UserViewPage() {
               </div>
 
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
+              <div className="grid grid-cols-1 gap-x-5 gap-y-4 min-[501px]:grid-cols-2">
 
                 {/* CORREO EMPRESARIAL */}
-                <div className="flex gap-3">
+                <div className="flex min-w-0 items-start gap-3 [&>div]:min-w-0">
 
                   <Mail
-                    className="text-brand mt-1"
+                    className="shrink-0 text-text-brand"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-small text-text-secondary">
+                    <p className="text-small text-text-muted">
                       Correo electrónico empresarial
                     </p>
 
-                    <p className="text-body font-body mt-1 break-all text-text-secondary">
+                    <p className="mt-1 text-medium text-text-secondary wrap-anywhere">
                       {user.businessEmail || "No registrado"}
                     </p>
 
@@ -463,20 +505,20 @@ export default function UserViewPage() {
 
 
                 {/* CONFIRMACIÓN CORREO EMPRESARIAL */}
-                <div className="flex gap-3">
+                <div className="flex min-w-0 items-start gap-3 [&>div]:min-w-0">
 
                   <Mail
-                    className="text-brand mt-1"
+                    className="shrink-0 text-text-brand"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-small text-text-secondary">
+                    <p className="text-small text-text-muted">
                       Confirmación correo electrónico empresarial
                     </p>
 
-                    <p className="text-body font-body mt-1 break-all text-text-secondary">
+                    <p className="mt-1 text-medium text-text-secondary wrap-anywhere">
                       {user.confirmBusinessEmail || "No registrado"}
                     </p>
 
@@ -486,20 +528,20 @@ export default function UserViewPage() {
 
 
                 {/* FECHA INICIO LABORAL */}
-                <div className="flex gap-3">
+                <div className="flex min-w-0 items-start gap-3 [&>div]:min-w-0">
 
                   <Calendars
-                    className="text-brand mt-1"
+                    className="shrink-0 text-text-brand"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-small text-text-secondary">
+                    <p className="text-small text-text-muted">
                       Fecha inicio laboral
                     </p>
 
-                    <p className="text-body font-body mt-1 text-text-secondary">
+                    <p className="mt-1 text-medium text-text-secondary wrap-anywhere">
                       {user.workStartDate || "No registrado"}
                     </p>
 
@@ -509,20 +551,20 @@ export default function UserViewPage() {
 
 
                 {/* FECHA FIN LABORAL */}
-                <div className="flex gap-3">
+                <div className="flex min-w-0 items-start gap-3 [&>div]:min-w-0">
 
                   <Calendars
-                    className="text-brand mt-1"
+                    className="shrink-0 text-text-brand"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-small text-text-secondary">
+                    <p className="text-small text-text-muted">
                       Fecha fin laboral
                     </p>
 
-                    <p className="text-body font-body mt-1 text-text-secondary">
+                    <p className="mt-1 text-medium text-text-secondary wrap-anywhere">
                       {user.workEndDate || "No registrado"}
                     </p>
 
@@ -532,20 +574,20 @@ export default function UserViewPage() {
 
 
                 {/* ESTADO */}
-                <div className="flex gap-3">
+                <div className="flex min-w-0 items-start gap-3 [&>div]:min-w-0">
 
                   <ToggleRight
-                    className="text-brand mt-1"
+                    className="shrink-0 text-text-brand"
                     size={20}
                   />
 
                   <div>
 
-                    <p className="text-small text-text-secondary">
+                    <p className="text-small text-text-muted">
                       Estado
                     </p>
 
-                    <p className="text-body font-body mt-1 text-text-secondary">
+                    <p className="mt-1 text-medium text-text-secondary wrap-anywhere">
                       {user.isActive ? "Activo" : "Inactivo"}
                     </p>
 
@@ -561,20 +603,20 @@ export default function UserViewPage() {
 
 
           {/* COLUMNA DERECHA */}
-          <div className="space-y-5">
+          <div className="min-w-0 space-y-4">
 
             {/* ROL */}
-            <div className="bg-brand-light rounded-2xl shadow-md p-6">
+            <div className="rounded-xl border border-background-clear bg-background-positive/72 p-5 shadow-[0_4px_18px] shadow-text-coffee/3">
 
               <div className="flex items-center gap-3 mb-5">
 
-                <h2 className="font-heading text-title text-text-secondary">
+                <h2 className="text-body font-medium-custom text-text-primary">
                   Rol asignado
                 </h2>
 
               </div>
 
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand text-text-inverse font-body text-small">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-border-clear2 text-brand-hover font-normal text-small">
 
                 <Shield size={20} />
 
@@ -588,13 +630,13 @@ export default function UserViewPage() {
 
 
             {/* ACCIONES */}
-            <div className="bg-brand-light rounded-2xl shadow-md px-8 p-4">
+            <div className="rounded-xl border border-background-clear bg-background-positive/72 p-5 shadow-[0_4px_18px] shadow-text-coffee/3">
 
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-2.5">
 
                 <Link to={`/dashboard/users/${user.id}/edit`}>
-                  <Button>
-                    <span className="flex items-center justify-center gap-2">
+                  <Button className="flex min-h-10 w-full items-center rounded-lg border border-background-clear bg-border-clear2/30 px-4 py-2.5 text-left text-medium text-text-coffee transition-colors hover:bg-border-clear2/70 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand">
+                    <span className="flex w-full items-center gap-4 [&>svg]:shrink-0 [&>svg]:text-text-brand">
 
                       <Edit size={20} />
 
@@ -605,7 +647,7 @@ export default function UserViewPage() {
                 </Link>
 
 
-                <Button>
+                <Button onClick={handleToggleStatus}>
                   <span className="flex items-center justify-center gap-2">
 
                     <ToggleRight size={20} />
@@ -616,12 +658,12 @@ export default function UserViewPage() {
                 </Button>
 
 
-                <Button>
+                <Button onClick={handleDisableUser}>
                   <span className="flex items-center justify-center gap-2">
 
                     <Ban size={20} />
 
-                    Desactivar usuario
+                    Deshabilitar usuario
 
                   </span>
                 </Button>
@@ -636,7 +678,7 @@ export default function UserViewPage() {
 
       </div>
 
-    </div>
+
   );
 }
 

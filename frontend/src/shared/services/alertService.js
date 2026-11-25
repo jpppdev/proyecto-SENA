@@ -48,10 +48,10 @@ export function showErrorAlert({
     buttonsStyling: false,
   });
 }
-export function showDeleteAlert({
+export function showDisableAlert({
   title = "¿Estás seguro?",
-  text = "Esta acción no se puede deshacer",
-  confirmButtonText = "Sí, eliminar",
+  text = "El registro quedará deshabilitado en el sistema",
+  confirmButtonText = "Sí, deshabilitar",
   cancelButtonText = "Cancelar",
 } = {}) {
   return Swal.fire({
@@ -72,9 +72,9 @@ export function showDeleteAlert({
   });
 }
 
-export function showCancelDeleteAlert({
-  title = "Eliminación cancelada",
-  text = "La eliminación del usuario fue cancelada.",
+export function showCancelDisableAlert({
+  title = "Deshabilitación cancelada",
+  text = "La deshabilitación fue cancelada.",
   confirmButtonText = "Aceptar",
   timer = 2000,
 } = {}) {
@@ -97,9 +97,9 @@ export function showCancelDeleteAlert({
   });
 }
 
-export function showConfirmDeleteAlert({
-  title = "Usuario eliminado",
-  text = "El usuario fue eliminado correctamente.",
+export function showConfirmDisableAlert({
+  title = "Registro deshabilitado",
+  text = "El registro fue deshabilitado correctamente.",
   confirmButtonText = "Aceptar",
   timer = 2000,
 } = {}) {
@@ -121,6 +121,64 @@ export function showConfirmDeleteAlert({
     buttonsStyling: false,
   });
 }
+
+export function showInactivityWarningAlert({
+  title = "Sesión a punto de expirar",
+  text = "Llevas tiempo inactivo. Tu sesión se cerrará automáticamente si no respondes.",
+  confirmButtonText = "Mantener sesión",
+  cancelButtonText = "Cerrar sesión",
+  timer = 60000,
+} = {}) {
+  return Swal.fire({
+    icon: "warning",
+    title,
+    text,
+    timer,
+    timerProgressBar: true,
+    showCancelButton: true,
+    confirmButtonText,
+    cancelButtonText,
+    reverseButtons: true,
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    customClass: {
+      popup: "rounded-2xl",
+      title: "text-amber-600 font-bold",
+      confirmButton:
+        "bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg ml-2 transition-colors",
+      cancelButton:
+        "bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium px-4 py-2 rounded-lg transition-colors",
+    },
+    buttonsStyling: false,
+  });
+}
+
+export function showSessionExpiredAlert({
+  title = "Sesión cerrada por inactividad",
+  text = "Por seguridad, tu sesión ha finalizado. Inicia sesión nuevamente.",
+  confirmButtonText = "Aceptar",
+  timer = 3000,
+} = {}) {
+  return Swal.fire({
+    icon: "info",
+    title,
+    text,
+    confirmButtonText,
+    timer,
+    timerProgressBar: true,
+    customClass: {
+      popup: "rounded-2xl",
+      title: "text-red-600 font-bold",
+      confirmButton:
+        "bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-lg transition-colors",
+    },
+    buttonsStyling: false,
+  });
+}
+
+export const showDeleteAlert = showDisableAlert;
+export const showCancelDeleteAlert = showCancelDisableAlert;
+export const showConfirmDeleteAlert = showConfirmDisableAlert;
 export function showCancelAlert({
   title = "Cancelado",
   text = "",

@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { Input, Button } from "@/shared";
 import restaurante from "../../../assets/images/Img-Restaurante.jpeg";
 import newPassword from "../../../assets/images/NewPassword.png";
-import title from "../../../assets/images/Img-Titulo.png";
+import title from "../../../assets/images/1-logo.png";
 import { newPasswordSchema } from "../schemas/NewPasswordSchema";
-import { showSuccessAlert } from "@/shared/services/alertService";
+import { resetPassword } from "../schemas/authService";
+import { showSuccessAlert, showCancelAlert } from "@/shared/services/alertService";
 
 function NewPassword() {
   const navigate = useNavigate();
@@ -13,8 +14,9 @@ function NewPassword() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const formData = {
@@ -30,30 +32,64 @@ function NewPassword() {
     }
 
     setErrors({});
+    setIsSubmitting(true);
 
-    showSuccessAlert({
-      title: "Contraseña cambiada",
-      text: "Tu contraseña fue cambiada con éxito.",
-      timer: 3000,
-    });
+    try {
+      const email = sessionStorage.getItem("resetEmail") || "";
+      const token = sessionStorage.getItem("resetToken") || "";
 
-    navigate("/login");
+      if (!token) {
+        await showCancelAlert({
+          title: "Token no encontrado",
+          text: "Por favor solicita y verifica nuevamente tu código de recuperación.",
+          timer: 2500,
+        });
+        navigate("/forgotPassword");
+        return;
+      }
+
+      const response = await resetPassword({
+        email,
+        token,
+        password: result.data.password,
+      });
+
+      sessionStorage.removeItem("resetEmail");
+      sessionStorage.removeItem("resetToken");
+
+      await showSuccessAlert({
+        title: "Contraseña cambiada",
+        text: response.message || "Tu contraseña fue cambiada con éxito.",
+        timer: 2500,
+      });
+
+      navigate("/login");
+    } catch (error) {
+      console.error("Error al restablecer contraseña:", error.message);
+      await showCancelAlert({
+        title: "Error al cambiar contraseña",
+        text: error.message || "No se pudo actualizar la contraseña.",
+        timer: 2500,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
-
+      
       {/* Fondo */}
       <div
         className="absolute inset-0 bg-cover bg-center blur-md scale-110"
         style={{ backgroundImage: `url(${restaurante})` }}
       ></div>
 
-      {/* Tarjeta */}
+      {/* Tarjeta con ALTO y ANCHO FIJOS intactos */}
       <div className="relative z-10 w-[1000px] h-[600px] bg-background-div rounded-4xl shadow-2xl flex overflow-hidden">
-
+        
         {/* Imagen */}
-        <div className="w-1/2 flex items-center justify-center">
+        <div className="w-1/2 h-full">
           <img
             src={newPassword}
             alt="Restaurante"
@@ -64,44 +100,45 @@ function NewPassword() {
         {/* Formulario */}
         <form
           onSubmit={handleSubmit}
-          className="w-1/2 flex flex-col justify-center items-center px-14"
+          className="w-1/2 h-full flex items-center justify-center p-6"
         >
-
-          <img
-            src={title}
-            alt="Title"
-            className="w-48 mx-auto mb-6"
-          />
-
-          <h1 className="text-main font-heading text-text-negative text-center mb-6">
-            Renovar contraseña
-          </h1>
-
-          <p className="text-body text-text-secondary text-center mb-8">
-            Ingresa y confirma tu nueva contraseña para
-            completar el proceso de recuperación.
-          </p>
-
-          <div className="w-1/2 flex flex-col justify-center items-center">
-            <Input
-              htmlFor="password"
-              name="password"
-              variant="tertiary"
-              type="password"
-              label="Nueva contraseña"
-              placeholder="Ingresa tu nueva contraseña"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setErrors({
-                  ...errors,
-                  password: undefined,
-                });
-              }}
-              error={errors.password}
+          {/* Contenedor Maestro w-80: Iguala el ancho de todos los elementos */}
+          <div className="w-80 flex flex-col justify-center">
+            
+            <img
+              src={title}
+              alt="Title"
+              className="w-48 mx-auto mb-4"
             />
 
-            <div className="mt-4">
+            <h1 className="text-main font-heading text-text-negative text-center mb-3">
+              Renovar Contraseña
+            </h1>
+
+            <p className="text-body text-text-secondary text-center mb-5">
+              Ingresa y confirma tu nueva contraseña para
+              completar el proceso de recuperación.
+            </p>
+
+            {/* Contenedor de Inputs con un gap moderado para que quepa el error */}
+            <div className="flex flex-col gap-4 mb-6">
+              <Input
+                htmlFor="password"
+                name="password"
+                variant="tertiary"
+                type="password"
+                label="Nueva contraseña"
+                placeholder="Ingresa tu nueva contraseña"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (errors.password) {
+                    setErrors({ ...errors, password: undefined });
+                  }
+                }}
+                error={errors.password}
+              />
+
               <Input
                 htmlFor="confirmPassword"
                 name="confirmPassword"
@@ -112,37 +149,34 @@ function NewPassword() {
                 value={confirmPassword}
                 onChange={(e) => {
                   setConfirmPassword(e.target.value);
-                  setErrors({
-                    ...errors,
-                    confirmPassword: undefined,
-                  });
+                  if (errors.confirmPassword) {
+                    setErrors({ ...errors, confirmPassword: undefined });
+                  }
                 }}
                 error={errors.confirmPassword}
               />
             </div>
-          </div>
 
-          <div className="w-full mt-8 flex justify-center">
-            <Button
-              variant="primary"
-              type="submit"
-              size="md"
-            >
-              Renovar contraseña
-            </Button>
-          </div>
+            <div className="flex justify-center mb-5">
+              <Button
+                variant="primary"
+                type="submit"
+                size="md"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Guardando..." : "Renovar contraseña"}
+              </Button>
+            </div>
 
-          <div className="text-center mt-6">
             <p
-              className="text-medium font-medium-custom cursor-pointer text-brand"
+              className="text-center text-medium font-medium-custom cursor-pointer text-brand hover:underline"
               onClick={() => navigate("/login")}
             >
               Volver al inicio de sesión
             </p>
+
           </div>
-
         </form>
-
       </div>
     </section>
   );

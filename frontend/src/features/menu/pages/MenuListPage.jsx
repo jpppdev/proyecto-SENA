@@ -3,14 +3,22 @@ import { Link } from "react-router-dom";
 import { Button, DataTable } from "@/shared";
 import { MenuColumns } from "../table/MenuColumns";
 import { getMenu } from "../services/menuServices";
+import MenuReportConfigModal from "@/features/menu/reports/components/MenuReportConfigModal";
 
 export default function MenuListPage() {
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [menuData, setMenuData] = useState([]);
 
-  useEffect(() => {
+  const loadMenu = () => {
     getMenu()
       .then((data) => setMenuData(data))
       .catch((error) => console.error("Error cargando menu:", error));
+  };
+
+  useEffect(() => {
+    loadMenu();
+    window.addEventListener("menu:updated", loadMenu);
+    return () => window.removeEventListener("menu:updated", loadMenu);
   }, []);
 
   return (
@@ -21,15 +29,26 @@ export default function MenuListPage() {
       </h1>
       
       <div className="flex justify-end items-center gap-4 pb-10">
+        {/* botón de reportar menú */}
+        <Button onClick={() => setIsReportModalOpen(true)}>
+          Reportar menú
+        </Button>
         
         {/* botón de crear platillo */}
-        <Link to="/dashboard/menuCreate" className="text-h1 font-heading">
+        <Link to="/dashboard/menuCreate" className="text-h1 font-title font-heading">
           <Button>Agregar al menú</Button>
         </Link>
 
       </div>
 
       <DataTable data={menuData} columns={MenuColumns} />
+
+      <MenuReportConfigModal
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        module="menu"
+        data={menuData}
+      />
 
     </div>
   );

@@ -1,3 +1,7 @@
+CREATE TABLE IF NOT EXISTS roles (
+    id_rol SERIAL PRIMARY KEY,
+    nombre_rol VARCHAR(50) NOT NULL UNIQUE
+);
 CREATE TABLE IF NOT EXISTS usuarios (
     id_usuario SERIAL PRIMARY KEY,
     id_rol INT NOT NULL,

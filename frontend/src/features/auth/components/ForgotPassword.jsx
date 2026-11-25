@@ -3,15 +3,17 @@ import { useNavigate } from "react-router-dom";
 import { Input, Button } from "@/shared";
 import restaurante from "../../../assets/images/Img-Restaurante.jpeg";
 import savePassword from "../../../assets/images/SavePassword.png";
-import title from "../../../assets/images/Img-Titulo.png";
+import title from "../../../assets/images/1-logo.png";
 import { forgotPasswordSchema } from "../schemas/ForgotPasswordSchema";
-import { showSuccessAlert } from "@/shared/services/alertService";
+import { requestPasswordReset } from "../schemas/authService";
+import { showSuccessAlert, showCancelAlert } from "@/shared/services/alertService";
 
 function ForgotPassword() {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     setEmail(e.target.value);
@@ -22,7 +24,7 @@ function ForgotPassword() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const result = forgotPasswordSchema.safeParse({
@@ -35,14 +37,30 @@ function ForgotPassword() {
     }
 
     setErrors({});
+    setIsSubmitting(true);
 
-    showSuccessAlert({
-      title: "Codigo Enviado",
-      text: "Enviamos un código a tu correo.",
-      timer: 3000,
-    });
+    try {
+      const response = await requestPasswordReset(result.data.email);
 
-    navigate("/resetPasswordToken");
+      sessionStorage.setItem("resetEmail", response.email || result.data.email);
+
+      await showSuccessAlert({
+        title: "Código Enviado",
+        text: response.message || "Enviamos un código de 4 dígitos a tu correo.",
+        timer: 2500,
+      });
+
+      navigate("/resetPasswordToken");
+    } catch (error) {
+      console.error("Error en recuperación de contraseña:", error.message);
+      await showCancelAlert({
+        title: "Error al enviar el código",
+        text: error.message || "No se pudo enviar el código de recuperación.",
+        timer: 2500,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -77,8 +95,9 @@ function ForgotPassword() {
             className="w-48 mx-auto mb-6"
           />
 
+
           <h1 className="text-main font-heading text-text-negative text-center mb-6">
-            Recuperar contraseña
+            Recuperar Contraseña
           </h1>
 
           <p className="text-body text-text-secondary text-center mb-8">
@@ -103,8 +122,9 @@ function ForgotPassword() {
               variant="primary"
               type="submit"
               size="md"
+              disabled={isSubmitting}
             >
-              Recuperar contraseña
+              {isSubmitting ? "Enviando código..." : "Recuperar contraseña"}
             </Button>
           </div>
 

@@ -23,7 +23,7 @@ export default function Select({
         name={name}
         className="w-full h-12 rounded-md border border-border px-4"
       >
-        <option value="">Seleccione una opcion</option>
+        <option value="">Seleccione una opción</option>
 
         {options.map((option) => {
           const optionValue = option.value ?? option.id;

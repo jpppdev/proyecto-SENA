@@ -1,43 +1,46 @@
 :root {
     /* Primary Color: Base #9F3E19 */
---color-primary-950: #9F3E19;
---color-primary-900: #A34623;
---color-primary-800: #AD5A3A;
---color-primary-700: #B76D51;
---color-primary-600: #C18068;
---color-primary-500: #CB947F;
---color-primary-400: #D4A694;
---color-primary-300: #DEB9AB;
---color-primary-200: #E8CCC2;
---color-primary-100: #F3E2DB;
---color-primary-50:  #FCF3F0;
+--color-primary-950: #3e130e;
+--color-primary-900: #6d2b11;
+--color-primary-800: #75330e;
+--color-primary-700: #9F3E19;
+--color-primary-600: #A34623;
+--color-primary-500: #AD5A3A;
+--color-primary-400: #B76D51;
+--color-primary-300: #C18068;
+--color-primary-200: #CB947F;
+--color-primary-100: #D4A694;
+--color-primary-50:  #DEB9AB;
 
     
     /* Secondary Color: Base #DC6D15 */
---color-secondary-950: #B3550E;
---color-secondary-900: #DC6D15;
---color-secondary-800: #DD7623;
---color-secondary-700: #E1873D;
---color-secondary-600: #E39856;
---color-secondary-500: #E6A96F;
---color-secondary-400: #E9BA88;
---color-secondary-300: #EDC9A0;
---color-secondary-200: #F0D9B9;
---color-secondary-100: #F4E4D0;
---color-secondary-50:  #FAEEE4;
+--color-secondary-950: #B25600;
+--color-secondary-900: #B3550E;
+--color-secondary-800: #ff690e;
+--color-secondary-700: #f56b08;
+--color-secondary-600: #DC6D15;
+--color-secondary-500: #DD7623;
+--color-secondary-400: #E1873D;
+--color-secondary-300: #E39856;
+--color-secondary-200: #E6A96F;
+--color-secondary-100: #EDC9A0;
+--color-secondary-50:  #F0D9B9;
+
 
     /* Tertiary Color: Base #fbe8d6 (200) */
     --color-tertiary-950: #BFAA92;
-    --color-tertiary-900: #E8D6C3;
-    --color-tertiary-800: #D8C0A5;
-    --color-tertiary-700: #b35d3d;
-    --color-tertiary-600: #d27856;
+    --color-tertiary-900: #D8C0A5;
+    --color-tertiary-800: #E8D6C3;
+    --color-tertiary-700: #FFEDCE;
+    --color-tertiary-600: #eee5dc;
     --color-tertiary-500: #e09575;
     --color-tertiary-400: #ebb496;
     --color-tertiary-300: #f4d1b8;
     --color-tertiary-200: #fbe8d6;
     --color-tertiary-100: #fdfaf6;
     --color-tertiary-50: #fffdfb;
+    --color-tertiary-50: #FFEDCE;
+    
     
     /* Basic color */
     --white: #fdfcfc;
@@ -58,15 +61,16 @@
 
     
     --main-font: Helvetica, Arial, sans-serif;
-    --font-heading: Helvetica, Arial, sans-serif;
+    --font-family-title: Helvetica, Arial, sans-serif;
     --secondary-font: Calibri, Helvetica, Arial;
 
 
-    /* Font weigths crudos */
+    /* Font weights crudos */
     --font-weight-light: 300;
     --font-weight-regular: 400;
-    --font-weight-medium-custom: 700;
-    --font-weight-bold: 900;
+    --weight-medium-custom: 700;
+    --font-weight-bold: 1000;
+
 
     /* Font-size */
 
@@ -74,7 +78,7 @@
     --fs-xxxl: 4rem;/*super grande*/
     --fs-xxl: 3rem;/*extra grande*/
     --fs-xl: 2.5rem;/*muy grande*/
-    --fs-lg: 2rem;/*h1*/
+    --fs-lg: 2.5rem;/*h1*/
     --fs-md:1.5rem;/*titulo*/
     --fs-sm:1.25rem;/*subtitulo*/
     --fs-xs:1rem;/*base*/

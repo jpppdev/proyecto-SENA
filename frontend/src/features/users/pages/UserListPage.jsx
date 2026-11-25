@@ -1,49 +1,116 @@
-﻿// src/users/pagesUserListPage.js
+// src/users/pagesUserListPage.js
 
 import { useState, useEffect } from "react";
-import { DataTable, Button } from "@/shared";
+import { FileDown, Users } from "lucide-react";
+import { DataTable, Breadcrumbs, Button } from "@/shared";
 import { UserColumns } from "../table/UserColumns";
 import { getUsers } from "../services/userServices";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ReportConfigModal from "../reports/components/ReportConfigModal";
 
+const breadcrumbs = [
+  { label: "Inicio", to: "/dashboard/home" },
+  { label: "Usuarios" },
+];
+
 export default function UserListPage() {
+  const navigate = useNavigate();
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [usersData, setUsersData] = useState([]);
-  
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [retryCount, setRetryCount] = useState(0);
+
   useEffect(() => {
-    getUsers()
-      .then((data) => setUsersData(data))
-      .catch((error) => console.error("Error cargando usuarios:", error));
-  }, []);
+    let active = true;
+    let latestRequest = 0;
+
+    const loadUsers = async () => {
+      const request = ++latestRequest;
+      try {
+        const data = await getUsers();
+        if (!active || request !== latestRequest) return;
+        setUsersData(data);
+        setError("");
+      } catch {
+        if (!active || request !== latestRequest) return;
+        setError("No se pudo cargar el listado de usuarios.");
+      } finally {
+        if (active && request === latestRequest) setIsLoading(false);
+      }
+    };
+
+    loadUsers();
+    window.addEventListener("users:updated", loadUsers);
+    return () => {
+      active = false;
+      window.removeEventListener("users:updated", loadUsers);
+    };
+  }, [retryCount]);
+
+  const retryLoading = () => {
+    setError("");
+    setIsLoading(true);
+    setRetryCount((count) => count + 1);
+  };
 
   return (
-    <div className="p-6">
+    <div className="contenedor-1 min-w-0 p-4 sm:p-6">
       
-      <h1 className="text-[color:var(--color-text-primary)] text-[length:var(--text-main)] font-semibold mb-4  ">Listado de Usuarios</h1>
-      {/* color de texto,  */}
+      <header className="contenedor-2 mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div className="contenedor-3 flex min-w-0 items-center gap-4">
+          
+          <div className="contenedor-4 min-w-0"> 
+            <h1 className=" contenedor-5
+              text-text-primary
+              text-main
+              font-title font-heading">
+              {/* Aplica un interlineado
+                Aplica un grosor
+                Aplica un espaciado entre letras
+              */} 
+              Listado de Usuarios</h1>
+            <p className="contenedor-6 mt-1 text-medium text-text-secondary sm:text-body">Consulta, gestiona y administra los usuarios del sistema.</p>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-4">
+          {/* botón de reportar usuario */}
+          <Button variant="tertiary" onClick={() => setIsReportModalOpen(true)}>
+            <FileDown className="mr-2 size-5 shrink-0" aria-hidden="true" />
+            Reportar usuario
+          </Button>
+          {/* Botón para crear usuario */}
+          <Button onClick={() => navigate("/dashboard/userCreate")}>
+            Crear usuario
+          </Button>
+        </div>
+      </header>
       
-      <div className="flex justify-end items-center gap-4 pb-10">
+      
+      
+      
 
-
-        {/* botón de reportar usuario */}
-        <Button onClick={() => setIsReportModalOpen(true)}>
-          Reportar usuario
-        </Button>
-
-
-        {/* botón de reportar crear usuario */}
-        <Link to="/dashboard/userCreate" className="text-h1 font-heading">
-          <Button>Crear usuario</Button>
-        </Link>
-
-      </div>
-
-      <DataTable data={usersData} columns={UserColumns} />
+      <section aria-label="Listado de usuarios" aria-busy={isLoading}>
+        {isLoading ? (
+          <p role="status" className="py-6 text-text-secondary">Cargando usuarios…</p>
+        ) : error ? (
+          <div className="space-y-3 py-6">
+            <p role="alert" className="text-error">{error}</p>
+            <Button onClick={retryLoading}>Reintentar</Button>
+          </div>
+        ) : usersData.length === 0 ? (
+          <p role="status" className="py-6 text-text-secondary">No hay usuarios registrados.</p>
+        ) : (
+          <DataTable data={usersData} columns={UserColumns} />
+        )}
+      </section>
 
       <ReportConfigModal
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
+        data={usersData}
       />
 
     </div>

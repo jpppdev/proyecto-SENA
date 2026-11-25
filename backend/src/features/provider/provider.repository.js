@@ -63,8 +63,14 @@ export const providerRepository = {
         const query = `
           SELECT 
             id_supplier AS id,
-            '' AS "documentType",
-            COALESCE(contact_name, 'N/A') AS "documentNumber",
+            CASE 
+              WHEN POSITION(' ' IN COALESCE(contact_name, '')) > 0 THEN SPLIT_PART(contact_name, ' ', 1)
+              ELSE 'NIT'
+            END AS "documentType",
+            CASE 
+              WHEN POSITION(' ' IN COALESCE(contact_name, '')) > 0 THEN SUBSTRING(contact_name FROM POSITION(' ' IN contact_name) + 1)
+              ELSE COALESCE(contact_name, '00000')
+            END AS "documentNumber",
             supplier_name AS "providerName",
             supplier_email AS email,
             supplier_phone AS phone,
@@ -82,8 +88,14 @@ export const providerRepository = {
         const query = `
           SELECT 
             id_supplier AS id,
-            '' AS "documentType",
-            COALESCE(contact_name, 'N/A') AS "documentNumber",
+            CASE 
+              WHEN POSITION(' ' IN COALESCE(contact_name, '')) > 0 THEN SPLIT_PART(contact_name, ' ', 1)
+              ELSE 'NIT'
+            END AS "documentType",
+            CASE 
+              WHEN POSITION(' ' IN COALESCE(contact_name, '')) > 0 THEN SUBSTRING(contact_name FROM POSITION(' ' IN contact_name) + 1)
+              ELSE COALESCE(contact_name, '00000')
+            END AS "documentNumber",
             supplier_name AS "providerName",
             supplier_email AS email,
             supplier_phone AS phone,
@@ -94,6 +106,63 @@ export const providerRepository = {
           WHERE id_supplier = $1;
         `;
         const result = await pool.query(query, [id]);
+        return result.rows[0];
+    },
+
+    async update(id, providerData) {
+        const {
+            providerName,
+            documentType,
+            documentNumber,
+            email,
+            phone,
+            address,
+            isActive = true,
+        } = providerData;
+
+        const activeBool = isActive === "true" ? true : isActive === "false" ? false : Boolean(isActive);
+
+        const query = `
+          UPDATE suppliers SET
+            supplier_name = $1,
+            contact_name = $2,
+            supplier_email = $3,
+            supplier_phone = $4,
+            supplier_address = $5,
+            is_active = $6
+          WHERE id_supplier = $7
+          RETURNING id_supplier AS id;
+        `;
+
+        const values = [
+            providerName,
+            documentType && documentNumber ? `${documentType} ${documentNumber}` : documentNumber || null,
+            email,
+            phone,
+            address || null,
+            activeBool,
+            id,
+        ];
+
+        const result = await pool.query(query, values);
+        return result.rows[0];
+    },
+
+    async updateStatus(id, isActive) {
+        const query =
+            typeof isActive === "boolean"
+                ? `UPDATE suppliers SET is_active = $1 WHERE id_supplier = $2 RETURNING id_supplier AS id, is_active AS "isActive";`
+                : `UPDATE suppliers SET is_active = NOT is_active WHERE id_supplier = $1 RETURNING id_supplier AS id, is_active AS "isActive";`;
+        const values = typeof isActive === "boolean" ? [isActive, id] : [id];
+        const result = await pool.query(query, values);
+        return result.rows[0];
+    },
+
+    async disable(id) {
+        const result = await pool.query(
+            `UPDATE suppliers SET is_active = FALSE WHERE id_supplier = $1 RETURNING id_supplier AS id, is_active AS "isActive";`,
+            [id]
+        );
         return result.rows[0];
     }
 };

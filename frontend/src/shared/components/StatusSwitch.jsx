@@ -1,39 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 // Iconos usados dentro de switch
 import { Check, X } from "lucide-react";
 
 // componente reutilizable para representar un switch de estado (activo/inactivo)
 export default function StatusSwitch({
-    checked = false, // Valor inicial del switch
+    checked,         // Estado controlado, cuando se proporciona
     onChange,        // callback que se ejecuta cuando cambia de estado
     disabled = false, // permite deshabilitar la interacción
     size = "md"      // tamaño del switch (sm, md, lg)
 }) {
 
-    // estado interno del componente
-    const [isActive, setIsActive] = useState(checked);
+    const [uncontrolledActive, setUncontrolledActive] = useState(false);
+    const isActive = checked ?? uncontrolledActive;
 
-    // estado que sincroniza el estado interno con el valor recibido desde el componente padre
-    useEffect(() => {
-        setIsActive(checked);
-    }, [checked]);
-    
-    // Función que maneja el cambio del switch
     const handleToggle = () => {
-        // si el switch esta deshabilitado no permite interacción
-        if (disabled) return;
-
-        // calcula el nuevo estado (invierte el valor actual)
-        const newValue = !isActive;
-
-        // Actualiza el estado interno
-        setIsActive(newValue);
-
-        // si existe un callback onChange, se ejecuta enviando el nuevo valor
-        if (onChange) {
-            onChange(newValue);
-        }
+        const nextValue = !isActive;
+        if (checked === undefined) setUncontrolledActive(nextValue);
+        onChange?.(nextValue);
     };
 
     // Clases del tamaño del contenedor del switch
@@ -53,6 +37,9 @@ export default function StatusSwitch({
     return (
         // Botón que funciona como switch
         <button
+            type="button"
+            role="switch"
+            aria-checked={isActive}
             onClick={handleToggle}
             disabled={disabled}
             className={`

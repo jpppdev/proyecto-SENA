@@ -304,11 +304,9 @@ const handleCancel = async () => {
           {/* FOOTER */}
           <div className="flex justify-end mt-12 border-t-2 border-[var(--color-border-strong)] pt-8">
             <Button 
-              type="submit" 
-              variant="create"
-              size="md"
+              type="submit"
+              variant="primary"
               disabled={isSubmitting}
-             
             >
               {isSubmitting ? "GUARDANDO..." : "GUARDAR USUARIO"}
             </Button>

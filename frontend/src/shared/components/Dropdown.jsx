@@ -1,13 +1,14 @@
 import {
   createContext,
   useContext,
+  useCallback,
   useEffect,
   useRef,
   useState,
   cloneElement
 } from "react"
 
-export const DropdownContext = createContext(null) //EL PAPÁ
+const DropdownContext = createContext(null) //EL PAPÁ
 
 export function Dropdown({
   children,
@@ -23,13 +24,13 @@ export function Dropdown({
     const open = isControlled ? controlledOpen : uncontrolledOpen
 
     // Si no se pone el onchange en el controlado se queda ahi. nunca cambia porq ue nadie escucha el evento 
- const setOpen = (value) => {
+  const setOpen = useCallback((value) => {
     if (isControlled) {
       onOpenChange?.(value)  // Le avisa al papa
     } else {
       setUncontrolledOpen(value) // Lo cambia el mismo
     }
-  }
+  }, [isControlled, onOpenChange])
 
   
 
@@ -45,7 +46,7 @@ export function Dropdown({
 
     document.addEventListener("mousedown", handleClickOutside) //mousedown escucha todos los clicks
     return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [])
+  }, [setOpen])
 
 
 
@@ -57,7 +58,7 @@ export function Dropdown({
 
     document.addEventListener("keydown", handleEscape)
     return () => document.removeEventListener("keydown", handleEscape)
-  }, [])
+  }, [setOpen])
 
 
   return (
@@ -123,27 +124,31 @@ export function DropdownContent({ children, className = "" }) {
 export function DropdownItem({
   children,
   onClick,
-  className = ""
+  className = "",
+  asChild = false,
 }) {
-  const { setOpen } = useContext(DropdownContext)
+  const { setOpen } = useContext(DropdownContext);
+  const itemClassName = `block w-full rounded-lg px-3 py-2 text-left transition-colors hover:bg-gray-500 focus:bg-gray-100 ${className}`;
 
-  const handleClick = (e) => {
-    onClick?.(e)
-    setOpen(false) // Se cierra solo al darle click
+  const handleClick = (event) => {
+    onClick?.(event);
+    setOpen(false);
+  };
+
+  if (asChild) {
+    return cloneElement(children, {
+      role: "menuitem",
+      className: `${itemClassName} ${children.props.className ?? ""}`,
+      onClick: (event) => {
+        children.props.onClick?.(event);
+        handleClick(event);
+      },
+    });
   }
 
   return (
-    <button
-      role="menuitem"
-      onClick={handleClick}
-      className={`
-        w-full text-left px-3 py-2 rounded-lg
-        hover:bg-gray-500 focus:bg-gray-100
-        transition-colors
-        ${className}
-      `}
-    >
+    <button type="button" role="menuitem" onClick={handleClick} className={itemClassName}>
       {children}
     </button>
-  )
+  );
 }

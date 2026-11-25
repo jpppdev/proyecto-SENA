@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS order_details (
     unit_price DECIMAL(10, 2) NOT NULL, 
     subtotal DECIMAL(10, 2) NOT NULL,
     special_instructions TEXT,
+    notes TEXT,
     
     
     CONSTRAINT fk_detail_order FOREIGN KEY (id_order) REFERENCES orders(id_order) ON DELETE CASCADE,

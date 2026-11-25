@@ -5,16 +5,22 @@ import { DataTable, Button } from "@/shared";
 import { InventoryColumns } from "../table/InventoryColumns";
 import { getInventory } from "../services/inventoryServices";
 import { Link } from "react-router-dom";
-import ReportConfigModal from "@/features/users/reports/components/ReportConfigModal";
+import InventoryReportConfigModal from "@/features/inventory/reports/components/InventoryReportConfigModal";
 
 export default function InventoryListPage() {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false)
   const [inventoryData, setInventoryData] = useState([]);
 
-  useEffect(() => {
+  const loadInventory = () => {
     getInventory()
       .then((data) => setInventoryData(data))
       .catch((error) => console.error("Error cargando inventario:", error));
+  };
+
+  useEffect(() => {
+    loadInventory();
+    window.addEventListener("inventory:updated", loadInventory);
+    return () => window.removeEventListener("inventory:updated", loadInventory);
   }, []);
 
   return (
@@ -32,7 +38,7 @@ export default function InventoryListPage() {
 
 
         {/* botón de reportar crear usuario */}
-        <Link to="/dashboard/inventoryCreate" className="text-h1 font-heading">
+        <Link to="/dashboard/inventoryCreate" className="text-h1 font-title font-heading">
           <Button>Crear producto</Button>
         </Link>
 
@@ -40,9 +46,11 @@ export default function InventoryListPage() {
 
       <DataTable data={inventoryData} columns={InventoryColumns} />
 
-      <ReportConfigModal
+      <InventoryReportConfigModal
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
+        module="inventory"
+        data={inventoryData}
       />
 
     </div>

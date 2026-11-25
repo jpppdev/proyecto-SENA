@@ -3,7 +3,8 @@
 @import "tailwindcss";
 
 @theme{
-    /* ==================BRAND========= */
+
+/* ==================BRAND========= */
 
     /* color principal de todo el proyecto */
     --color-brand: var(--semantic-brand);
@@ -13,31 +14,61 @@
     --color-brand-light: var(--semantic-brand-light);
 
 
-    /* ==========BACKGROUND======= */
+/* =========================BACKGROUND==================================== */
+
+    /* fondo blanco */
+    --color-background-positive: var(--semantic-background-positive);
+
+    /* fondo claro color piel */
+    --color-background-clear: var(--semantic-background-clear);
+
     --color-background-input: var(--semantic-background-div);
     --color-background-div: var(--semantic-background-div);
     --color-surface: var(--semantic-surface);
     --color-surface-muted: var(--semantic-surface-muted);
     --color-background-inverse: var(--semantic-background-inverse);
 
-    /* ============TEXT========== */
+
+
+/*=============================TEXT================================ */
+
     --color-text-primary: var(--semantic-text-primary);
+
+    /* texto gris */
     --color-text-secondary: var(--semantic-text-secondary);
+
+    /* texto positivo: color blanco */
+    --color-text-success: var(--semantic-text-success);
+
+    /* texto oscuro: cafe */
+    --color-text-coffee: var(--semantic-text-coffee);
+
     --color-text-muted: var(--semantic-text-muted);
+
+
     --color-text-inverse: var(--semantic-text-inverse);
-    /* Color para titulos negativo */
+
+    /* Color para títulos negativo */
     --color-text-negative: var(--semantic-text-negative);
     /* Color naranja para textos */
-    --color-text-brand: var(--semantic-text-brand)
+    --color-text-brand: var(--semantic-text-brand);
 
-    /* =============BORDER===================*/
+
+
+/* ==================BORDER======================================*/
+/* =================================================================*/
+
+    /* borde piel muy claro */
+    --color-border-clear2: var(--semantic-border-clear2);
 
     /* borde para los inputs search */
     --color-border: var(--semantic-border);
 
+    /* color del borde oscuro (naranja oscuro) para el hover de los input  */
+    --color-border-hover: var(--semantic-border-hover);
+
     /* borde para los inputs claros */
     --color-border-clear: var(--semantic-border-clear);
-
 
     --color-border-strong: var(--semantic-border-strong);
     
@@ -54,6 +85,8 @@
     /* ==================TYPOGRAPHY=============== */
 
     --text-display: var(--semantic-font-size-display);
+    --font-title: var(--font-family-title);
+
 
     /* títulos */
     --text-main: var(--semantic-font-size-h1);
@@ -67,11 +100,13 @@
 
 
     /* =================FONT WEIGHT================== */
-    --font-heading: var(--semantic-font-weight-heading);
+    --font-weight-heading: var(--semantic-font-weight-heading);
     --font-body: var(--semantic-font-weight-body);
     --font-label: var(--semantic-font-weight-label);
     --font-weight-medium-custom: var(--semantic-font-weight-medium);
 }
+
+
 
     @layer base {
         input[type="search"]::-webkit-search-decoration,

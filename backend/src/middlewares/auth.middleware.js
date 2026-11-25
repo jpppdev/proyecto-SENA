@@ -1,0 +1,28 @@
+    // backend/src/middlewares/auth.middleware.js
+    import jwt from "jsonwebtoken";
+
+    const DEFAULT_JWT_SECRET = "ee8TMRCy2AqKoWblBOFgK824RZ9MMUh1lcyvgi4pR6g";
+
+    export const authenticateToken = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader) {
+        return res.status(401).json({ message: "Token requerido" });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    if (!token) {
+        return res.status(401).json({ message: "Token inválido" });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || DEFAULT_JWT_SECRET);
+
+        req.user = decoded;
+
+        next();
+    } catch {
+        return res.status(401).json({ message: "Token inválido o expirado" });
+    }
+    };

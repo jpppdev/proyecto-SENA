@@ -9,33 +9,38 @@ const { Pool } = pkg;
 
 // Importamos detonv para poder leer variables de entorno desde un archivo.env
 import dotenv from "dotenv";
+import { fileURLToPath } from "url";
+import path from "path";
 
 //Cargamos las variables de entorno desde el archivo .env
 
 // Esto debe ejecutarse antes de acceder a process.env
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 // Creamos y exportamos una instancia unica del Pool de PostgreSQL
 // Esta instancia se reutiliza en toda la aplicacion
 export const pool = new Pool({
     // Host donde se encuentra PostgreSQL (ej: locarlhost o IP del servidor)
-    host: process.env.DB_HOST,
+    host: process.env.DB_HOST || "localhost",
 
 
     // PUerta de PostgreSQL (por defecto 5432)
-    port: process.env.DB_PORT,
+    port: Number(process.env.DB_PORT) || 5432,
 
     // Usuario con permisos sobre la base de datos
-    user: process.env.DB_USER,
+    user: process.env.DB_USER || "postgres",
 
     // Contraseña del usuario
-    password: process.env.DB_PASSWORD,
+    password: process.env.DB_PASSWORD || "123456",
 
     // Nombre de la base de datos a la que nos conectaremos
-    database: process.env.DB_NAME,
+    database: process.env.DB_NAME || "aurum",
 
     // numero máximo de conexiones activas en el pool
     max: 20,
+    connectionTimeoutMillis: 5000,
 
     //Tiempo maximo (en ms) que una conexion puede estar inactiva
     // antes de ser cerrada automaticamente
@@ -59,6 +64,66 @@ pool.on('error', (err) => {
 // Inicializacion automatica de tablas y datos semilla si estan vacias
 async function initDatabaseTables() {
     try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS roles (
+                id_rol SERIAL PRIMARY KEY,
+                nombre_rol VARCHAR(50) NOT NULL UNIQUE
+            );
+
+            INSERT INTO roles (nombre_rol) VALUES
+                ('administrador'),
+                ('mesero'),
+                ('empleado'),
+                ('cajero'),
+                ('usuario')
+            ON CONFLICT (nombre_rol) DO NOTHING;
+
+            CREATE TABLE IF NOT EXISTS usuarios (
+                id_usuario SERIAL PRIMARY KEY,
+                id_rol INT DEFAULT 1 REFERENCES roles(id_rol) ON DELETE RESTRICT,
+                user_name VARCHAR(100) NOT NULL,
+                user_lastname VARCHAR(100) DEFAULT '',
+                user_email VARCHAR(150) UNIQUE NOT NULL,
+                business_email VARCHAR(150) UNIQUE,
+                user_phone VARCHAR(20),
+                user_document_types VARCHAR(20) DEFAULT 'CC',
+                user_document_number VARCHAR(50) UNIQUE,
+                address VARCHAR(255),
+                user_password TEXT NOT NULL,
+                user_avatar_url TEXT,
+                is_staff BOOLEAN DEFAULT FALSE,
+                is_active BOOLEAN DEFAULT TRUE,
+                is_superuser BOOLEAN DEFAULT FALSE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE TABLE IF NOT EXISTS password_reset_tokens (
+                id_token SERIAL PRIMARY KEY,
+                user_email VARCHAR(150) NOT NULL,
+                token VARCHAR(10) NOT NULL,
+                expires_at TIMESTAMP NOT NULL,
+                used BOOLEAN DEFAULT FALSE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        `);
+
+        // Si no existe ningún usuario en la tabla usuarios, creamos un administrador por defecto
+        const { rows: userCount } = await pool.query(`SELECT COUNT(*)::INT AS count FROM usuarios`);
+        if (userCount[0].count === 0) {
+            await pool.query(`
+                INSERT INTO usuarios (
+                    id_rol, user_name, user_lastname, user_email, user_phone,
+                    user_document_types, user_document_number, user_password,
+                    is_staff, is_active, is_superuser
+                ) VALUES (
+                    (SELECT id_rol FROM roles WHERE nombre_rol = 'administrador' LIMIT 1),
+                    'Administrador', 'Aurum', 'admin@aurum.com', '3001234567',
+                    'CC', '1000000001', 'Admin123*',
+                    TRUE, TRUE, TRUE
+                ) ON CONFLICT (user_email) DO NOTHING;
+            `);
+        }
+
         await pool.query(`
             CREATE TABLE IF NOT EXISTS suppliers (
                 id_supplier SERIAL PRIMARY KEY,
