@@ -8,6 +8,7 @@ import { Router } from "express";
 // El router nunca implementa logica,
 // solo delega la ejecucion al controller.
 import { orderController } from "./order.controller.js";
+import { authenticateToken } from "../../middlewares/auth.middleware.js";
 
 // Creamos una instancia del router de Express
 const router = Router();
@@ -23,6 +24,11 @@ router.post(
 router.get(
     "/",
     orderController.getAll
+);
+router.get(
+    "/available-tables",
+    authenticateToken,
+    orderController.getAvailableTables
 );
 router.get(
     "/:id",

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { inventorySchema } from "../schemas/InventorySchema";
 import { createInventory } from "../services/inventoryServices";
 import { Input, Button, Select } from "@/shared";
-import { ArrowLeft, Box, ClipboardList, Store, FileText, Check, Plus, PackagePlus } from "lucide-react";
+import { ArrowLeft, Box, ClipboardList, Store, FileText, Check, Plus } from "lucide-react";
 import { showErrorAlert } from "@/shared/services/alertService";
 
 const CardSection = ({ icon, title, children }) => (
@@ -131,11 +131,11 @@ export default function InventoryCreateForm() {
 
       {/* 
         FORMULARIO: Aquí inyectamos las clases para cambiar mágicamente el color 
-        de tus componentes Input, Select y Textarea a un blanco translúcido suave 
+        de tus componentes Input y Textarea a un blanco translúcido suave
       */}
       <form 
         onSubmit={handleSubmit} 
-        className="space-y-6 [&_input]:!bg-white/60 [&_select]:!bg-white/60 [&_textarea]:!bg-white/60 [&_input]:!text-[var(--color-gray-900)] [&_select]:!text-[var(--color-gray-900)] [&_textarea]:!text-[var(--color-gray-900)] [&_input]:!border-white/50 [&_select]:!border-white/50 [&_textarea]:!border-white/50"
+        className="space-y-6 [&_input]:!bg-white/60 [&_textarea]:!bg-white/60 [&_input]:!text-[var(--color-gray-900)] [&_textarea]:!text-[var(--color-gray-900)] [&_input]:!border-white/50 [&_textarea]:!border-white/50"
       >
         
         {/* GRID DE TARJETAS 2x2 */}
@@ -147,7 +147,7 @@ export default function InventoryCreateForm() {
               <Input variant="primary" size="md" label="Nombre del producto *" htmlFor="productName" name="productName" value={formData.productName} onChange={handleChange} error={errors.productName} placeholder="Ej: Pechuga de pollo" />
             </div>
             <div className="grid grid-cols-2 gap-4 [&>div]:!w-full">
-              <Select label="Categoría *" htmlFor="category" name="category" value={formData.category} onChange={handleChange} error={errors.category} options={categories} />
+              <Select variant="create" label="Categoría *" htmlFor="category" name="category" value={formData.category} onChange={handleChange} error={errors.category} options={categories} />
               <Input variant="primary" size="md" label="Código (SKU)" htmlFor="sku" name="sku" value={formData.sku} onChange={handleChange} error={errors.sku} placeholder="Ej: POL-001" />
             </div>
             <div className="w-full">
@@ -168,7 +168,7 @@ export default function InventoryCreateForm() {
           <CardSection icon={<ClipboardList size={20} />} title="2. Control de inventario">
             <div className="grid grid-cols-2 gap-4 [&>div]:!w-full">
               <Input type="text" variant="primary" size="md" label="Cantidad inicial *" htmlFor="initialQuantity" name="initialQuantity" value={formData.initialQuantity} onChange={handleChange} error={errors.initialQuantity} placeholder="Ej: 25" />
-              <Select label="Unidad de medida *" htmlFor="unit" name="unit" value={formData.unit} onChange={handleChange} error={errors.unit} options={units} />
+              <Select variant="create" label="Unidad de medida *" htmlFor="unit" name="unit" value={formData.unit} onChange={handleChange} error={errors.unit} options={units} />
             </div>
             <div className="[&>div]:!w-full">
               <Input type="text" variant="primary" size="md" label="Stock mínimo *" htmlFor="minStock" name="minStock" value={formData.minStock} onChange={handleChange} error={errors.minStock} placeholder="Ej: 5" />
@@ -196,7 +196,7 @@ export default function InventoryCreateForm() {
           <CardSection icon={<Store size={20} />} title="3. Proveedor">
             <div className="flex flex-col sm:flex-row items-end gap-4 w-full">
               <div className="flex-1 w-full [&>div]:!w-full">
-                <Select label="Proveedor *" htmlFor="provider" name="provider" value={formData.provider} onChange={handleChange} error={errors.provider} options={providers} />
+                <Select variant="create" label="Proveedor *" htmlFor="provider" name="provider" value={formData.provider} onChange={handleChange} error={errors.provider} options={providers} />
               </div>
               <button 
                 type="button"
@@ -241,10 +241,8 @@ export default function InventoryCreateForm() {
           <Button 
             type="submit"
             disabled={isSubmitting} 
-            variant="create"
-            size="md" 
-           >
-            <PackagePlus size={18} />
+            variant="primary"
+          >
             {isSubmitting ? "CREANDO..." : "Crear producto"}
           </Button>
         </div>

@@ -7,6 +7,7 @@ import  ForgotPassword  from "@/features/auth/components/ForgotPassword";
 import  ResetPasswordToken  from "@/features/auth/components/ResetPasswordToken";
 import  NewPassword  from "@/features/auth/components/NewPassword";
 import DishesPage from "@/features/products/pages/DishesPage";
+import TablesPage from "@/features/tables/pages/TablesPage";
 import { InventoryCreateForm, InventoryEditForm } from "../features/inventory";
 import { ProviderRegisterForm } from "../features/provider";
 
@@ -79,6 +80,7 @@ const  router = createBrowserRouter([
             {index: true},
             { path: "home", element: <AdminHomePage />},
             { path: "Dishes", element: <DishesPage />},
+            { path: "tables", element: <TablesPage /> },
             
             // --- USUARIOS ---
             { path: "userList", element: <UserListPage />},

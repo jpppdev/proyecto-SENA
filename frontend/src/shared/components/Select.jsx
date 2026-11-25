@@ -1,4 +1,6 @@
 ﻿// Componente Select reutilizable
+import { useId } from "react";
+
 export default function Select({
   label,
   name,
@@ -7,23 +9,34 @@ export default function Select({
   onChange,
   options = [],
   htmlFor,
+  variant = "primary",
+  placeholder = "Seleccione una opción",
+  disabled = false,
 }) {
+  const fieldId = useId();
+  const isCreate = variant === "create";
+  const id = htmlFor ?? fieldId;
+  const errorId = error ? `${id}-error` : undefined;
+
   return (
-    <div className="w-[320px]">
+    <div className={isCreate ? "form-field-create" : "w-[320px]"}>
       {label && (
-        <label htmlFor={htmlFor} className="block text-caption mb-1 text-text-muted">
+        <label htmlFor={id} className={isCreate ? "form-field-create-label" : "block text-caption mb-0 text-text-muted"}>
           {label}
         </label>
       )}
 
       <select
-        id={htmlFor}
+        id={id}
         value={value}
         onChange={onChange}
         name={name}
-        className="w-full h-12 rounded-md border border-border px-4"
+        disabled={disabled}
+        className={isCreate ? "form-field-create-control" : "w-full h-12 rounded-md border border-border px-4"}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={errorId}
       >
-        <option value="">Seleccione una opción</option>
+        <option value="">{placeholder}</option>
 
         {options.map((option) => {
           const optionValue = option.value ?? option.id;
@@ -36,7 +49,7 @@ export default function Select({
         })}
       </select>
 
-      {error && <p className="text-caption text-red-600 mt-1">{error}</p>}
+      {error && <p id={errorId} className={isCreate ? "mt-1 text-small text-error" : "text-caption text-red-600 mt-1"}>{error}</p>}
     </div>
   );
 }

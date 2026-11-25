@@ -6,7 +6,7 @@ export const MenuColumns = [
     header: "Imagen",
     accessorKey: "menuImage",
     cell: (info) => (
-      <div className="w-12 h-12 rounded-xl overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center shadow-sm">
+      <div className="w-12 h-12 rounded-xl overflow-hidden border border-border-clear2 bg-background-clear flex items-center justify-center shadow-sm">
         <img
           src={info.getValue()}
           alt="Platillo"
@@ -19,18 +19,18 @@ export const MenuColumns = [
   {
     header: "Nombre del Plato",
     accessorKey: "menuName",
-    cell: (info) => <span className="font-semibold text-gray-900">{info.getValue()}</span>,
+    cell: (info) => <span className="font-semibold text-text-primary">{info.getValue()}</span>,
   },
   {
     header: "Categoría",
     accessorKey: "category",
-    cell: (info) => <span className="text-gray-600">{info.getValue()}</span>,
+    cell: (info) => <span className="text-text-secondary">{info.getValue()}</span>,
   },
   {
     header: "Precio",
     accessorKey: "price",
     cell: (info) => (
-      <span className="font-medium text-[var(--color-text-primary)]">
+      <span className="font-medium text-text-primary">
         ${info.getValue().toLocaleString()}
       </span>
     ),

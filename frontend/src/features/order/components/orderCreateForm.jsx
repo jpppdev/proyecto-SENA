@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
   Check, 
@@ -13,11 +13,12 @@ import {
 
 import { Input, Button, Select } from "@/shared";
 import { orderSchema } from "../schema/orderSchema"; 
-import { createOrder } from "../services/orderServices";
+import { createOrder, getAvailableTables } from "../services/orderServices";
+import { getMenu } from "@/features/menu/services/menuServices";
 import { showErrorAlert } from "@/shared/services/alertService";
 
 // =====================================================================
-// 1. CONSTANTES MOCK (Fuera del componente para evitar re-renderizar)
+// 1. OPCIONES DEL FORMULARIO
 // =====================================================================
 const ORDER_TYPES = [
   { label: "Consumo en Mesa", value: "mesa" },
@@ -31,12 +32,7 @@ const PAYMENT_METHODS = [
   { label: "Transferencia (Nequi/Daviplata)", value: "transferencia" }
 ];
 
-const AVAILABLE_PRODUCTS = [
-  { label: "Café Americano - $5.000", value: "p1", price: 5000, name: "Café Americano" },
-  { label: "Capuchino Vainilla - $7.500", value: "p2", price: 7500, name: "Capuchino Vainilla" },
-  { label: "Croissant de Mantequilla - $4.500", value: "p3", price: 4500, name: "Croissant" },
-  { label: "Té Chai Latte - $8.000", value: "p4", price: 8000, name: "Té Chai Latte" }
-];
+const menuPrice = new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", minimumFractionDigits: 0 });
 
 // =====================================================================
 // 2. SUB-COMPONENTES (Fuera del componente principal)
@@ -66,6 +62,12 @@ export default function OrderCreateForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errors, setErrors] = useState({});
+  const [tables, setTables] = useState(null);
+  const [tablesError, setTablesError] = useState("");
+  const [tablesRequest, setTablesRequest] = useState(0);
+  const [menu, setMenu] = useState(null);
+  const [menuError, setMenuError] = useState("");
+  const [menuRequest, setMenuRequest] = useState(0);
 
   // --- Estado del formulario (Cliente y Pago) ---
   const [formData, setFormData] = useState({
@@ -83,32 +85,102 @@ export default function OrderCreateForm() {
 
   // --- Valores Derivados ---
   const totalOrder = orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const needsTable = formData.orderType === "mesa";
+  const selectedProduct = menu?.find(({ id }) => String(id) === currentProduct);
+
+  useEffect(() => {
+    let controller;
+    const loadMenu = async () => {
+      controller?.abort();
+      controller = new AbortController();
+      const { signal } = controller;
+      setMenu(null);
+      setMenuError("");
+
+      try {
+        const catalog = await getMenu(signal);
+        if (signal.aborted) return;
+        const activeItems = catalog.filter(({ isActive }) => isActive);
+        setMenu(activeItems);
+        setCurrentProduct((previous) => activeItems.some(({ id }) => String(id) === previous) ? previous : "");
+      } catch (error) {
+        if (!signal.aborted) setMenuError(error.message);
+      }
+    };
+
+    loadMenu();
+    window.addEventListener("menu:updated", loadMenu);
+    window.addEventListener("focus", loadMenu);
+    return () => {
+      controller?.abort();
+      window.removeEventListener("menu:updated", loadMenu);
+      window.removeEventListener("focus", loadMenu);
+    };
+  }, [menuRequest]);
+
+  useEffect(() => {
+    if (!needsTable) return;
+
+    let controller;
+    const loadTables = async () => {
+      controller?.abort();
+      controller = new AbortController();
+      const { signal } = controller;
+      setTables(null);
+      setTablesError("");
+
+      try {
+        const available = await getAvailableTables(signal);
+        if (signal.aborted) return;
+        setTables(available);
+        setFormData((previous) => {
+          if (!previous.tableNumber || available.some(({ tableNumber }) => String(tableNumber) === previous.tableNumber)) {
+            return previous;
+          }
+          return { ...previous, tableNumber: "" };
+        });
+      } catch (error) {
+        if (!signal.aborted) setTablesError(error.message);
+      }
+    };
+
+    loadTables();
+    window.addEventListener("focus", loadTables);
+    return () => {
+      controller?.abort();
+      window.removeEventListener("focus", loadTables);
+    };
+  }, [needsTable, tablesRequest]);
 
   // =====================================================================
   // HANDLERS
   // =====================================================================
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+      ...(name === "orderType" && value !== "mesa" ? { tableNumber: "" } : {}),
+    }));
+    if (name === "tableNumber" || name === "orderType") {
+      setErrors((previous) => ({ ...previous, tableNumber: undefined }));
+    }
   };
 
   const handleAddItem = () => {
-    if (!currentProduct || !currentQty || parseInt(currentQty) <= 0) return;
-    
-    const productDef = AVAILABLE_PRODUCTS.find(p => p.value === currentProduct);
-    
-    if (productDef) {
-      const newItem = {
-        id: Date.now().toString(), // ID temporal para la key
-        productId: productDef.value,
-        name: productDef.name,
-        price: productDef.price,
-        quantity: parseInt(currentQty)
-      };
-      setOrderItems([...orderItems, newItem]);
-      setCurrentProduct("");
-      setCurrentQty("1");
-    }
+    const quantity = Number(currentQty);
+    if (!selectedProduct || !Number.isSafeInteger(quantity) || quantity <= 0) return;
+
+    const newItem = {
+      id: Date.now().toString(),
+      productId: selectedProduct.id,
+      name: selectedProduct.menuName,
+      price: Number(selectedProduct.price),
+      quantity,
+    };
+    setOrderItems((previous) => [...previous, newItem]);
+    setCurrentProduct("");
+    setCurrentQty("1");
   };
 
   const handleRemoveItem = (idToRemove) => {
@@ -117,6 +189,12 @@ export default function OrderCreateForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting || isSuccess) return;
+
+    if (needsTable && !tables?.some(({ tableNumber }) => String(tableNumber) === formData.tableNumber)) {
+      setErrors((previous) => ({ ...previous, tableNumber: "Selecciona una mesa disponible." }));
+      return;
+    }
     
     // Validar el esquema base con Zod
     const result = orderSchema.safeParse(formData);
@@ -158,11 +236,23 @@ export default function OrderCreateForm() {
       
       const response = await createOrder(finalOrderData);
       console.log("Orden creada:", response);
+      window.dispatchEvent(new CustomEvent("orders:updated"));
 
       // await createOrder(finalOrderData);
       setIsSuccess(true);
       setTimeout(() => navigate(-1), 2500);
     } catch (error) {
+      if (error.status === 409 && needsTable) {
+        setFormData((previous) => ({ ...previous, tableNumber: "" }));
+        setErrors((previous) => ({ ...previous, tableNumber: error.message }));
+        setTablesRequest((request) => request + 1);
+        return;
+      }
+      if (error.status === 422) {
+        setMenuRequest((request) => request + 1);
+        await showErrorAlert({ title: "Revisa los productos de la orden", text: error.message });
+        return;
+      }
       console.error("Error:", error.message);
       alert(error.message);
     } finally {
@@ -212,15 +302,38 @@ export default function OrderCreateForm() {
 
       <form 
         onSubmit={handleSubmit} 
-        className="space-y-6 [&_input]:!bg-white/60 [&_select]:!bg-white/60 [&_textarea]:!bg-white/60 [&_input]:!text-[var(--color-gray-900)] [&_select]:!text-[var(--color-gray-900)] [&_textarea]:!text-[var(--color-gray-900)] [&_input]:!border-white/50 [&_select]:!border-white/50 [&_textarea]:!border-white/50"
+        className="space-y-6 [&_input]:!bg-white/60 [&_textarea]:!bg-white/60 [&_input]:!text-[var(--color-gray-900)] [&_textarea]:!text-[var(--color-gray-900)] [&_input]:!border-white/50 [&_textarea]:!border-white/50"
       >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           
           {/* TARJETA 1: Info del Cliente */}
           <CardSection icon={<User size={20} />} title="1. Datos del Servicio">
             <div className="grid grid-cols-2 gap-4 [&>div]:!w-full">
-              <Select label="Tipo de Servicio *" htmlFor="orderType" name="orderType" value={formData.orderType} onChange={handleChange} error={errors.orderType} options={ORDER_TYPES} />
-              <Input variant="primary" size="md" label="Número de Mesa" htmlFor="tableNumber" name="tableNumber" value={formData.tableNumber} onChange={handleChange} error={errors.tableNumber} placeholder="Ej: 04" disabled={formData.orderType !== 'mesa'} />
+              <Select variant="create" label="Tipo de Servicio *" htmlFor="orderType" name="orderType" value={formData.orderType} onChange={handleChange} error={errors.orderType} options={ORDER_TYPES} />
+              <div className="min-w-0">
+                <Select
+                  variant="create"
+                  label="Número de Mesa"
+                  htmlFor="tableNumber"
+                  name="tableNumber"
+                  value={formData.tableNumber}
+                  onChange={handleChange}
+                  error={needsTable ? errors.tableNumber || tablesError : undefined}
+                  disabled={!needsTable || !tables?.length || isSubmitting}
+                  placeholder={
+                    !needsTable ? "Seleccione el servicio en mesa"
+                      : tablesError ? "Mesas no disponibles"
+                        : !tables ? "Cargando mesas…"
+                          : tables.length ? "Seleccione una mesa" : "No hay mesas disponibles"
+                  }
+                  options={(tables ?? []).map(({ tableNumber }) => ({ value: String(tableNumber), label: `Mesa ${tableNumber}` }))}
+                />
+                {needsTable && tablesError && (
+                  <Button size="sm" variant="tertiary" onClick={() => setTablesRequest((request) => request + 1)}>
+                    Reintentar
+                  </Button>
+                )}
+              </div>
             </div>
             <div className="[&>div]:!w-full">
               <Input variant="primary" size="md" label="Nombre del Cliente (Opcional)" htmlFor="customerName" name="customerName" value={formData.customerName} onChange={handleChange} error={errors.customerName} placeholder="Para llamar el pedido" />
@@ -230,8 +343,24 @@ export default function OrderCreateForm() {
           {/* TARJETA 2: Selección de Productos */}
           <CardSection icon={<Coffee size={20} />} title="2. Agregar Productos">
             <div className="flex flex-col sm:flex-row items-end gap-4 w-full">
-              <div className="flex-1 w-full [&>div]:!w-full">
-                <Select label="Seleccionar Producto" htmlFor="currentProduct" name="currentProduct" value={currentProduct} onChange={(e) => setCurrentProduct(e.target.value)} options={AVAILABLE_PRODUCTS} />
+              <div className="min-w-0 flex-1 w-full">
+                <Select
+                  variant="create"
+                  label="Seleccionar Producto"
+                  htmlFor="currentProduct"
+                  name="currentProduct"
+                  value={currentProduct}
+                  onChange={(event) => setCurrentProduct(event.target.value)}
+                  disabled={!menu?.length || isSubmitting}
+                  error={menuError}
+                  placeholder={menuError ? "Menú no disponible" : !menu ? "Cargando menú…" : menu.length ? "Seleccione un producto" : "No hay productos activos"}
+                  options={(menu ?? []).map(({ id, menuName, price }) => ({ value: String(id), label: `${menuName} · ${menuPrice.format(price)}` }))}
+                />
+                {menuError && (
+                  <Button size="sm" variant="tertiary" onClick={() => setMenuRequest((request) => request + 1)}>
+                    Reintentar
+                  </Button>
+                )}
               </div>
               <div className="w-24 [&>div]:!w-full">
                 <Input type="text" variant="primary" size="md" label="Cant." htmlFor="currentQty" name="currentQty" value={currentQty} onChange={(e) => setCurrentQty(e.target.value.replace(/\D/g, ''))} />
@@ -239,6 +368,7 @@ export default function OrderCreateForm() {
               <button 
                 type="button"
                 onClick={handleAddItem}
+                disabled={!selectedProduct || Number(currentQty) <= 0 || isSubmitting}
                 className="h-12 px-5 rounded-xl border-2 border-[var(--color-secondary-500)] text-[var(--color-secondary-600)] bg-white/50 font-bold text-sm flex items-center justify-center gap-2 hover:bg-[var(--color-secondary-500)] hover:text-white transition-all shadow-sm"
               >
                 <Plus size={16} /> Agregar
@@ -249,7 +379,7 @@ export default function OrderCreateForm() {
           {/* TARJETA 3: Pago y Notas */}
           <CardSection icon={<CreditCard size={20} />} title="3. Pago y Notas">
             <div className="[&>div]:!w-full">
-              <Select label="Método de Pago *" htmlFor="paymentMethod" name="paymentMethod" value={formData.paymentMethod} onChange={handleChange} error={errors.paymentMethod} options={PAYMENT_METHODS} />
+              <Select variant="create" label="Método de Pago *" htmlFor="paymentMethod" name="paymentMethod" value={formData.paymentMethod} onChange={handleChange} error={errors.paymentMethod} options={PAYMENT_METHODS} />
             </div>
             <div className="w-full">
               <label className="block text-[var(--text-caption)] font-bold text-[var(--color-text-secondary)] mb-1 uppercase">Observaciones del Pedido</label>
@@ -304,7 +434,7 @@ export default function OrderCreateForm() {
           <Button type="button" onClick={() => navigate(-1)} variant="secondary" size="md" className="rounded-xl border-[var(--color-border-strong)] text-[var(--color-text-primary)] hover:bg-white/40 transition-all">
             Cancelar
           </Button>
-          <Button type="submit" variant="primary" disabled={isSubmitting}>
+          <Button type="submit" variant="primary" disabled={isSubmitting || isSuccess || (needsTable && !tables?.length)}>
             {isSubmitting ? "PROCESANDO..." : "Confirmar Orden"}
           </Button>
         </div>

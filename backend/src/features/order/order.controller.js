@@ -8,6 +8,14 @@ import { orderService } from "./order.service.js";
 // (create, update, delete, getById, etc.)
 
 export const orderController = {
+    async getAvailableTables(req, res) {
+        try {
+            res.json(await orderService.getAvailableTables());
+        } catch (error) {
+            console.error("Error al consultar mesas disponibles:", error);
+            res.status(500).json({ message: "No se pudieron consultar las mesas disponibles." });
+        }
+    },
 
     // Metodo encargado de manejar la creacion de una orden.
     // Se asume que este metodo sera usado como handler de una ruta Express.
@@ -33,6 +41,9 @@ export const orderController = {
             });
 
         } catch (err) {
+            if (err.status === 400 || err.status === 409 || err.status === 422) {
+                return res.status(err.status).json({ message: err.message });
+            }
 
             // Capturamos cualquier error lanzado por el service o capas inferiores
             // Se registra el error completo para depuracion en backend

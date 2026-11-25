@@ -23,13 +23,14 @@ export async function createMenu(menuData) {
 
 export const createMenuItem = createMenu;
 
-export async function getMenus() {
+export async function getMenus(signal) {
   const token = sessionStorage.getItem("token");
   const response = await fetch(MENU_URL, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
     },
+    signal,
   });
 
   if (!response.ok) {

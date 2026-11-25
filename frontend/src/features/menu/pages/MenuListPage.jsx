@@ -1,11 +1,14 @@
+import ListPageHeader from "@/shared/components/ListPageHeader";
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { FileDown } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button, DataTable } from "@/shared";
 import { MenuColumns } from "../table/MenuColumns";
 import { getMenu } from "../services/menuServices";
 import MenuReportConfigModal from "@/features/menu/reports/components/MenuReportConfigModal";
 
 export default function MenuListPage() {
+  const navigate = useNavigate();
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [menuData, setMenuData] = useState([]);
 
@@ -22,24 +25,19 @@ export default function MenuListPage() {
   }, []);
 
   return (
-    <div className="p-6">
-      
-      <h1 className="text-[length:var(--text-main)] font-semibold mb-4 text-[color:var(--color-text-primary)]">
-        Listado del Menú
-      </h1>
-      
-      <div className="flex justify-end items-center gap-4 pb-10">
-        {/* botón de reportar menú */}
-        <Button onClick={() => setIsReportModalOpen(true)}>
+    <div className="min-w-0 p-4 sm:p-6">
+      <ListPageHeader
+        title="Listado del Menú"
+        description="Consulta y administra los platillos del menú."
+      >
+        <Button variant="tertiary" onClick={() => setIsReportModalOpen(true)}>
+          <FileDown className="mr-2 size-5 shrink-0" aria-hidden="true" />
           Reportar menú
         </Button>
-        
-        {/* botón de crear platillo */}
-        <Link to="/dashboard/menuCreate" className="text-h1 font-title font-heading">
-          <Button>Agregar al menú</Button>
-        </Link>
-
-      </div>
+        <Button onClick={() => navigate("/dashboard/menuCreate")}>
+          Agregar al menú
+        </Button>
+      </ListPageHeader>
 
       <DataTable data={menuData} columns={MenuColumns} />
 

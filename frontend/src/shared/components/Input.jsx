@@ -83,7 +83,7 @@ export default function Input({
                 className={`
                     block   
                     text-caption
-                    mb-1
+                    mb-0
                     text-secondary
                     ${
                         size === "sm"

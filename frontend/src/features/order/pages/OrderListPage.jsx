@@ -1,12 +1,15 @@
+import ListPageHeader from "@/shared/components/ListPageHeader";
 import { useState, useEffect } from "react";
+import { FileDown } from "lucide-react";
 import { DataTable, Button } from "@/shared";
 import { OrderColumns } from "../table/OrderColumns";
 import { getOrders } from "../services/orderServices";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 // CORRECCIÓN 2: Importamos el modal desde el módulo de usuarios donde ya existe
 import  OrderReportConfigModal  from "@/features/order/reports/components/OrderReportConfigModal";
 
 export default function OrderListPage() {
+  const navigate = useNavigate();
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [ordersData, setOrdersData] = useState([]);
 
@@ -23,20 +26,19 @@ export default function OrderListPage() {
   }, []);
 
   return (
-    <div className="p-6">
-      <h1 className="text-[length:var(--text-main)] font-semibold mb-4 text-[color:var(--color-text-primary)]">
-        Listado de Órdenes
-      </h1>
-
-      <div className="flex justify-end items-center gap-4 pb-10">
-        <Button onClick={() => setIsReportModalOpen(true)}>
+    <div className="min-w-0 p-4 sm:p-6">
+      <ListPageHeader
+        title="Listado de Órdenes"
+        description="Consulta y gestiona las órdenes registradas."
+      >
+        <Button variant="tertiary" onClick={() => setIsReportModalOpen(true)}>
+          <FileDown className="mr-2 size-5 shrink-0" aria-hidden="true" />
           Reportar orden
         </Button>
-
-        <Link to="/dashboard/orderCreate" className="text-h1 font-title font-heading">
-          <Button>Crear orden</Button>
-        </Link>
-      </div>
+        <Button onClick={() => navigate("/dashboard/orderCreate")}>
+          Crear orden
+        </Button>
+      </ListPageHeader>
 
       <DataTable data={ordersData} columns={OrderColumns} />
 
