@@ -1,8 +1,7 @@
 // src/features/users/components/UserRowActions.jsx
 
-import { Pencil, Eye, Ban } from "lucide-react";
+import RowActions from "@/shared/components/RowActions";
 import { useNavigate } from "react-router-dom";
-import { IconButton } from "@/shared/components/IconButton";
 import { 
   showDisableAlert, 
   showCancelDisableAlert, 
@@ -59,37 +58,11 @@ export default function UserRowActions({ user }) {
   };
 
   return (
-    <div className="flex gap-2">
-      <IconButton
-        ariaLabel="Visualizar usuario"
-        variant="action"
-        hitSize={46}
-        iconSize={20}
-        onClick={handleView} 
-        title="Visualizar usuario"
-      >
-        <Eye size={20} />
-      </IconButton>
-      
-      <IconButton
-        ariaLabel="Editar usuario"
-        variant="action"
-        hitSize={46}
-        iconSize={20}
-        onClick={handleEdit} 
-        title="Editar usuario"
-      >
-        <Pencil size={20} />
-      </IconButton>
-
-      <button 
-        type="button"
-        onClick={handleDisable} 
-        className="p-1 rounded hover:bg-gray-100 text-red-600 transition-colors"
-        title="Deshabilitar usuario"
-      >
-        <Ban size={16} /> 
-      </button>
-    </div>
+    <RowActions
+      entity="usuario"
+      onView={handleView}
+      onEdit={handleEdit}
+      onDisable={handleDisable}
+    />
   );
 }

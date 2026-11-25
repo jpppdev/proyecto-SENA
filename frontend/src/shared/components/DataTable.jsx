@@ -85,7 +85,7 @@ return (
   <div className=" ">
     {/* ================== TOOLBAR ================== */}
     {/* Barra superior con buscador y selector de filas */}
-    <div className="contenedor-1 flex items-center justify-between gap-4 mb-5 rounded-[18px] bg-white/88 p-3.75 shadow-[0_12px_32px_rgba(116,59,17,.055)] ">
+    <div className="contenedor-1 flex items-center justify-between gap-4 mb-5 rounded-[18px] bg-background-positive/88 p-3.75 shadow-sm">
       {/* ================== BUSCADOR ================== */}
       {/* Filtra todas las columnas de la tabla */}
       <Input
@@ -104,7 +104,7 @@ return (
           aria-label="Filas por página"
           value={table.getState().pagination.pageSize}
           onChange={(e) => table.setPageSize(Number(e.target.value))}
-          className="h-12 appearance-none pl-6 pr-10 rounded-2xl font-medium transition-all duration-200 border text-text-coffee border-border-button"
+          className="h-12 appearance-none pl-6 pr-10 rounded-2xl font-medium transition-all duration-200 border text-text-coffee border-border-clear2"
         >
           {[5, 7, 10, 20, 50].map(size => (
             <option key={size} value={size}>
@@ -125,10 +125,10 @@ return (
       min-w-0
       overflow-hidden 
       rounded-[19px]
-      border border-t-0 border-[#f0e8df]
-      bg-white/92
+      border border-t-0 border-border-clear2
+      bg-background-positive/92
       pb-1
-      shadow-[0_12px_32px_rgba(116,59,17,.055)]
+      shadow-sm
       w-full
       overflow-x-auto">
       
@@ -195,14 +195,14 @@ return (
             {table.getRowModel().rows.map(row => (
 
 
-              <tr key={row.id} className="bg-white hover:bg-gray-50 [&:last-child>td]:border-b-0">
+              <tr key={row.id} className="bg-background-positive hover:bg-background-clear/30 [&:last-child>td]:border-b-0">
 
 
                 {/* Celdas visibles de cada fila */}
                 {row.getVisibleCells().map(cell => (
 
 
-                  <td key={cell.id} className="p-3 border-b border-border-clear2 text-[#5D2505]">
+                  <td key={cell.id} className="p-3 border-b border-border-clear2 text-text-coffee">
 
 
                     {/* Render dinámico del contenido de la celda */}
@@ -237,20 +237,20 @@ return (
 
         {/* ================== INFORMACIÓN ================== */}
         {/* Cantidad de registros visibles */}
-        <span className="text-sm text-gray-600">
+        <span className="text-medium text-text-secondary">
           Mostrando {table.getRowModel().rows.length} de{" "}
           {table.getFilteredRowModel().rows.length} registros
         </span>
 
 
         {/* ================== CONTROLES DE PAGINACIÓN ================== */}
-        <div className="flex items-center gap-2 p-4">
+        <div className="flex items-center gap-2 p-4 [&>button:disabled]:opacity-50">
 
 
           {/* Ir a la primera página */}
           <Button
             size="sm"
-            variant="secondary"
+            variant="primary"
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
           >
@@ -261,7 +261,7 @@ return (
           {/* Página anterior */}
           <Button
             size="sm"
-            variant="secondary"
+            variant="primary"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
@@ -279,6 +279,7 @@ return (
           {/* Página siguiente */}
           <Button
             size="sm"
+            variant="primary"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
@@ -289,6 +290,7 @@ return (
           {/* Ir a la última página */}
           <Button
             size="sm"
+            variant="primary"
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
             disabled={!table.getCanNextPage()}
           >

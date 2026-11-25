@@ -20,10 +20,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { showErrorAlert, showDeleteAlert } from "@/shared/services/alertService";
 
 import { logout } from "@/features/auth/schemas/logoutService";
+import { readSessionPayload } from "@/features/auth/session";
 
+const navLinkClass = "text-sm font-semibold text-[#713008] transition-colors hover:text-orange-600";
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const userId = Number(readSessionPayload()?.id);
   const [darkMode, setDarkMode] = useState(
     document.documentElement.classList.contains("dark")
   );
@@ -73,8 +76,14 @@ export default function Navbar() {
     <nav aria-label="Navegación superior" className="relative z-50 w-full bg-[linear-gradient(105deg,#f9e8cf_0%,#fff3e6_55%,#ffe3bd_100%)] text-[#713008]">
       <div className="mx-auto max-w-[1600px] px-3 sm:px-6 lg:px-8">
         <div className="flex h-[72px] items-center justify-between gap-2 sm:gap-4">
-          <div className="flex h-16 w-20 shrink-0 items-center justify-center sm:h-[68px] sm:w-32">
-            <img src={logo} alt="Restaurante Aurum" className="h-full w-full object-contain" />
+          <div className="flex h-full w-[104px] shrink-0 items-center overflow-hidden sm:w-44">
+            <img
+              src={logo}
+              alt="Restaurante Aurum"
+              width={1536}
+              height={1024}
+              className="h-[72px] w-auto max-w-none shrink-0 -translate-x-3 translate-y-1 sm:h-[82px]"
+            />
           </div>
 
           {/* Enlaces de navegación */}
@@ -82,7 +91,7 @@ export default function Navbar() {
             <li>
               <Link
                 to="/dashboard/home"
-                className="text-sm font-semibold text-[#713008] transition-colors hover:text-orange-600"
+                className={navLinkClass}
               >
                 Panel
               </Link>
@@ -91,9 +100,15 @@ export default function Navbar() {
             <li>
               <Link
                 to="/dashboard/Dishes"
-                className="text-sm font-semibold text-[#713008] transition-colors hover:text-orange-600"
+                className={navLinkClass}
               >
                 Platillos
+              </Link>
+            </li>
+
+            <li>
+              <Link to="/dashboard/tables" className={navLinkClass}>
+                Mesas
               </Link>
             </li>
 
@@ -101,7 +116,7 @@ export default function Navbar() {
               <Link
                 to="/dashboard"
                 onClick={handleContactClick}
-                className="text-sm font-semibold text-[#713008] transition-colors hover:text-orange-600"
+                className={navLinkClass}
               >
                 Contacto
               </Link>
@@ -152,11 +167,17 @@ export default function Navbar() {
 
               <DropdownContent className="right-0 border-orange-100 bg-[#fff8f1]! text-[#713008]! [&_button:hover]:bg-orange-100">
 
-                <DropdownItem asChild>
-                  <Link to="/dashboard/userList" className="block w-full">
-                    Mi Perfil
-                  </Link>
+                <DropdownItem asChild className="xl:hidden!">
+                  <Link to="/dashboard/tables">Mesas</Link>
                 </DropdownItem>
+
+                {Number.isSafeInteger(userId) && userId > 0 && (
+                  <DropdownItem asChild>
+                    <Link to={`/dashboard/userView/${userId}`} className="block w-full">
+                      Mi Perfil
+                    </Link>
+                  </DropdownItem>
+                )}
 
                 <DropdownItem asChild>
                   <Link to="/dashboard/permissions" className="block w-full">

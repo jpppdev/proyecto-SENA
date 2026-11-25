@@ -160,7 +160,7 @@ export default function MenuCreateForm() {
         </svg>
 
         {/* FORMULARIO */}
-        <form onSubmit={handleSubmit} className="[&_input]:!bg-white/60 [&_select]:!bg-white/60 [&_input]:!text-[var(--color-gray-900)] [&_select]:!text-[var(--color-gray-900)] [&_input]:!border-white/50 [&_select]:!border-white/50">
+        <form onSubmit={handleSubmit} className="[&_input]:!bg-white/60 [&_input]:!text-[var(--color-gray-900)] [&_input]:!border-white/50">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-8 gap-y-6">
             
             {/* Columna 1: INFORMACIÓN PRINCIPAL */}
@@ -170,7 +170,7 @@ export default function MenuCreateForm() {
                 DETALLES
               </h3>
               <Input variant="primary" size="md" label="Nombre del Plato" htmlFor="menuName" name="menuName" value={formData.menuName} onChange={handleChange} error={errors.menuName} placeholder="Ej: Capuchino Vainilla" />
-              <Select label="Categoría" htmlFor="category" name="category" value={formData.category} onChange={handleChange} error={errors.category} options={menuCategories} />
+              <Select variant="create" label="Categoría" htmlFor="category" name="category" value={formData.category} onChange={handleChange} error={errors.category} options={menuCategories} />
               <Input variant="primary" size="md" label="Precio de Venta ($)" htmlFor="price" name="price" value={formData.price} onChange={handleChange} error={errors.price} placeholder="Sin puntos ni comas" />
             </div>
 
@@ -191,7 +191,7 @@ export default function MenuCreateForm() {
                 <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/40 border border-white/60 text-[var(--color-text-primary)] text-base shadow-sm">3</span>
                 PUBLICACIÓN
               </h3>
-              <Select label="Estado en el Menú" htmlFor="isActive" name="isActive" value={formData.isActive} onChange={handleChange} error={errors.isActive} options={[
+              <Select variant="create" label="Estado en el Menú" htmlFor="isActive" name="isActive" value={formData.isActive} onChange={handleChange} error={errors.isActive} options={[
                 { label: "Disponible", value: "true" },
                 { label: "Agotado / Oculto", value: "false" }
               ]} />
@@ -203,10 +203,8 @@ export default function MenuCreateForm() {
           <div className="flex justify-end mt-12 border-t-2 border-[var(--color-border-strong)] pt-8">
             <Button 
               type="submit" 
-              variant="create" 
-              size="md" 
+              variant="primary"
               disabled={isSubmitting} 
-             
             >
               {isSubmitting ? "GUARDANDO..." : "GUARDAR MENÚ"}
             </Button>

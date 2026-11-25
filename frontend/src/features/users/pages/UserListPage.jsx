@@ -1,5 +1,6 @@
 // src/users/pagesUserListPage.js
 
+import ListPageHeader from "@/shared/components/ListPageHeader";
 import { useState, useEffect } from "react";
 import { FileDown, Users } from "lucide-react";
 import { DataTable, Breadcrumbs, Button } from "@/shared";
@@ -56,37 +57,19 @@ export default function UserListPage() {
   };
 
   return (
-    <div className="contenedor-1 min-w-0 p-4 sm:p-6">
-      
-      <header className="contenedor-2 mb-6 flex flex-wrap items-center justify-between gap-4">
-        <div className="contenedor-3 flex min-w-0 items-center gap-4">
-          
-          <div className="contenedor-4 min-w-0"> 
-            <h1 className=" contenedor-5
-              text-text-primary
-              text-main
-              font-title font-heading">
-              {/* Aplica un interlineado
-                Aplica un grosor
-                Aplica un espaciado entre letras
-              */} 
-              Listado de Usuarios</h1>
-            <p className="contenedor-6 mt-1 text-medium text-text-secondary sm:text-body">Consulta, gestiona y administra los usuarios del sistema.</p>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-4">
-          {/* botón de reportar usuario */}
-          <Button variant="tertiary" onClick={() => setIsReportModalOpen(true)}>
-            <FileDown className="mr-2 size-5 shrink-0" aria-hidden="true" />
-            Reportar usuario
-          </Button>
-          {/* Botón para crear usuario */}
-          <Button onClick={() => navigate("/dashboard/userCreate")}>
-            Crear usuario
-          </Button>
-        </div>
-      </header>
+    <div className="min-w-0 p-4 sm:p-6">
+      <ListPageHeader
+        title="Listado de Usuarios"
+        description="Consulta, gestiona y administra los usuarios del sistema."
+      >
+        <Button variant="tertiary" onClick={() => setIsReportModalOpen(true)}>
+          <FileDown className="mr-2 size-5 shrink-0" aria-hidden="true" />
+          Reportar usuario
+        </Button>
+        <Button onClick={() => navigate("/dashboard/userCreate")}>
+          Crear usuario
+        </Button>
+      </ListPageHeader>
       
       
       

@@ -1,4 +1,12 @@
 :root{
+    --semantic-form-field-background: var(--white);
+    --semantic-form-field-border: var(--color-apricot-200);
+    --semantic-form-field-text: var(--color-gray-900);
+    --semantic-form-field-label: var(--color-primary-950);
+    --semantic-form-field-height: var(--size-10);
+    --semantic-form-field-radius: var(--corner-radius-8);
+    --semantic-form-label-font-size: var(--fs-xxxs);
+
     /* ==============================LIGHT THEME================ */
 
     /* ==========BRAND============== */

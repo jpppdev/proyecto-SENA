@@ -216,9 +216,7 @@ export default function MenuEditForm() {
             <Button 
               type="submit" 
               variant="primary" 
-              size="md" 
               disabled={isSubmitting} 
-              className="rounded-full bg-[var(--color-text-primary)] !text-[var(--color-background)] px-10 py-3.5 text-sm font-bold shadow-lg hover:opacity-80 active:scale-95 transition-all !border-none"
             >
               {isSubmitting ? "ACTUALIZANDO..." : "ACTUALIZAR MENÚ"}
             </Button>

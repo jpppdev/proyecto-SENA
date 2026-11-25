@@ -1,13 +1,16 @@
 // src/users/pagesUserListPage.js
 
+import ListPageHeader from "@/shared/components/ListPageHeader";
 import { useState, useEffect } from "react";
+import { FileDown } from "lucide-react";
 import { DataTable, Button } from "@/shared";
 import { InventoryColumns } from "../table/InventoryColumns";
 import { getInventory } from "../services/inventoryServices";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import InventoryReportConfigModal from "@/features/inventory/reports/components/InventoryReportConfigModal";
 
 export default function InventoryListPage() {
+  const navigate = useNavigate();
   const [isReportModalOpen, setIsReportModalOpen] = useState(false)
   const [inventoryData, setInventoryData] = useState([]);
 
@@ -24,25 +27,19 @@ export default function InventoryListPage() {
   }, []);
 
   return (
-    <div className="p-6">
-      
-      <h1 className="text-[length:var(--text-main)] font-semibold mb-4 text-[color:var(--color-text-primary)] ">Listado de Inventario</h1>
-
-      
-      <div className="flex justify-end items-center gap-4 pb-10">
-
-        {/* botón de reportar usuario */}
-        <Button onClick={() => setIsReportModalOpen(true)}>
+    <div className="min-w-0 p-4 sm:p-6">
+      <ListPageHeader
+        title="Listado de Inventario"
+        description="Consulta las existencias y administra los productos del inventario."
+      >
+        <Button variant="tertiary" onClick={() => setIsReportModalOpen(true)}>
+          <FileDown className="mr-2 size-5 shrink-0" aria-hidden="true" />
           Reportar producto
         </Button>
-
-
-        {/* botón de reportar crear usuario */}
-        <Link to="/dashboard/inventoryCreate" className="text-h1 font-title font-heading">
-          <Button>Crear producto</Button>
-        </Link>
-
-      </div>
+        <Button onClick={() => navigate("/dashboard/inventoryCreate")}>
+          Crear producto
+        </Button>
+      </ListPageHeader>
 
       <DataTable data={inventoryData} columns={InventoryColumns} />
 

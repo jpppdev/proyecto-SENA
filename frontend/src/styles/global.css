@@ -2,6 +2,42 @@
 @import url(semantic.css);
 @import "tailwindcss";
 
+@layer components {
+    .form-field-create {
+        @apply w-full min-w-0;
+    }
+
+    .form-field-create-label {
+        @apply mb-1 block font-medium-custom;
+        color: var(--semantic-form-field-label);
+        font-size: var(--semantic-form-label-font-size);
+    }
+
+    .form-field-create-control {
+        @apply w-full border px-4 text-body transition-colors;
+        height: var(--semantic-form-field-height);
+        border-radius: var(--semantic-form-field-radius);
+        border-color: var(--semantic-form-field-border);
+        background-color: var(--semantic-form-field-background);
+        color: var(--semantic-form-field-text);
+        color-scheme: light;
+    }
+
+    .form-field-create-control:focus-visible {
+        outline: 2px solid var(--semantic-focus-ring);
+        outline-offset: 2px;
+    }
+
+    .form-field-create-control[aria-invalid="true"] {
+        border-color: var(--semantic-error);
+    }
+
+    .form-field-create-control:disabled {
+        @apply cursor-not-allowed opacity-60;
+    }
+
+}
+
 @theme{
 
 /* ==================BRAND========= */
