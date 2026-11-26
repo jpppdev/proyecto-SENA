@@ -29,7 +29,7 @@ export default function MenuCreateForm() {
     { label: "Bebidas Calientes", value: "calientes" },
     { label: "Bebidas Frías", value: "frias" },
     { label: "Panadería y Repostería", value: "panaderia" },
-    { label: "Desayunos", value: "desayunos" },
+    { label: "Desayunos", value: "Desayunos" },
     { label: "Snacks", value: "snacks" }
   ];
 
