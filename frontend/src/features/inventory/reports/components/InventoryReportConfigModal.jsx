@@ -272,7 +272,7 @@ export default function InventoryReportConfigModal({
         {/* Botones */}
         <div className="w-full flex items-center justify-end gap-2 pt-2">
           <Button
-            variant="secondary"
+            variant="tertiary"
             type="button"
             size="md"
             onClick={onClose}
