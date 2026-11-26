@@ -21,9 +21,10 @@ export async function createOrder(orderData) {
   return response.json();
 }
 
-export async function getAvailableTables(signal) {
+export async function getAvailableTables(signal, { includeUnavailable = false } = {}) {
   const token = sessionStorage.getItem("token");
-  const response = await fetch(`${ORDERS_URL}/available-tables`, {
+  const query = includeUnavailable ? "?includeUnavailable=true" : "";
+  const response = await fetch(`${ORDERS_URL}/available-tables${query}`, {
     headers: { Authorization: `Bearer ${token}` },
     signal,
   });

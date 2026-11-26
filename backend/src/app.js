@@ -15,6 +15,7 @@ import inventoryRoutes from "./features/inventory/inventory.routes.js";
 import menuRoutes from "./features/menu/menu.routes.js";
 import productRoutes from "./features/products/product.routes.js";
 import permissionRoutes from "./features/permissions/permission.routes.js";
+import tableRoutes from "./features/tables/table.routes.js";
 import { authenticateToken } from "./middlewares/auth.middleware.js";
 
 // Creamos la instancia de la aplicacion Express
@@ -44,6 +45,7 @@ app.use("/api/inventory", inventoryRoutes);
 app.use("/api/menu", menuRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/permissions", authenticateToken, permissionRoutes);
+app.use("/api/tables", authenticateToken, tableRoutes);
 
 // Exportamos la aplicacion configurada
 // EL arranque del servidor se hace en server.js
