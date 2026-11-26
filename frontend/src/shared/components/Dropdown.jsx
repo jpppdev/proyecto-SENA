@@ -128,7 +128,7 @@ export function DropdownItem({
   asChild = false,
 }) {
   const { setOpen } = useContext(DropdownContext);
-  const itemClassName = `block w-full rounded-lg px-3 py-2 text-left transition-colors hover:bg-gray-500 focus:bg-gray-100 ${className}`;
+  const itemClassName = `block w-full rounded-lg px-3 py-2 text-left transition-colors hover:bg-text-muted focus:bg-brand-light ${className}`;
 
   const handleClick = (event) => {
     onClick?.(event);

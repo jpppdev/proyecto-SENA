@@ -10,7 +10,7 @@ import { orderService } from "./order.service.js";
 export const orderController = {
     async getAvailableTables(req, res) {
         try {
-            res.json(await orderService.getAvailableTables());
+            res.json(await orderService.getAvailableTables(req.query.includeUnavailable === "true"));
         } catch (error) {
             console.error("Error al consultar mesas disponibles:", error);
             res.status(500).json({ message: "No se pudieron consultar las mesas disponibles." });

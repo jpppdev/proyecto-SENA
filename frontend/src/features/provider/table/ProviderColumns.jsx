@@ -1,5 +1,6 @@
 // src/features/providers/table/ProviderColumns.jsx
 
+import { StatusBadge } from "@/shared";
 import ProviderRowActions from "../components/ProviderRowActions";
 import { updateProviderStatus } from "../services/providerServices";
 
@@ -41,16 +42,11 @@ export const ProviderColumns = [
         }
       };
       return (
-        <button
-          type="button"
+        <StatusBadge
+          label={isActive ? "ACTIVO" : "INACTIVO"}
+          tone={isActive ? "success" : "danger"}
           onClick={handleToggle}
-          title="Haz clic para cambiar el estado"
-          className={`px-2 py-1 rounded-full text-xs font-semibold cursor-pointer transition-opacity hover:opacity-80 ${
-            isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-          }`}
-        >
-          {isActive ? 'ACTIVO' : 'INACTIVO'}
-        </button>
+        />
       );
     }
   },

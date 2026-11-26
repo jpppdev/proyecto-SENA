@@ -1,64 +1,28 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { 
-  Check, 
-  ShoppingCart, 
-  User, 
-  Coffee, 
-  CreditCard, 
-  Plus, 
-  Trash2, 
-  Receipt 
-} from "lucide-react";
-
+import { ArrowLeft, Check, MessageSquare, Receipt, Utensils } from "lucide-react";
 import { Input, Button, Select } from "@/shared";
-import { orderSchema } from "../schema/orderSchema"; 
+import { createOrderSchema } from "../schema/orderSchema";
 import { createOrder, getAvailableTables } from "../services/orderServices";
+import { MAX_ORDER_QUANTITY } from "../data/orderLimits";
 import { getMenu } from "@/features/menu/services/menuServices";
 import { showErrorAlert } from "@/shared/services/alertService";
+import OrderCatalog from "./OrderCatalog";
+import OrderSection from "./OrderSection";
+import OrderSummary from "./OrderSummary";
+import OrderTablePicker from "./OrderTablePicker";
 
-// =====================================================================
-// 1. OPCIONES DEL FORMULARIO
-// =====================================================================
 const ORDER_TYPES = [
   { label: "Consumo en Mesa", value: "mesa" },
   { label: "Para Llevar", value: "llevar" },
   { label: "Domicilio", value: "domicilio" }
 ];
 
-const PAYMENT_METHODS = [
-  { label: "Efectivo", value: "efectivo" },
-  { label: "Tarjeta de Crédito/Débito", value: "tarjeta" },
-  { label: "Transferencia (Nequi/Daviplata)", value: "transferencia" }
-];
-
 const menuPrice = new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", minimumFractionDigits: 0 });
 
-// =====================================================================
-// 2. SUB-COMPONENTES (Fuera del componente principal)
-// =====================================================================
-const CardSection = ({ icon, title, children }) => (
-  <div className="bg-white/30 backdrop-blur-md rounded-3xl p-6 shadow-sm border border-white/40 flex flex-col gap-5">
-    <div className="flex items-center gap-3 mb-2">
-      <div className="bg-[var(--color-secondary-500)] p-2 rounded-xl text-white shadow-md">
-        {icon}
-      </div>
-      <h3 className="text-[var(--color-text-primary)] font-extrabold text-lg tracking-wide">
-        {title}
-      </h3>
-    </div>
-    {children}
-  </div>
-);
-
-// =====================================================================
-// 3. COMPONENTE PRINCIPAL
-// =====================================================================
 export default function OrderCreateForm() {
-  // --- Navegación ---
   const navigate = useNavigate();
 
-  // --- Estados de UI ---
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errors, setErrors] = useState({});
@@ -69,24 +33,19 @@ export default function OrderCreateForm() {
   const [menuError, setMenuError] = useState("");
   const [menuRequest, setMenuRequest] = useState(0);
 
-  // --- Estado del formulario (Cliente y Pago) ---
   const [formData, setFormData] = useState({
     customerName: "",
-    orderType: "",
+    orderType: "mesa",
     tableNumber: "",
-    paymentMethod: "",
     observations: "",
   });
 
-  // --- Estado del Carrito ---
   const [orderItems, setOrderItems] = useState([]);
-  const [currentProduct, setCurrentProduct] = useState("");
-  const [currentQty, setCurrentQty] = useState("1");
 
-  // --- Valores Derivados ---
   const totalOrder = orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const needsTable = formData.orderType === "mesa";
-  const selectedProduct = menu?.find(({ id }) => String(id) === currentProduct);
+  const availableTables = tables?.filter(({ status }) => status === "available");
+  const locked = isSubmitting || isSuccess;
 
   useEffect(() => {
     let controller;
@@ -102,7 +61,6 @@ export default function OrderCreateForm() {
         if (signal.aborted) return;
         const activeItems = catalog.filter(({ isActive }) => isActive);
         setMenu(activeItems);
-        setCurrentProduct((previous) => activeItems.some(({ id }) => String(id) === previous) ? previous : "");
       } catch (error) {
         if (!signal.aborted) setMenuError(error.message);
       }
@@ -130,11 +88,11 @@ export default function OrderCreateForm() {
       setTablesError("");
 
       try {
-        const available = await getAvailableTables(signal);
+        const inventory = await getAvailableTables(signal, { includeUnavailable: true });
         if (signal.aborted) return;
-        setTables(available);
+        setTables(inventory);
         setFormData((previous) => {
-          if (!previous.tableNumber || available.some(({ tableNumber }) => String(tableNumber) === previous.tableNumber)) {
+          if (!previous.tableNumber || inventory.some(({ tableNumber, status }) => status === "available" && String(tableNumber) === previous.tableNumber)) {
             return previous;
           }
           return { ...previous, tableNumber: "" };
@@ -152,54 +110,52 @@ export default function OrderCreateForm() {
     };
   }, [needsTable, tablesRequest]);
 
-  // =====================================================================
-  // HANDLERS
-  // =====================================================================
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
+  const updateField = (name, value) => {
+    setFormData((previous) => ({
+      ...previous,
       [name]: value,
       ...(name === "orderType" && value !== "mesa" ? { tableNumber: "" } : {}),
     }));
-    if (name === "tableNumber" || name === "orderType") {
-      setErrors((previous) => ({ ...previous, tableNumber: undefined }));
-    }
+    setErrors((previous) => ({
+      ...previous,
+      [name]: undefined,
+      ...(name === "orderType" ? { tableNumber: undefined } : {}),
+    }));
   };
 
-  const handleAddItem = () => {
-    const quantity = Number(currentQty);
-    if (!selectedProduct || !Number.isSafeInteger(quantity) || quantity <= 0) return;
+  const handleChange = ({ target: { name, value } }) => updateField(name, value);
 
-    const newItem = {
-      id: Date.now().toString(),
-      productId: selectedProduct.id,
-      name: selectedProduct.menuName,
-      price: Number(selectedProduct.price),
-      quantity,
-    };
-    setOrderItems((previous) => [...previous, newItem]);
-    setCurrentProduct("");
-    setCurrentQty("1");
-  };
+  const changeItemQuantity = (productId, delta, product) => {
+    setOrderItems((previous) => {
+      const existing = previous.find((item) => item.productId === productId);
+      if (existing) {
+        const quantity = Math.min(MAX_ORDER_QUANTITY, Math.max(1, existing.quantity + delta));
+        return previous.map((item) => item === existing ? { ...item, quantity } : item);
+      }
+      if (!product) return previous;
 
-  const handleRemoveItem = (idToRemove) => {
-    setOrderItems(orderItems.filter(item => item.id !== idToRemove));
+      return [...previous, {
+        productId,
+        name: product.menuName,
+        price: Number(product.price),
+        image: product.menuImage,
+        quantity: 1,
+      }];
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isSubmitting || isSuccess) return;
 
-    if (needsTable && !tables?.some(({ tableNumber }) => String(tableNumber) === formData.tableNumber)) {
+    if (needsTable && !availableTables?.some(({ tableNumber }) => String(tableNumber) === formData.tableNumber)) {
       setErrors((previous) => ({ ...previous, tableNumber: "Selecciona una mesa disponible." }));
       return;
     }
     
-    // Validar el esquema base con Zod
-    const result = orderSchema.safeParse(formData);
+    const result = createOrderSchema.safeParse(formData);
 
-        if (!result.success) {
+    if (!result.success) {
       const fieldErrors = {};
 
       result.error.issues.forEach((issue) => {
@@ -226,19 +182,15 @@ export default function OrderCreateForm() {
     setIsSubmitting(true);
 
     try {
-      // Payload completo para el backend
       const finalOrderData = {
         ...result.data,
-        items: orderItems,
+        items: orderItems.map(({ productId, name, price, quantity }) => ({ id: String(productId), productId, name, price, quantity })),
         total: totalOrder
       };
-      console.log("Enviando orden:", finalOrderData);
       
-      const response = await createOrder(finalOrderData);
-      console.log("Orden creada:", response);
+      await createOrder(finalOrderData);
       window.dispatchEvent(new CustomEvent("orders:updated"));
 
-      // await createOrder(finalOrderData);
       setIsSuccess(true);
       setTimeout(() => navigate(-1), 2500);
     } catch (error) {
@@ -260,186 +212,117 @@ export default function OrderCreateForm() {
     }
   };
 
-  // =====================================================================
-  // RENDER PRINCIPAL
-  // =====================================================================
   return (
-    <div className="relative w-full max-w-[1200px] min-h-[600px] mx-auto mt-10 text-[var(--color-text-primary)]">
-      
-      {/* CAPA DE ÉXITO */}
+    <div className="relative mx-auto w-full max-w-[1680px] px-3 py-5 text-text-primary sm:p-6 [.dark_&]:text-text-inverse">
       {isSuccess && (
-        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-[var(--color-background-inverse)]/40 backdrop-blur-md transition-all duration-300 rounded-[2.5rem]">
-          <div className="w-32 h-32 bg-[var(--color-surface-muted)] rounded-[2rem] rotate-3 flex items-center justify-center mb-6 shadow-xl relative">
-            <Receipt className="w-14 h-14 text-[var(--color-brand)] -rotate-3" />
-            <div className="absolute -bottom-2 -right-2 bg-[var(--color-success)] rounded-full p-2 border-4 border-[var(--color-surface-muted)] -rotate-3">
-              <Check className="w-6 h-6 text-[var(--color-text-inverse)]" strokeWidth={3} />
-            </div>
+        <div role="status" className="fixed inset-0 z-50 grid place-items-center bg-background-inverse/50 backdrop-blur-sm">
+          <div className="flex flex-col items-center gap-4 rounded-3xl bg-background-div p-8 text-text-primary shadow-xl">
+            <span className="relative grid size-16 place-items-center rounded-2xl bg-background-clear text-text-brand">
+              <Receipt size={34} aria-hidden="true" />
+              <Check size={22} aria-hidden="true" className="absolute -right-2 -bottom-1 rounded-full bg-success p-1 text-text-inverse" />
+            </span>
+            <p className="text-title font-heading">¡Orden procesada!</p>
           </div>
-          <h2 className="text-[var(--color-text-primary)] text-2xl font-bold tracking-wide drop-shadow-md">
-            ¡Orden Procesada!
-          </h2>
         </div>
       )}
 
-      {/* HEADER */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 px-4">
-        <div>
-          <h1 className="text-3xl font-extrabold  mb-1 drop-shadow-sm">
-            Crear Nueva Orden
-          </h1>
-          <p className="text-sm font-medium text-[var(--color-text-inverse)] opacity-90">
-            Registra los datos del cliente y los productos a facturar
-          </p>
+      <header className="mb-5 flex flex-wrap items-center justify-between gap-4 sm:mb-6">
+        <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+          <span className="grid size-13 shrink-0 place-items-center rounded-2xl bg-linear-to-b from-brand to-brand-hover text-text-inverse shadow-md sm:size-15">
+            <Utensils size={28} aria-hidden="true" />
+          </span>
+          <div>
+            <h1 className="text-title leading-tight font-heading sm:text-main">Crear Nueva Orden</h1>
+            <p className="mt-1 text-medium text-text-secondary sm:text-body [.dark_&]:text-text-inverse">Registra un pedido, selecciona la mesa y agrega los productos.</p>
+          </div>
         </div>
-        <Button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="inline-flex min-h-10 items-center justify-center self-start rounded-[10px] border border-brand px-5 py-2.5 text-medium font-medium-custom text-text-coffee transition-colors hover:bg-border-clear2/60 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand md:self-center"
-        >
-          Volver a órdenes
+        <Button onClick={() => navigate(-1)} disabled={locked} className="inline-flex min-h-10 items-center gap-3 rounded-xl border border-brand px-4 py-2 text-medium font-medium-custom enabled:hover:bg-brand-soft/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:opacity-50">
+          <ArrowLeft size={19} aria-hidden="true" className="text-text-brand [.dark_&]:text-brand-soft" />
+          Volver a Órdenes
         </Button>
-      </div>
+      </header>
 
-      <form 
-        onSubmit={handleSubmit} 
-        className="space-y-6 [&_input]:!bg-white/60 [&_textarea]:!bg-white/60 [&_input]:!text-[var(--color-gray-900)] [&_textarea]:!text-[var(--color-gray-900)] [&_input]:!border-white/50 [&_textarea]:!border-white/50"
-      >
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          
-          {/* TARJETA 1: Info del Cliente */}
-          <CardSection icon={<User size={20} />} title="1. Datos del Servicio">
-            <div className="grid grid-cols-2 gap-4 [&>div]:!w-full">
-              <Select variant="create" label="Tipo de Servicio *" htmlFor="orderType" name="orderType" value={formData.orderType} onChange={handleChange} error={errors.orderType} options={ORDER_TYPES} />
-              <div className="min-w-0">
-                <Select
-                  variant="create"
-                  label="Número de Mesa"
-                  htmlFor="tableNumber"
-                  name="tableNumber"
-                  value={formData.tableNumber}
-                  onChange={handleChange}
-                  error={needsTable ? errors.tableNumber || tablesError : undefined}
-                  disabled={!needsTable || !tables?.length || isSubmitting}
-                  placeholder={
-                    !needsTable ? "Seleccione el servicio en mesa"
-                      : tablesError ? "Mesas no disponibles"
-                        : !tables ? "Cargando mesas…"
-                          : tables.length ? "Seleccione una mesa" : "No hay mesas disponibles"
-                  }
-                  options={(tables ?? []).map(({ tableNumber }) => ({ value: String(tableNumber), label: `Mesa ${tableNumber}` }))}
-                />
-                {needsTable && tablesError && (
-                  <Button size="sm" variant="tertiary" onClick={() => setTablesRequest((request) => request + 1)}>
-                    Reintentar
-                  </Button>
-                )}
-              </div>
-            </div>
-            <div className="[&>div]:!w-full">
-              <Input variant="primary" size="md" label="Nombre del Cliente (Opcional)" htmlFor="customerName" name="customerName" value={formData.customerName} onChange={handleChange} error={errors.customerName} placeholder="Para llamar el pedido" />
-            </div>
-          </CardSection>
-
-          {/* TARJETA 2: Selección de Productos */}
-          <CardSection icon={<Coffee size={20} />} title="2. Agregar Productos">
-            <div className="flex flex-col sm:flex-row items-end gap-4 w-full">
-              <div className="min-w-0 flex-1 w-full">
-                <Select
-                  variant="create"
-                  label="Seleccionar Producto"
-                  htmlFor="currentProduct"
-                  name="currentProduct"
-                  value={currentProduct}
-                  onChange={(event) => setCurrentProduct(event.target.value)}
-                  disabled={!menu?.length || isSubmitting}
-                  error={menuError}
-                  placeholder={menuError ? "Menú no disponible" : !menu ? "Cargando menú…" : menu.length ? "Seleccione un producto" : "No hay productos activos"}
-                  options={(menu ?? []).map(({ id, menuName, price }) => ({ value: String(id), label: `${menuName} · ${menuPrice.format(price)}` }))}
-                />
-                {menuError && (
-                  <Button size="sm" variant="tertiary" onClick={() => setMenuRequest((request) => request + 1)}>
-                    Reintentar
-                  </Button>
-                )}
-              </div>
-              <div className="w-24 [&>div]:!w-full">
-                <Input type="text" variant="primary" size="md" label="Cant." htmlFor="currentQty" name="currentQty" value={currentQty} onChange={(e) => setCurrentQty(e.target.value.replace(/\D/g, ''))} />
-              </div>
-              <button 
-                type="button"
-                onClick={handleAddItem}
-                disabled={!selectedProduct || Number(currentQty) <= 0 || isSubmitting}
-                className="h-12 px-5 rounded-xl border-2 border-[var(--color-secondary-500)] text-[var(--color-secondary-600)] bg-white/50 font-bold text-sm flex items-center justify-center gap-2 hover:bg-[var(--color-secondary-500)] hover:text-white transition-all shadow-sm"
-              >
-                <Plus size={16} /> Agregar
-              </button>
-            </div>
-          </CardSection>
-
-          {/* TARJETA 3: Pago y Notas */}
-          <CardSection icon={<CreditCard size={20} />} title="3. Pago y Notas">
-            <div className="[&>div]:!w-full">
-              <Select variant="create" label="Método de Pago *" htmlFor="paymentMethod" name="paymentMethod" value={formData.paymentMethod} onChange={handleChange} error={errors.paymentMethod} options={PAYMENT_METHODS} />
-            </div>
-            <div className="w-full">
-              <label className="block text-[var(--text-caption)] font-bold text-[var(--color-text-secondary)] mb-1 uppercase">Observaciones del Pedido</label>
-              <textarea 
-                name="observations" 
-                value={formData.observations} 
-                onChange={handleChange}
-                placeholder="Ej: Sin azúcar, leche deslactosada..."
-                className="w-full rounded-md border border-[var(--color-border-clear)] px-4 py-3 text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand)] resize-none h-20 transition-all"
-              ></textarea>
-              {errors.observations && <p className="text-xs text-red-500 mt-1">{errors.observations}</p>}
-            </div>
-          </CardSection>
-
-          {/* TARJETA 4: Resumen de la Orden (Carrito) */}
-          <CardSection icon={<ShoppingCart size={20} />} title="Resumen del Pedido">
-            <div className="flex-1 bg-white/40 border border-white/50 rounded-xl p-4 overflow-y-auto max-h-[200px]">
-              {orderItems.length === 0 ? (
-                <div className="h-full flex items-center justify-center text-[var(--color-text-muted)] text-sm font-medium">
-                  No hay productos en la orden
+      <form onSubmit={handleSubmit} className="space-y-4 [.dark_&]:[&_.form-field-create-label]:text-text-inverse [.dark_&]:[&_.form-field-create>p]:text-brand-soft" aria-busy={isSubmitting}>
+        <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,46fr)_minmax(0,54fr)]">
+          <div className="min-w-0 space-y-4">
+            <OrderSection id="order-service-heading" icon="1" title="Datos del Servicio">
+              <div className="grid items-start gap-4 sm:grid-cols-2">
+                <Select variant="create" label="Tipo de Servicio *" htmlFor="orderType" name="orderType" value={formData.orderType} onChange={handleChange} error={errors.orderType} options={ORDER_TYPES} disabled={locked} />
+                <div className="[&>div]:w-full [&_label+div]:h-auto">
+                  <Input
+                    htmlFor="customerName"
+                    name="customerName"
+                    label={<span className="form-field-create-label">Nombre del Cliente <span className="font-normal">(opcional)</span></span>}
+                    placeholder="Ej. Juan Pérez"
+                    value={formData.customerName}
+                    onChange={handleChange}
+                    aria-invalid={!!errors.customerName}
+                    aria-describedby={errors.customerName ? "order-customer-error" : undefined}
+                    disabled={locked}
+                    className="form-field-create-control relative"
+                  />
+                  {errors.customerName && <p id="order-customer-error" className="mt-1 text-small text-error [.dark_&]:text-brand-soft">{errors.customerName}</p>}
                 </div>
-              ) : (
-                <ul className="space-y-3">
-                  {orderItems.map((item) => (
-                    <li key={item.id} className="flex justify-between items-center border-b border-white/40 pb-2 last:border-0 last:pb-0">
-                      <div className="flex flex-col">
-                        <span className="font-bold text-[var(--color-text-primary)] text-sm">{item.name}</span>
-                        <span className="text-xs text-[var(--color-text-muted)]">{item.quantity} x ${item.price.toLocaleString()}</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className="font-extrabold text-[var(--color-text-primary)]">${(item.quantity * item.price).toLocaleString()}</span>
-                        <button type="button" onClick={() => handleRemoveItem(item.id)} className="text-red-500 hover:text-red-700 hover:bg-white/50 p-1.5 rounded-lg transition-colors">
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-            
-            <div className="flex justify-between items-center bg-[var(--color-background-inverse)] text-[var(--color-text-inverse)] p-4 rounded-xl shadow-inner mt-2">
-              <span className="font-bold text-lg">TOTAL:</span>
-              <span className="font-extrabold text-2xl">${totalOrder.toLocaleString()}</span>
-            </div>
-          </CardSection>
+              </div>
+            </OrderSection>
 
+            <OrderTablePicker
+              tables={tables}
+              value={formData.tableNumber}
+              needsTable={needsTable}
+              disabled={locked}
+              error={errors.tableNumber}
+              loadError={tablesError}
+              onChange={(value) => updateField("tableNumber", value)}
+              onRetry={() => setTablesRequest((request) => request + 1)}
+            />
+
+            <OrderSection id="order-notes-heading" icon={<MessageSquare size={21} />} title="3. Notas del Pedido">
+              <label htmlFor="observations" className="form-field-create-label">Observaciones del Pedido</label>
+              <textarea
+                id="observations"
+                name="observations"
+                value={formData.observations}
+                onChange={handleChange}
+                placeholder="Ej. Sin azúcar, extra salsa, etc."
+                aria-invalid={!!errors.observations}
+                aria-describedby={errors.observations ? "order-observations-error" : undefined}
+                disabled={locked}
+                className="form-field-create-control min-h-20 resize-y py-2"
+              />
+              {errors.observations && <p id="order-observations-error" role="alert" className="mt-1 text-small text-error [.dark_&]:text-brand-soft">{errors.observations}</p>}
+            </OrderSection>
+          </div>
+
+          <div className="min-w-0 space-y-4">
+            <OrderCatalog
+              menu={menu}
+              error={menuError}
+              disabled={locked}
+              onRetry={() => setMenuRequest((request) => request + 1)}
+              onAdd={(product) => changeItemQuantity(product.id, 1, product)}
+              formatPrice={menuPrice.format}
+            />
+            <OrderSummary
+              items={orderItems}
+              total={totalOrder}
+              formatPrice={menuPrice.format}
+              disabled={locked}
+              onQuantityChange={changeItemQuantity}
+              onRemove={(productId) => setOrderItems((previous) => previous.filter((item) => item.productId !== productId))}
+            />
+          </div>
         </div>
 
-        {/* FOOTER GENERAL */}
-        <div className="flex justify-end gap-4 bg-white/30 backdrop-blur-md p-4 rounded-3xl shadow-sm border border-white/40 mt-6">
-          <Button type="button" onClick={() => navigate(-1)} variant="secondary" size="md" className="rounded-xl border-[var(--color-border-strong)] text-[var(--color-text-primary)] hover:bg-white/40 transition-all">
-            Cancelar
-          </Button>
-          <Button type="submit" variant="primary" disabled={isSubmitting || isSuccess || (needsTable && !tables?.length)}>
-            {isSubmitting ? "PROCESANDO..." : "Confirmar Orden"}
-          </Button>
+        <div className="flex flex-wrap justify-end gap-2 rounded-3xl border border-border-clear/40 bg-background-div/80 p-4 shadow-sm sm:p-5 [.dark_&]:border-border-strong [.dark_&]:bg-background-inverse">
+            <Button onClick={() => navigate(-1)} disabled={locked} className="min-h-10 rounded-xl border border-border-clear px-4 font-medium-custom enabled:hover:bg-brand-soft/20 focus-visible:outline-2 focus-visible:outline-brand disabled:opacity-50">
+              Cancelar
+            </Button>
+            <Button type="submit" disabled={locked || (needsTable && !availableTables?.length)} className="min-h-10 rounded-xl bg-brand-hover px-4 font-medium-custom text-text-inverse enabled:hover:bg-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:opacity-50">
+              {isSubmitting ? "Procesando…" : "Confirmar Orden"}
+            </Button>
         </div>
       </form>
-
     </div>
   );
 }

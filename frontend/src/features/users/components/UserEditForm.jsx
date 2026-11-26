@@ -77,7 +77,7 @@ export default function UserEditForm() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e?.preventDefault();
 
     const dataToValidate = {
       ...formData,
@@ -128,18 +128,18 @@ export default function UserEditForm() {
   };
 
   return (
-    <div className="relative w-full max-w-[1024px] min-h-[600px] mx-auto mt-12 bg-white/30 rounded-[2.5rem] shadow-md overflow-hidden border border-[var(--color-border-strong)] p-8 md:p-10">
+    <div className="relative w-full max-w-[1024px] min-h-[600px] mx-auto mt-12 bg-background-div/60 backdrop-blur-md rounded-[2.5rem] shadow-md overflow-hidden border border-border/50 p-8 md:p-10 text-text-primary">
       
       {/* CAPA DE ÉXITO */}
       {isSuccess && (
-        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/40 backdrop-blur-md transition-all duration-300">
-          <div className="w-32 h-32 bg-[var(--color-secondary-200)] rounded-[2rem] rotate-3 flex items-center justify-center mb-6 shadow-xl relative">
-            <UserCog className="w-14 h-14 text-[var(--color-secondary-500)] -rotate-3" />
-            <div className="absolute -bottom-2 -right-2 bg-[var(--color-secondary-500)] rounded-full p-2 border-4 border-[var(--color-secondary-200)] -rotate-3">
-              <Check className="w-6 h-6 text-white" strokeWidth={3} />
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-background-inverse/40 backdrop-blur-md transition-all duration-300">
+          <div className="w-32 h-32 bg-surface-muted rounded-[2rem] rotate-3 flex items-center justify-center mb-6 shadow-xl relative">
+            <UserCog className="w-14 h-14 text-brand -rotate-3" />
+            <div className="absolute -bottom-2 -right-2 bg-success rounded-full p-2 border-4 border-surface-muted -rotate-3">
+              <Check className="w-6 h-6 text-text-inverse" strokeWidth={3} />
             </div>
           </div>
-          <h2 className="text-white text-2xl font-serif italic tracking-wide drop-shadow-md">
+          <h2 className="text-text-primary text-2xl font-bold tracking-wide drop-shadow-md">
             ¡Usuario Actualizado!
           </h2>
         </div>
@@ -149,11 +149,11 @@ export default function UserEditForm() {
         {/* HEADER */}
         <div className="flex items-center gap-6 mb-10">
           <div className="relative">
-            <div className={`h-24 w-24 rounded-[1.75rem] rotate-3 bg-[var(--color-secondary-500)] flex items-center justify-center text-white shadow-lg overflow-hidden [&_.border-dashed]:!border-transparent [&_.text-blue-500]:!hidden ${formData.userImage?.length > 0 ? "[&>div>div:last-child]:!hidden" : ""}`}>
+            <div className={`h-24 w-24 rounded-[1.75rem] rotate-3 bg-brand flex items-center justify-center text-text-success shadow-lg overflow-hidden [&_.border-dashed]:!border-transparent [&_.text-blue-500]:!hidden ${formData.userImage?.length > 0 ? "[&>div>div:last-child]:!hidden" : ""}`}>
               {(!formData.userImage || formData.userImage.length === 0) && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10 -rotate-3">
-                  <User className="w-8 h-8 text-white/80" />
-                  <span className="text-[10px] font-bold mt-1 text-white/80">Cambiar Foto</span>
+                  <User className="w-8 h-8 opacity-80" />
+                  <span className="text-[10px] font-bold mt-1 opacity-80">Cambiar Foto</span>
                 </div>
               )}
               <div className="absolute inset-0 z-0 flex items-center justify-center -rotate-3 scale-[1.35]">
@@ -167,47 +167,48 @@ export default function UserEditForm() {
             </div>
           </div>
           <div>
-            <h1 className="text-3xl font-extrabold text-[var(--color-text-primary)] mb-1">
+            <h1 className="text-3xl font-extrabold text-text-primary mb-1">
               Editar Usuario
             </h1>
-            <p className="text-sm font-medium text-[var(--color-text-muted)]">
+            <p className="text-sm font-medium text-text-muted">
               Actualiza los datos del empleado o admin
             </p>
           </div>
           <div className="flex-1" />
-          <button 
+          <Button 
             type="button" 
             onClick={() => navigate(-1)}
-            className="hidden sm:flex items-center gap-2 rounded-2xl border-2 border-[var(--color-text-primary)] text-[var(--color-text-primary)] px-5 py-2.5 text-sm font-bold hover:bg-[var(--color-text-primary)] hover:text-[var(--color-background)] transition-all"
+            variant="tertiary"
           >
             <ArrowLeft className="h-4 w-4" />
             Regresar
-          </button>
+          </Button>
         </div>
 
-        <svg viewBox="0 0 400 12" preserveAspectRatio="none" className="w-full h-3 text-[var(--color-secondary-200)] mb-10">
+        <svg viewBox="0 0 400 12" preserveAspectRatio="none" className="w-full h-3 text-border-clear mb-10">
           <path d="M0 6 Q 10 0, 20 6 T 40 6 T 60 6 T 80 6 T 100 6 T 120 6 T 140 6 T 160 6 T 180 6 T 200 6 T 220 6 T 240 6 T 260 6 T 280 6 T 300 6 T 320 6 T 340 6 T 360 6 T 380 6 T 400 6" fill="none" stroke="currentColor" strokeWidth="3" />
         </svg>
 
-        <form onSubmit={handleSubmit}>
+        {/* CONTENEDOR SIN ETIQUETA FORM */}
+        <div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-12 gap-y-8">
             {/* PERSONALES */}
             <div className="space-y-4 [&>div]:!w-full">
-              <h3 className="flex items-center gap-3 text-[var(--color-text-primary)] font-extrabold mb-6 text-lg tracking-wider">
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/40 backdrop-blur-md border border-white/60 text-[var(--color-text-primary)] text-base shadow-sm">1</span>
+              <h3 className="flex items-center gap-3 text-text-primary font-extrabold mb-6 text-lg tracking-wider">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-surface-muted border border-border-clear text-text-primary text-base shadow-sm">1</span>
                 PERSONALES
               </h3>
               <Input variant="primary" size="md" label="Nombres" htmlFor="userName" name="userName" value={formData.userName} onChange={handleChange} error={errors.userName} />
               <Input variant="primary" size="md" label="Apellidos" htmlFor="userLastName" name="userLastName" value={formData.userLastName} onChange={handleChange} error={errors.userLastName} />
-              <Select label="Tipo de Documento" htmlFor="userDocumentTypes" name="userDocumentTypes" value={formData.userDocumentTypes} onChange={handleChange} error={errors.userDocumentTypes} options={documentTypes} />
+              <Select variant="create" label="Tipo de Documento" htmlFor="userDocumentTypes" name="userDocumentTypes" value={formData.userDocumentTypes} onChange={handleChange} error={errors.userDocumentTypes} options={documentTypes} />
               <Input variant="primary" size="md" label="Número de Documento" htmlFor="userDocumentNumber" name="userDocumentNumber" value={formData.userDocumentNumber} onChange={handleChange} error={errors.userDocumentNumber} />
               <Input variant="primary" size="md" label="Correo Electrónico" htmlFor="userEmail" name="userEmail" type="email" value={formData.userEmail} onChange={handleChange} error={errors.userEmail} />
             </div>
 
             {/* EMPRESARIALES */}
             <div className="space-y-4 [&>div]:!w-full">
-              <h3 className="flex items-center gap-3 text-[var(--color-text-primary)] font-extrabold mb-6 text-lg tracking-wider">
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/40 backdrop-blur-md border border-white/60 text-[var(--color-text-primary)] text-base shadow-sm">2</span>
+              <h3 className="flex items-center gap-3 text-text-primary font-extrabold mb-6 text-lg tracking-wider">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-surface-muted border border-border-clear text-text-primary text-base shadow-sm">2</span>
                 EMPRESARIALES
               </h3>
               <Input variant="primary" size="md" label="Correo Empresarial" htmlFor="businessEmail" name="businessEmail" type="email" value={formData.businessEmail} onChange={handleChange} error={errors.businessEmail} />
@@ -219,26 +220,31 @@ export default function UserEditForm() {
 
             {/* SENSIBLES */}
             <div className="space-y-4 [&>div]:!w-full">
-              <h3 className="flex items-center gap-3 text-[var(--color-text-primary)] font-extrabold mb-6 text-lg tracking-wider">
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/40 backdrop-blur-md border border-white/60 text-[var(--color-text-primary)] text-base shadow-sm">3</span>
+              <h3 className="flex items-center gap-3 text-text-primary font-extrabold mb-6 text-lg tracking-wider">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-surface-muted border border-border-clear text-text-primary text-base shadow-sm">3</span>
                 SENSIBLES
               </h3>
-              <Select label="Estado" htmlFor="isActive" name="isActive" value={formData.isActive} onChange={handleChange} error={errors.isActive} options={[{ label: "Activo", value: "true" }, { label: "Inactivo", value: "false" }]} />
-              <Select label="Tipo de Usuario" htmlFor="role" name="role" value={formData.role} onChange={handleChange} error={errors.role} options={[{ label: "Administrador", value: "administrador" }, { label: "Mesero", value: "mesero" }, { label: "Empleado", value: "empleado" }, { label: "Cajero", value: "cajero" }, { label: "Usuario Normal", value: "usuario" }]} />
+              <Select variant="create" label="Estado" htmlFor="isActive" name="isActive" value={formData.isActive} onChange={handleChange} error={errors.isActive} options={[{ label: "Activo", value: "true" }, { label: "Inactivo", value: "false" }]} />
+              <Select variant="create" label="Tipo de Usuario" htmlFor="role" name="role" value={formData.role} onChange={handleChange} error={errors.role} options={[{ label: "Administrador", value: "administrador" }, { label: "Mesero", value: "mesero" }, { label: "Empleado", value: "empleado" }, { label: "Cajero", value: "cajero" }, { label: "Usuario Normal", value: "usuario" }]} />
               <Input variant="primary" size="md" label="Contraseña (Opcional)" htmlFor="userPassword" name="userPassword" type="password" value={formData.userPassword} onChange={handleChange} error={errors.userPassword} placeholder="Dejar en blanco para no cambiar" />
             </div>
           </div>
 
-          <div className="flex justify-end mt-12 border-t-2 border-[var(--color-border-strong)] pt-8">
+          <div className="flex justify-end gap-4 bg-background-div/60 backdrop-blur-md p-4 rounded-3xl shadow-sm border border-border/50 mt-6">
+            <Button type="button" onClick={() => navigate(-1)} variant="tertiary">
+            Cancelar
+            </Button>
+            
             <Button 
-              type="submit" 
+              type="button"
+              onClick={handleSubmit}
               variant="primary" 
               disabled={isSubmitting} 
             >
               {isSubmitting ? "ACTUALIZANDO..." : "ACTUALIZAR USUARIO"}
             </Button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );

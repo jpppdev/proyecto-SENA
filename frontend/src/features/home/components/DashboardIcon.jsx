@@ -2,7 +2,7 @@ import { ReceiptText, Hourglass, Package, ClipboardList, Truck, Utensils, Users 
 
 const icons = { orders: ReceiptText, pending: Hourglass, inventory: Package, review: ClipboardList, provider: Truck, menu: Utensils, users: Users };
 const tones = {
-  orange: "bg-orange-100 text-orange-600",
+  orange: "bg-border-clear2 text-brand",
   amber: "bg-amber-100 text-amber-600",
   red: "bg-red-100 text-red-600",
   purple: "bg-violet-100 text-violet-600",

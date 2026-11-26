@@ -42,25 +42,25 @@ export const IconButton = React.forwardRef(function IconButton(
     const variants = {
         default: `
             rounded-full
-            text-neutral-700 
-            hover:bg-neutral-100
-            focus-visible:ring-neutral-400
+            text-text-secondary
+            hover:bg-brand-light
+            focus-visible:ring-border-strong
         `,
         ghost: `
             rounded-full
-            text-neutral-600 
-            hover:bg-neutral-100
-            focus-visible:ring-neutral-300
+            text-text-secondary
+            hover:bg-brand-light
+            focus-visible:ring-surface
         `,
         primary: `
             rounded-full
-            text-white bg-blue-600 
+            text-text-inverse bg-blue-600
             hover:bg-blue-700
             focus-visible:ring-blue-500
         `,
         action: `
-            rounded-[14px] text-[#ff6500] bg-[#fff2e6]
-            hover:bg-[#ffe5cc] focus-visible:ring-orange-400
+            rounded-[14px] text-brand bg-border-clear2
+            hover:bg-brand-soft/40 focus-visible:ring-focus-ring
         `,
         danger: `
             rounded-[14px] text-[#ff3038] bg-[#ffeded]
@@ -75,7 +75,7 @@ export const IconButton = React.forwardRef(function IconButton(
             aria-label={ariaLabel}
             disabled={disabled}
             onClick={onClick}
-            className={clsx(baseStyles, variants[variant], className, {"bg-neutral-300": isActive,
+            className={clsx(baseStyles, variants[variant], className, {"bg-surface-muted": isActive,
         })}
         style={{
             width: `${hitSize}px`,

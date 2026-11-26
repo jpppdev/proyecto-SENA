@@ -25,7 +25,7 @@ export default function Input({
         `, 
         secondary: `
             border-red-300
-            bg-gray-300
+            bg-surface-muted
         `, 
         tertiary: `
             border border-border-clear
@@ -33,7 +33,7 @@ export default function Input({
             text-text-secondary
             hover:border-brand
             focus:border-brand
-            focus:bg-white
+            focus:bg-background-div
             focus:outline-none
             `,
          quaternary: `
@@ -92,7 +92,7 @@ export default function Input({
                             ? "-mb-0"
                             : "-mb-1"
                     }
-                    ${error ? "text-red-800" : "text-[color:var(--text-primary)]"}
+                    ${error ? "text-red-800" : "text-text-primary"}
                 `}
             > 
                 {label}
@@ -140,7 +140,7 @@ export default function Input({
 
                         focus:outline-none
                         focus:ring-2
-                        focus:ring-ring
+                        focus:ring-focus-ring
                         focus:ring-brand
                         ${variants[variant]}
                         ${variant === "quaternary" ? "pr-11" : ""}

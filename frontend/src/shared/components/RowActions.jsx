@@ -35,7 +35,7 @@ export default function RowActions({ entity, onView, onEdit, onDisable }) {
         aria-label={disableLabel}
         title={disableLabel}
         onClick={onDisable}
-        className="p-1 rounded hover:bg-gray-100 text-red-600 transition-colors"
+        className="p-1 rounded hover:bg-brand-light text-red-600 transition-colors"
       >
         <Ban size={16} aria-hidden="true" />
       </button>
