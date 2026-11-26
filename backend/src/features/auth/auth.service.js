@@ -39,8 +39,15 @@ export const authService = {
             throw new Error("Credenciales inválidas"); 
         } 
 
+        if (user.is_active === false) {
+            throw new Error("Tu cuenta está deshabilitada. Contacta al administrador");
+        }
+
+        const roleName = user.roleName || (user.isSuperUser ? "administrador" : "usuario");
+        const isSuperUser = Boolean(user.isSuperUser || roleName === "administrador");
+
         const token = jwt.sign( 
-            { id: user.id, email: user.user_email }, 
+            { id: user.id, email: user.user_email, name: user.user_name, roleName, isSuperUser }, 
             process.env.JWT_SECRET || DEFAULT_JWT_SECRET, 
             { expiresIn: process.env.JWT_EXPIRES || "8h" }, 
         ); 
@@ -51,6 +58,8 @@ export const authService = {
                 id: user.id, 
                 email: user.user_email,
                 name: user.user_name,
+                roleName,
+                isSuperUser,
             }, 
         }; 
     },

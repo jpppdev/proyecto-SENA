@@ -5,10 +5,13 @@ import DishCategories from "../components/DishCategories";
 import DishPagination from "../components/DishPagination";
 import { products } from "../data/products";
 import { getProducts } from "../services/productServices";
+import { usePermissions } from "@/features/permissions";
 
 const PAGE_SIZE = 10;
 
 export default function DishesPage() {
+  const { can } = usePermissions();
+  const canManageDish = can("menu", "edit") || can("menu", "delete");
   const [catalog, setCatalog] = useState(null);
   const [loadFailed, setLoadFailed] = useState(false);
   const [category, setCategory] = useState(null);
@@ -74,7 +77,11 @@ export default function DishesPage() {
               <Card
                  key={dish.id}
                 product={dish}
-                actions={catalog !== null && <MenuRowActions product={{ ...dish, menuName: dish.title }} catalog />}
+                actions={
+                  catalog !== null && canManageDish && (
+                    <MenuRowActions product={{ ...dish, menuName: dish.title }} catalog />
+                  )
+                }
               />
             ))}
           </div>

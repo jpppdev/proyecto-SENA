@@ -7,6 +7,21 @@ import { permissionService } from "./permission.service.js";
 // Exportamos el controlador de permisos
 export const permissionController = {
 
+    // GET /api/permissions/me
+    async getMyPermissions(req, res) {
+        try {
+            const data = await permissionService.getMyPermissions(req.user?.id);
+            if (!data) {
+                return res.status(404).json({ message: "Usuario no encontrado" });
+            }
+            return res.status(200).json(data);
+        } catch (error) {
+            return res.status(500).json({
+                message: error.message,
+            });
+        }
+    },
+
     // GET /api/permissions
     async getAll(req, res) {
         try {

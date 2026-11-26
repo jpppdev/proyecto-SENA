@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 
 import { Breadcrumbs, Button } from "@/shared";
+import { usePermissions } from "@/features/permissions";
 import { getUserById, updateUserStatus, disableUser } from "../services/userServices";
 import { showSuccessAlert, showErrorAlert, showDisableAlert } from "@/shared/services/alertService";
 
@@ -23,6 +24,7 @@ export default function UserViewPage() {
 }
 
 function UserDetails({ id }) {
+  const { can } = usePermissions();
 
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -630,47 +632,55 @@ return (
 
 
             {/* ACCIONES */}
-            <div className="rounded-xl border border-background-clear bg-background-positive/72 p-5 shadow-[0_4px_18px] shadow-text-coffee/3">
+            {(can("users", "edit") || can("users", "delete")) && (
+              <div className="rounded-xl border border-background-clear bg-background-positive/72 p-5 shadow-[0_4px_18px] shadow-text-coffee/3">
 
-              <div className="flex flex-col gap-2.5">
+                <div className="flex flex-col gap-2.5">
 
-                <Link to={`/dashboard/users/${user.id}/edit`}>
-                  <Button className="flex min-h-10 w-full items-center rounded-lg border border-background-clear bg-border-clear2/30 px-4 py-2.5 text-left text-medium text-text-coffee transition-colors hover:bg-border-clear2/70 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand">
-                    <span className="flex w-full items-center gap-4 [&>svg]:shrink-0 [&>svg]:text-text-brand">
+                  {can("users", "edit") && (
+                    <>
+                      <Link to={`/dashboard/users/${user.id}/edit`}>
+                        <Button className="flex min-h-10 w-full items-center rounded-lg border border-background-clear bg-border-clear2/30 px-4 py-2.5 text-left text-medium text-text-coffee transition-colors hover:bg-border-clear2/70 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand">
+                          <span className="flex w-full items-center gap-4 [&>svg]:shrink-0 [&>svg]:text-text-brand">
 
-                      <Edit size={20} />
+                            <Edit size={20} />
 
-                      Editar usuario
+                            Editar usuario
 
-                    </span>
-                  </Button>
-                </Link>
-
-
-                <Button onClick={handleToggleStatus}>
-                  <span className="flex items-center justify-center gap-2">
-
-                    <ToggleRight size={20} />
-
-                    Cambiar estado
-
-                  </span>
-                </Button>
+                          </span>
+                        </Button>
+                      </Link>
 
 
-                <Button onClick={handleDisableUser}>
-                  <span className="flex items-center justify-center gap-2">
+                      <Button onClick={handleToggleStatus}>
+                        <span className="flex items-center justify-center gap-2">
 
-                    <Ban size={20} />
+                          <ToggleRight size={20} />
 
-                    Deshabilitar usuario
+                          Cambiar estado
 
-                  </span>
-                </Button>
+                        </span>
+                      </Button>
+                    </>
+                  )}
+
+
+                  {can("users", "delete") && (
+                    <Button onClick={handleDisableUser}>
+                      <span className="flex items-center justify-center gap-2">
+
+                        <Ban size={20} />
+
+                        Deshabilitar usuario
+
+                      </span>
+                    </Button>
+                  )}
+
+                </div>
 
               </div>
-
-            </div>
+            )}
 
           </div>
 

@@ -47,6 +47,11 @@ function Login() {
 
       sessionStorage.setItem("token", data.token);
 
+      const isAdmin = Boolean(
+        data?.user?.isSuperUser ||
+          String(data?.user?.roleName || "").toLowerCase() === "administrador"
+      );
+
       // Metemos un sweetaler dentro del try que avisara que se pudo iniciar sesion correctamente 
       await showSuccessAlert({
         title: "Inicio de sesión exitoso",
@@ -54,7 +59,7 @@ function Login() {
         timer: 1500,
       });
 
-      navigate("/dashboard/home");
+      navigate(isAdmin ? "/dashboard/home" : "/dashboard/Dishes");
 
     } catch (error) {
       console.error("Error en login:", error.message);

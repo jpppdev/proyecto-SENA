@@ -52,9 +52,10 @@
 // }
 
 import { useEffect } from "react";
-import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Navigate, Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import { readSessionPayload } from "../session";
+import { PermissionsProvider, usePermissions } from "@/features/permissions";
 import {
   showInactivityWarningAlert,
   showSessionExpiredAlert,
@@ -138,13 +139,58 @@ export function ProtectedRoute() {
     return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
+  return (
+    <PermissionsProvider>
+      <Outlet />
+    </PermissionsProvider>
+  );
+}
+
+// Guardia por rol y permisos de módulo (por defecto todos acceden a Platillos y Mesas)
+export function PermissionGuard({
+  module,
+  action = "view",
+  adminOnly = false,
+  allowOwnProfile = false,
+}) {
+  const { id } = useParams();
+  const { loading, user, isAdmin, can } = usePermissions();
+
+  if (isAdmin) {
+    return <Outlet />;
+  }
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[300px] items-center justify-center text-text-secondary">
+        Cargando permisos...
+      </div>
+    );
+  }
+
+  if (allowOwnProfile && id && user?.id && String(id) === String(user.id)) {
+    return <Outlet />;
+  }
+
+  if (adminOnly && !isAdmin) {
+    return <Navigate to="/dashboard/Dishes" replace />;
+  }
+
+  if (module && !can(module, action)) {
+    return <Navigate to="/dashboard/Dishes" replace />;
+  }
+
   return <Outlet />;
 }
 
-// Rutas públicas (login, recuperar contraseña): si ya hay sesión, va al dashboard
+// Rutas públicas (login, recuperar contraseña): si ya hay sesión, va a su vista inicial según rol
 export function PublicRoute() {
   if (hasValidToken()) {
-    return <Navigate to="/dashboard/home" replace />;
+    const payload = readSessionPayload();
+    const isAdmin = Boolean(
+      payload?.isSuperUser || String(payload?.roleName || "").toLowerCase() === "administrador"
+    );
+    return <Navigate to={isAdmin ? "/dashboard/home" : "/dashboard/Dishes"} replace />;
   }
 
   return <Outlet />;

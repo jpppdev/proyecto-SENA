@@ -28,7 +28,7 @@ import ProviderEditForm from "../features/provider/components/ProviderEditForm";
 
 import { AdminHomePage } from "../features/home";
 import { PermissionsPage } from "@/features/permissions";
-import { ProtectedRoute, PublicRoute } from "@/features/auth/components/ProtectedRoute";
+import { ProtectedRoute, PublicRoute, PermissionGuard } from "@/features/auth/components/ProtectedRoute";
 
 
 const  router = createBrowserRouter([
@@ -77,46 +77,131 @@ const  router = createBrowserRouter([
         path: "/dashboard",
         element : <DashboardLayout/>,
         children: [
-            {index: true},
-            { path: "home", element: <AdminHomePage />},
+            { index: true, element: <Navigate to="/dashboard/Dishes" replace /> },
+            // Vistas predeterminadas para cualquier usuario autenticado (Platillos y Mesas)
             { path: "Dishes", element: <DishesPage />},
             { path: "tables", element: <TablesPage /> },
-            
+
+            // --- PANEL Y PERMISOS (solo administrador) ---
+            {
+                element: <PermissionGuard adminOnly />,
+                children: [
+                    { path: "home", element: <AdminHomePage /> },
+                    { path: "permissions", element: <PermissionsPage /> },
+                ],
+            },
+
             // --- USUARIOS ---
-            { path: "userList", element: <UserListPage />},
-            { path: "userCreate", element: <UserRegisterForm />},
-            { path: "userView/:id", element: <ViewUser /> }, 
-            { path: "users/:id/edit", element: <UserEditForm /> },
-            { path: "userEdit/:id", element: <UserEditForm /> }, 
+            {
+                element: <PermissionGuard module="users" action="view" />,
+                children: [
+                    { path: "userList", element: <UserListPage /> },
+                ],
+            },
+            {
+                element: <PermissionGuard module="users" action="view" allowOwnProfile />,
+                children: [
+                    { path: "userView/:id", element: <ViewUser /> },
+                ],
+            },
+            {
+                element: <PermissionGuard module="users" action="create" />,
+                children: [
+                    { path: "userCreate", element: <UserRegisterForm /> },
+                ],
+            },
+            {
+                element: <PermissionGuard module="users" action="edit" />,
+                children: [
+                    { path: "users/:id/edit", element: <UserEditForm /> },
+                    { path: "userEdit/:id", element: <UserEditForm /> },
+                ],
+            },
 
             // --- ÓRDENES ---
-            { path: "orderList", element: <OrderListPage /> },
-            { path: "orderCreate", element: <OrderCreateForm /> },
-            { path: "orderView/:id", element: <ViewOrder /> },
-            { path: "orders/:id/edit", element: <OrderEditForm /> }, // Reemplazar con OrderEditForm cuando exista
+            {
+                element: <PermissionGuard module="orders" action="view" />,
+                children: [
+                    { path: "orderList", element: <OrderListPage /> },
+                    { path: "orderView/:id", element: <ViewOrder /> },
+                ],
+            },
+            {
+                element: <PermissionGuard module="orders" action="create" />,
+                children: [
+                    { path: "orderCreate", element: <OrderCreateForm /> },
+                ],
+            },
+            {
+                element: <PermissionGuard module="orders" action="edit" />,
+                children: [
+                    { path: "orders/:id/edit", element: <OrderEditForm /> },
+                ],
+            },
 
             // --- INVENTARIO ---
-            { path: "inventoryList", element: <InventoryListPage />},
-            { path: "inventoryCreate", element: <InventoryCreateForm />},
-            { path: "ViewInventory/:id", element: <ViewInventory /> },
-            { path: "inventory/:id/edit", element: <InventoryEditForm /> },
+            {
+                element: <PermissionGuard module="inventory" action="view" />,
+                children: [
+                    { path: "inventoryList", element: <InventoryListPage /> },
+                    { path: "ViewInventory/:id", element: <ViewInventory /> },
+                ],
+            },
+            {
+                element: <PermissionGuard module="inventory" action="create" />,
+                children: [
+                    { path: "inventoryCreate", element: <InventoryCreateForm /> },
+                ],
+            },
+            {
+                element: <PermissionGuard module="inventory" action="edit" />,
+                children: [
+                    { path: "inventory/:id/edit", element: <InventoryEditForm /> },
+                ],
+            },
 
             // --- PROVEEDORES ---
-            { path: "providerList", element: <ProviderListPage/> },
-            { path: "providerCreate", element: <ProviderRegisterForm />},
-            { path: "ViewSuppliers/:id", element: < ViewSuppliers />},
-            { path: "providerEdit/:id", element: < ProviderEditForm />},
+            {
+                element: <PermissionGuard module="providers" action="view" />,
+                children: [
+                    { path: "providerList", element: <ProviderListPage /> },
+                    { path: "ViewSuppliers/:id", element: <ViewSuppliers /> },
+                ],
+            },
+            {
+                element: <PermissionGuard module="providers" action="create" />,
+                children: [
+                    { path: "providerCreate", element: <ProviderRegisterForm /> },
+                ],
+            },
+            {
+                element: <PermissionGuard module="providers" action="edit" />,
+                children: [
+                    { path: "providerEdit/:id", element: <ProviderEditForm /> },
+                ],
+            },
 
             // --- MENÚ ---
-            { path: "menuList", element: <MenuListPage /> },
-            { path: "menuCreate", element: <MenuCreateForm /> },
-            { path: "addmenu", element: <MenuCreateForm />}, // Si es duplicado, revisa si necesitas ambas
-            { path: "ViewMenu/:id", element: <ViewMenu /> },
-            { path: "menuEdit/:id", element: <MenuEditForm /> },
-
-            // --- PERMISOS ---
-            { path: "permissions", element: <PermissionsPage /> },
-        
+            {
+                element: <PermissionGuard module="menu" action="view" />,
+                children: [
+                    { path: "menuList", element: <MenuListPage /> },
+                    { path: "ViewMenu/:id", element: <ViewMenu /> },
+                ],
+            },
+            {
+                element: <PermissionGuard module="menu" action="create" />,
+                children: [
+                    { path: "menuCreate", element: <MenuCreateForm /> },
+                    { path: "addmenu", element: <MenuCreateForm /> },
+                ],
+            },
+            {
+                element: <PermissionGuard module="menu" action="edit" />,
+                children: [
+                    { path: "menuEdit/:id", element: <MenuEditForm /> },
+                ],
+            },
         ],
     },
     ],

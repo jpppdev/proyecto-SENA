@@ -13,6 +13,14 @@ export const permissionService = {
         return await permissionRepository.getAllData();
     },
 
+    // Obtiene los permisos efectivos del usuario autenticado
+    async getMyPermissions(userId) {
+        if (!userId) {
+            throw new Error("Usuario no autenticado");
+        }
+        return await permissionRepository.getMyPermissions(userId);
+    },
+
     // Actualiza los permisos de un rol especifico
     async updateRolePermissions(roleName, permissions) {
         if (!roleName) {

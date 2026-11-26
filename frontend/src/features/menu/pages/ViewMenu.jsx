@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import { Breadcrumbs, Button } from "@/shared";
+import { usePermissions } from "@/features/permissions";
 import { getMenuById, updateMenuStatus, disableMenu } from "../services/menuServices";
 import { showSuccessAlert, showErrorAlert, showDisableAlert } from "@/shared/services/alertService";
 
@@ -22,6 +23,7 @@ export default function ViewMenu() {
 }
 
 function DishDetails({ id }) {
+  const { can } = usePermissions();
   const [dish, setDish] = useState(null);
   const [loading, setLoading] = useState(true);
   const [imgError, setImgError] = useState(false);
@@ -370,32 +372,40 @@ function DishDetails({ id }) {
           </div>
 
           {/* ACCIONES */}
-          <div className="rounded-xl border border-background-clear bg-background-positive/72 p-5 shadow-[0_4px_18px] shadow-text-coffee/3">
-            <div className="flex flex-col gap-2.5">
-              <Link to={`/dashboard/menuEdit/${dish.id}`}>
-                <Button className="flex min-h-10 w-full items-center rounded-lg border border-background-clear bg-border-clear2/30 px-4 py-2.5 text-left text-medium text-text-coffee transition-colors hover:bg-border-clear2/70 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand">
-                  <span className="flex w-full items-center gap-4 [&>svg]:shrink-0 [&>svg]:text-text-brand">
-                    <Edit size={20} />
-                    Actualizar menú
-                  </span>
-                </Button>
-              </Link>
+          {(can("menu", "edit") || can("menu", "delete")) && (
+            <div className="rounded-xl border border-background-clear bg-background-positive/72 p-5 shadow-[0_4px_18px] shadow-text-coffee/3">
+              <div className="flex flex-col gap-2.5">
+                {can("menu", "edit") && (
+                  <>
+                    <Link to={`/dashboard/menuEdit/${dish.id}`}>
+                      <Button className="flex min-h-10 w-full items-center rounded-lg border border-background-clear bg-border-clear2/30 px-4 py-2.5 text-left text-medium text-text-coffee transition-colors hover:bg-border-clear2/70 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand">
+                        <span className="flex w-full items-center gap-4 [&>svg]:shrink-0 [&>svg]:text-text-brand">
+                          <Edit size={20} />
+                          Actualizar menú
+                        </span>
+                      </Button>
+                    </Link>
 
-              <Button onClick={handleToggleStatus}>
-                <span className="flex items-center justify-center gap-2">
-                  <ToggleRight size={20} />
-                  Cambiar estado
-                </span>
-              </Button>
+                    <Button onClick={handleToggleStatus}>
+                      <span className="flex items-center justify-center gap-2">
+                        <ToggleRight size={20} />
+                        Cambiar estado
+                      </span>
+                    </Button>
+                  </>
+                )}
 
-              <Button onClick={handleDisableDish}>
-                <span className="flex items-center justify-center gap-2">
-                  <Ban size={20} />
-                  Deshabilitar platillo
-                </span>
-              </Button>
+                {can("menu", "delete") && (
+                  <Button onClick={handleDisableDish}>
+                    <span className="flex items-center justify-center gap-2">
+                      <Ban size={20} />
+                      Deshabilitar platillo
+                    </span>
+                  </Button>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

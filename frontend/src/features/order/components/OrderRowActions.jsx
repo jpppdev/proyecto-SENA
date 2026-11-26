@@ -7,9 +7,11 @@ import {
 } from "@/shared/services/alertService";
 import { useNavigate } from "react-router-dom";
 import { disableOrder } from "../services/orderServices";
+import { usePermissions } from "@/features/permissions";
 
 export default function OrderRowActions({ order }) {
   const navigate = useNavigate();
+  const { can } = usePermissions();
 
   const handleView = () => {
     navigate(`/dashboard/orderView/${order.id}`);
@@ -51,9 +53,9 @@ export default function OrderRowActions({ order }) {
   return (
     <RowActions
       entity="orden"
-      onView={handleView}
-      onEdit={handleEdit}
-      onDisable={handleDisable}
+      onView={can("orders", "view") ? handleView : undefined}
+      onEdit={can("orders", "edit") ? handleEdit : undefined}
+      onDisable={can("orders", "delete") ? handleDisable : undefined}
     />
   );
 }

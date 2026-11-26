@@ -5,10 +5,12 @@ import { useNavigate } from "react-router-dom";
 import { Button, DataTable } from "@/shared";
 import { ProviderColumns } from "../table/ProviderColumns"; 
 import { getProviders } from "../services/providerServices";
+import { usePermissions } from "@/features/permissions";
 import ProviderReportConfigModal from "@/features/provider/reports/components/ProviderReportConfigModal";
 
 export default function ProviderListPage() {
   const navigate = useNavigate();
+  const { can } = usePermissions();
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [providersData, setProvidersData] = useState([]);
 
@@ -34,9 +36,11 @@ export default function ProviderListPage() {
           <FileDown className="mr-2 size-5 shrink-0" aria-hidden="true" />
           Reportar proveedor
         </Button>
-        <Button onClick={() => navigate("/dashboard/providerCreate")}>
-          Crear proveedor
-        </Button>
+        {can("providers", "create") && (
+          <Button onClick={() => navigate("/dashboard/providerCreate")}>
+            Crear proveedor
+          </Button>
+        )}
       </ListPageHeader>
 
       <DataTable data={providersData} columns={ProviderColumns} />

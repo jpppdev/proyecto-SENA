@@ -5,11 +5,13 @@ import { DataTable, Button } from "@/shared";
 import { OrderColumns } from "../table/OrderColumns";
 import { getOrders } from "../services/orderServices";
 import { useNavigate } from "react-router-dom";
+import { usePermissions } from "@/features/permissions";
 // CORRECCIÓN 2: Importamos el modal desde el módulo de usuarios donde ya existe
 import  OrderReportConfigModal  from "@/features/order/reports/components/OrderReportConfigModal";
 
 export default function OrderListPage() {
   const navigate = useNavigate();
+  const { can } = usePermissions();
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [ordersData, setOrdersData] = useState([]);
 
@@ -35,9 +37,11 @@ export default function OrderListPage() {
           <FileDown className="mr-2 size-5 shrink-0" aria-hidden="true" />
           Reportar orden
         </Button>
-        <Button onClick={() => navigate("/dashboard/orderCreate")}>
-          Crear orden
-        </Button>
+        {can("orders", "create") && (
+          <Button onClick={() => navigate("/dashboard/orderCreate")}>
+            Crear orden
+          </Button>
+        )}
       </ListPageHeader>
 
       <DataTable data={ordersData} columns={OrderColumns} />

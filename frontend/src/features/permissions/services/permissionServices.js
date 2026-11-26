@@ -59,7 +59,9 @@ export async function saveRolePermissions(roleName, permissions) {
       return { roleName, permissions };
     }
 
-    return await response.json();
+    const data = await response.json();
+    window.dispatchEvent(new CustomEvent("permissions:updated"));
+    return data;
   } catch {
     return { roleName, permissions };
   }
@@ -85,8 +87,26 @@ export async function saveUserPermissions(userId, permissions, roleName) {
       return { userId, roleName, permissions };
     }
 
-    return await response.json();
+    const data = await response.json();
+    window.dispatchEvent(new CustomEvent("permissions:updated"));
+    return data;
   } catch {
     return { userId, roleName, permissions };
   }
+}
+
+export async function getMyPermissions() {
+  const token = sessionStorage.getItem("token");
+  const response = await fetch(`${PERMISSIONS_URL}/me`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("No se pudieron cargar los permisos del usuario");
+  }
+
+  return response.json();
 }

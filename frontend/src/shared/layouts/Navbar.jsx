@@ -21,12 +21,15 @@ import { showErrorAlert, showDeleteAlert } from "@/shared/services/alertService"
 
 import { logout } from "@/features/auth/schemas/logoutService";
 import { readSessionPayload } from "@/features/auth/session";
+import { usePermissions } from "@/features/permissions";
 
 const navLinkClass = "text-sm font-semibold text-[#713008] transition-colors hover:text-orange-600";
 
 export default function Navbar() {
   const navigate = useNavigate();
   const userId = Number(readSessionPayload()?.id);
+  const { user, isAdmin } = usePermissions();
+  const displayName = user?.userName || (isAdmin ? "Admin" : "Usuario");
   const [darkMode, setDarkMode] = useState(
     document.documentElement.classList.contains("dark")
   );
@@ -88,14 +91,16 @@ export default function Navbar() {
 
           {/* Enlaces de navegación */}
           <ul className="hidden shrink-0 items-center gap-5 xl:flex">
-            <li>
-              <Link
-                to="/dashboard/home"
-                className={navLinkClass}
-              >
-                Panel
-              </Link>
-            </li>
+            {isAdmin && (
+              <li>
+                <Link
+                  to="/dashboard/home"
+                  className={navLinkClass}
+                >
+                  Panel
+                </Link>
+              </li>
+            )}
 
             <li>
               <Link
@@ -160,12 +165,16 @@ export default function Navbar() {
                   className="inline-flex items-center gap-4 rounded-full p-0.5 text-base font-bold text-[#713008] hover:bg-white/40 focus-visible:outline-2 focus-visible:outline-orange-600"
                 >
                   <span className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white/90 bg-[linear-gradient(145deg,#c87521,#a4470a)] text-white sm:h-12 sm:w-12"><UserRound size={28} aria-hidden="true" /></span>
-                  <span className="hidden sm:inline">Admin</span>
+                  <span className="hidden sm:inline">{displayName}</span>
                   <ChevronDown size={16} className="hidden sm:block" aria-hidden="true" />
                 </button>
               </DropdownTrigger>
 
               <DropdownContent className="right-0 border-orange-100 bg-[#fff8f1]! text-[#713008]! [&_button:hover]:bg-orange-100">
+
+                <DropdownItem asChild className="xl:hidden!">
+                  <Link to="/dashboard/Dishes">Platillos</Link>
+                </DropdownItem>
 
                 <DropdownItem asChild className="xl:hidden!">
                   <Link to="/dashboard/tables">Mesas</Link>
@@ -179,11 +188,13 @@ export default function Navbar() {
                   </DropdownItem>
                 )}
 
-                <DropdownItem asChild>
-                  <Link to="/dashboard/permissions" className="block w-full">
-                    Gestion de Permisos
-                  </Link>
-                </DropdownItem>
+                {isAdmin && (
+                  <DropdownItem asChild>
+                    <Link to="/dashboard/permissions" className="block w-full">
+                      Gestion de Permisos
+                    </Link>
+                  </DropdownItem>
+                )}
 
                 <DropdownItem onClick={handleLogout}>Cerrar sesión</DropdownItem>
 
