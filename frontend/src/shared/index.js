@@ -18,6 +18,7 @@ export {default as Checkbox} from "./components/Checkbox";
 export {IconButton} from "./components/IconButton";
 export {default as SearchField} from "./components/SearchField";
 export {default as StatusSwitch} from "./components/StatusSwitch";
+export {default as StatusBadge} from "./components/StatusBadge";
 export {default as DataTable} from "./components/DataTable";
 export {default as Breadcrumbs} from "./components/Breadcrumbs";
 export {Dropdown,

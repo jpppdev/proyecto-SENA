@@ -43,10 +43,10 @@ const DEFAULT_PRODUCTS = [
 const CardSection = ({ icon, title, children }) => (
   <div className="bg-white/30 backdrop-blur-md rounded-3xl p-6 shadow-sm border border-white/40 flex flex-col gap-5">
     <div className="flex items-center gap-3 mb-2">
-      <div className="bg-[var(--color-secondary-500)] p-2 rounded-xl text-white shadow-md">
+      <div className="bg-brand p-2 rounded-xl text-white shadow-md">
         {icon}
       </div>
-      <h3 className="text-[var(--color-text-primary)] font-extrabold text-lg tracking-wide">
+      <h3 className="text-text-primary font-extrabold text-lg tracking-wide">
         {title}
       </h3>
     </div>
@@ -217,18 +217,18 @@ export default function OrderEditForm() {
   };
 
   return (
-    <div className="relative w-full max-w-[1200px] min-h-[600px] mx-auto mt-10 text-[var(--color-text-primary)]">
+    <div className="relative w-full max-w-[1200px] min-h-[600px] mx-auto mt-10 text-text-primary">
       
       {/* CAPA DE ÉXITO */}
       {isSuccess && (
-        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-[var(--color-background-inverse)]/40 backdrop-blur-md transition-all duration-300 rounded-[2.5rem]">
-          <div className="w-32 h-32 bg-[var(--color-surface-muted)] rounded-[2rem] rotate-3 flex items-center justify-center mb-6 shadow-xl relative">
-            <PencilLine className="w-14 h-14 text-[var(--color-brand)] -rotate-3" />
-            <div className="absolute -bottom-2 -right-2 bg-[var(--color-success)] rounded-full p-2 border-4 border-[var(--color-surface-muted)] -rotate-3">
-              <Check className="w-6 h-6 text-[var(--color-text-inverse)]" strokeWidth={3} />
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-background-inverse/40 backdrop-blur-md transition-all duration-300 rounded-[2.5rem]">
+          <div className="w-32 h-32 bg-surface-muted rounded-[2rem] rotate-3 flex items-center justify-center mb-6 shadow-xl relative">
+            <PencilLine className="w-14 h-14 text-brand -rotate-3" />
+            <div className="absolute -bottom-2 -right-2 bg-success rounded-full p-2 border-4 border-surface-muted -rotate-3">
+              <Check className="w-6 h-6 text-text-inverse" strokeWidth={3} />
             </div>
           </div>
-          <h2 className="text-[var(--color-text-primary)] text-2xl font-bold tracking-wide drop-shadow-md">
+          <h2 className="text-text-primary text-2xl font-bold tracking-wide drop-shadow-md">
             ¡Orden Actualizada!
           </h2>
         </div>
@@ -237,17 +237,17 @@ export default function OrderEditForm() {
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 px-4">
         <div>
-          <h1 className="text-3xl font-extrabold text-[var(--color-text-inverse)] mb-1 drop-shadow-sm">
+          <h1 className="text-3xl font-extrabold text-text-inverse mb-1 drop-shadow-sm">
             Editar Orden #{id}
           </h1>
-          <p className="text-sm font-medium text-[var(--color-text-inverse)] opacity-90">
+          <p className="text-sm font-medium text-text-inverse opacity-90">
             Modifica los detalles del cliente o los productos facturados
           </p>
         </div>
         <button 
           type="button" 
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 rounded-xl border-2 border-[var(--color-text-inverse)] text-[var(--color-text-inverse)] px-5 py-2.5 text-sm font-bold hover:bg-white/20 transition-all shadow-sm"
+          className="flex items-center gap-2 rounded-xl border-2 border-text-inverse text-text-inverse px-5 py-2.5 text-sm font-bold hover:bg-white/20 transition-all shadow-sm"
         >
           <ArrowLeft className="h-4 w-4" />
           Volver a órdenes
@@ -256,7 +256,7 @@ export default function OrderEditForm() {
 
       <form 
         onSubmit={handleSubmit} 
-        className="space-y-6 [&_input]:!bg-white/60 [&_select]:!bg-white/60 [&_textarea]:!bg-white/60 [&_input]:!text-[var(--color-gray-900)] [&_select]:!text-[var(--color-gray-900)] [&_textarea]:!text-[var(--color-gray-900)] [&_input]:!border-white/50 [&_select]:!border-white/50 [&_textarea]:!border-white/50"
+        className="space-y-6 [&_input]:!bg-white/60 [&_select]:!bg-white/60 [&_textarea]:!bg-white/60 [&_input]:!text-text-primary [&_select]:!text-text-primary [&_textarea]:!text-text-primary [&_input]:!border-white/50 [&_select]:!border-white/50 [&_textarea]:!border-white/50"
       >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           
@@ -283,7 +283,7 @@ export default function OrderEditForm() {
               <button 
                 type="button"
                 onClick={handleAddItem}
-                className="h-12 px-5 rounded-xl border-2 border-[var(--color-secondary-500)] text-[var(--color-secondary-600)] bg-white/50 font-bold text-sm flex items-center justify-center gap-2 hover:bg-[var(--color-secondary-500)] hover:text-white transition-all shadow-sm"
+                className="h-12 px-5 rounded-xl border-2 border-brand text-brand bg-white/50 font-bold text-sm flex items-center justify-center gap-2 hover:bg-brand hover:text-white transition-all shadow-sm"
               >
                 <Plus size={16} /> Agregar
               </button>
@@ -296,13 +296,13 @@ export default function OrderEditForm() {
               <Select label="Método de Pago *" htmlFor="paymentMethod" name="paymentMethod" value={formData.paymentMethod} onChange={handleChange} error={errors.paymentMethod} options={PAYMENT_METHODS} />
             </div>
             <div className="w-full">
-              <label className="block text-[var(--text-caption)] font-bold text-[var(--color-text-secondary)] mb-1 uppercase">Observaciones del Pedido</label>
+              <label className="block text-caption font-bold text-text-secondary mb-1 uppercase">Observaciones del Pedido</label>
               <textarea 
                 name="observations" 
                 value={formData.observations} 
                 onChange={handleChange}
                 placeholder="Ej: Sin azúcar, leche deslactosada..."
-                className="w-full rounded-md border border-[var(--color-border-clear)] px-4 py-3 text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-brand)] resize-none h-20 transition-all"
+                className="w-full rounded-md border border-border-clear px-4 py-3 text-text-primary focus:outline-none focus:ring-2 focus:ring-brand resize-none h-20 transition-all"
               ></textarea>
               {errors.observations && <p className="text-xs text-red-500 mt-1">{errors.observations}</p>}
             </div>
@@ -312,7 +312,7 @@ export default function OrderEditForm() {
           <CardSection icon={<ShoppingCart size={20} />} title="Resumen del Pedido">
             <div className="flex-1 bg-white/40 border border-white/50 rounded-xl p-4 overflow-y-auto max-h-[200px] custom-scrollbar">
               {orderItems.length === 0 ? (
-                <div className="h-full flex items-center justify-center text-[var(--color-text-muted)] text-sm font-medium">
+                <div className="h-full flex items-center justify-center text-text-muted text-sm font-medium">
                   No hay productos en la orden
                 </div>
               ) : (
@@ -320,11 +320,11 @@ export default function OrderEditForm() {
                   {orderItems.map((item) => (
                     <li key={item.id} className="flex justify-between items-center border-b border-white/40 pb-2 last:border-0 last:pb-0">
                       <div className="flex flex-col">
-                        <span className="font-bold text-[var(--color-text-primary)] text-sm">{item.name}</span>
-                        <span className="text-xs text-[var(--color-text-muted)]">{item.quantity} x ${item.price.toLocaleString("es-CO")}</span>
+                        <span className="font-bold text-text-primary text-sm">{item.name}</span>
+                        <span className="text-xs text-text-muted">{item.quantity} x ${item.price.toLocaleString("es-CO")}</span>
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="font-extrabold text-[var(--color-text-primary)]">${(item.quantity * item.price).toLocaleString("es-CO")}</span>
+                        <span className="font-extrabold text-text-primary">${(item.quantity * item.price).toLocaleString("es-CO")}</span>
                         <button type="button" onClick={() => handleRemoveItem(item.id)} className="text-red-500 hover:text-red-700 hover:bg-white/50 p-1.5 rounded-lg transition-colors">
                           <Trash2 size={16} />
                         </button>
@@ -335,7 +335,7 @@ export default function OrderEditForm() {
               )}
             </div>
             
-            <div className="flex justify-between items-center bg-[var(--color-background-inverse)] text-[var(--color-text-inverse)] p-4 rounded-xl shadow-inner mt-2">
+            <div className="flex justify-between items-center bg-background-inverse text-text-inverse p-4 rounded-xl shadow-inner mt-2">
               <span className="font-bold text-lg">TOTAL:</span>
               <span className="font-extrabold text-2xl">${totalOrder.toLocaleString("es-CO")}</span>
             </div>
@@ -345,7 +345,7 @@ export default function OrderEditForm() {
 
         {/* FOOTER GENERAL */}
         <div className="flex justify-end gap-4 bg-white/30 backdrop-blur-md p-4 rounded-3xl shadow-sm border border-white/40 mt-6">
-          <Button type="button" onClick={() => navigate(-1)} variant="secondary" size="md" className="rounded-xl border-[var(--color-border-strong)] text-[var(--color-text-primary)] hover:bg-white/40 transition-all">
+          <Button type="button" onClick={() => navigate(-1)} variant="secondary" size="md" className="rounded-xl border-border-strong text-text-primary hover:bg-white/40 transition-all">
             Cancelar
           </Button>
           <Button type="submit" disabled={isSubmitting} variant="primary">

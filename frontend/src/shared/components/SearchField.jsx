@@ -17,14 +17,14 @@ const variantStyles = {
   // Filled: campo con fondo relleno, borde mínimo o sutil
 //   (Material "Filled TextField").
   filled:
-    "bg-neutral-100 border-blue-500 hover:border-blue-700 focus-within:bg-white",
+    "bg-brand-light border-blue-500 hover:border-blue-700 focus-within:bg-background-div",
 
   // Outlined: campo con fondo transparente y borde visible siempre.
   //fondo trasparente, borde, y el hover
   // bg-transparent (El Fondo)
   // border-green-500 (El borde)
   // hover:border-green-600 (La Interacción)
-  outlined: "bg-transparent border-[var(--color-border)] hover:border-green-600",
+  outlined: "bg-transparent border-border hover:border-green-600",
 };
 
 const SearchField = forwardRef(
@@ -80,9 +80,9 @@ const SearchField = forwardRef(
             )}
         >
             {loading ? (
-                <LoaderCircle className="size-4 shrink-0 animate-spin text-[var(--color-border)] " />
+                <LoaderCircle className="size-4 shrink-0 animate-spin text-border " />
             ) : (
-                <SearchIcon className="size-4 shrink-0  text-[var(--color-border)]" />
+                <SearchIcon className="size-4 shrink-0  text-border" />
             )}
 
             {/* cambio de color del icono  */}
@@ -97,7 +97,7 @@ const SearchField = forwardRef(
                 aria-label={ariaLabel}
                 autoComplete={autoComplete}
                 onChange={(e) => onChange(e.target.value)}
-                className="search__input flex-1  px-2 outline-none placeholder-[var(--color-border)] "
+                className="search__input flex-1  px-2 outline-none placeholder-border "
                 // esta linea es para cambiar el color  placeholder 
                 // flex: ocupa el espacio sobrante
                 // bg:fondo traspa
@@ -111,9 +111,9 @@ const SearchField = forwardRef(
                     type="button"
                     onClick={handleClear}
                     aria-label="Limpiar búsqueda"
-                    className="search__clear rounded-full p-1 hover:bg-neutral-200 ]"
+                    className="search__clear rounded-full p-1 hover:bg-surface-muted"
                 >
-                    <X className="size-4 text-neutral-500" />
+                    <X className="size-4 text-text-muted" />
                 </button>
             )}
         </form>

@@ -1,3 +1,4 @@
+import { StatusBadge } from "@/shared";
 import MenuRowActions from "../components/MenuRowActions";
 import { updateMenuStatus } from "../services/menuServices";
 
@@ -50,18 +51,13 @@ export const MenuColumns = [
         }
       };
       return (
-        <button
-          type="button"
+        <StatusBadge
+          label={isActive ? "DISPONIBLE" : "AGOTADO"}
+          tone={isActive ? "success" : "danger"}
+          outlined
           onClick={handleToggle}
-          title="Haz clic para cambiar el estado"
-          className={`px-3 py-1 rounded-full text-xs font-bold tracking-wide cursor-pointer transition-opacity hover:opacity-80 ${
-            isActive 
-              ? "bg-green-100 text-green-700 border border-green-200" 
-              : "bg-red-100 text-red-700 border border-red-200"
-          }`}
-        >
-          {isActive ? "DISPONIBLE" : "AGOTADO"}
-        </button>
+          className="px-3 py-1 font-bold tracking-wide"
+        />
       );
     }
   },

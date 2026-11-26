@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Button, Checkbox, Select } from "@/shared";
-import { Shield, Users, Package, ShoppingCart, Coffee, Store, UserCheck } from "lucide-react";
+import { Button } from "@/shared";
+import { Users, Package, ShoppingCart, Coffee, Store } from "lucide-react";
 import { showSuccessAlert, showErrorAlert } from "@/shared/services/alertService";
 import { useNavigate } from "react-router-dom";
 import {
@@ -9,6 +9,9 @@ import {
     saveUserPermissions,
 } from "../services/permissionServices";
 import { getUsers } from "@/features/users/services/userServices";
+import PermissionsHeader from "../components/PermissionsHeader";
+import PermissionsFilters from "../components/PermissionsFilters";
+import PermissionModuleCard from "../components/PermissionModuleCard";
 
 const fallbackRoles = [
     { label: "Administrador (Acceso Total)", value: "administrador" },
@@ -329,123 +332,40 @@ export default function PermissionsPage() {
     const selectedUserObj = dbUsers.find((u) => String(u.id) === String(selectedUserId));
 
     return (
-        <div className="relative w-full max-w-[1200px] min-h-[600px] mx-auto mt-10 text-[var(--color-text-primary)]">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 px-4">
-                <div>
-                    <h1 className="text-3xl font-extrabold text-[#4a1d04] mb-1 drop-shadow-sm flex items-center gap-3">
-                        <Shield className="text-[var(--color-secondary-500)]" size={32} />
-                        Gestión de Permisos
-                    </h1>
-                    <p className="text-sm font-medium text-[#713008]">
-                        Configura los niveles de acceso por rol o asigna permisos específicos a cualquier usuario de la base de datos.
-                    </p>
-                </div>
-            </div>
+        <div className="relative w-full max-w-[1200px] min-h-[600px] mx-auto mt-10 text-text-primary">
+            <PermissionsHeader />
 
-            <div className="bg-white/30 backdrop-blur-md rounded-[2.5rem] shadow-md border border-white/40 p-8 md:p-10">
-                <div className="mb-8 flex flex-col lg:flex-row lg:items-end gap-6">
-                    <div className="w-full min-w-0 max-w-100">
-                        <Select
-                            variant="create"
-                            label={selectedUserId ? "Rol asignado al Usuario" : "Seleccionar Rol a Configurar"}
-                            name="selectedRole"
-                            value={selectedRole}
-                            onChange={handleRoleChange}
-                            htmlFor="role-select"
-                            options={roles}
-                        />
-                    </div>
-
-                    <div className="w-full min-w-0 max-w-100">
-                        <Select
-                            variant="create"
-                            label="Asignar Permiso Específico a Usuario (BD)"
-                            name="selectedUser"
-                            value={selectedUserId}
-                            onChange={handleUserChange}
-                            htmlFor="user-select"
-                            options={userOptions}
-                        />
-                    </div>
-
-                    {selectedUserId && (
-                        <Button
-                            type="button"
-                            variant="secondary"
-                            size="md"
-                            onClick={() => setSelectedUserId("")}
-                            className="rounded-xl"
-                        >
-                            Volver a permisos por rol
-                        </Button>
-                    )}
-                </div>
-
-                {selectedUserObj && (
-                    <div className="mb-8 flex items-center gap-3 rounded-2xl bg-white/90 border-2 border-orange-300 px-5 py-3.5 text-sm font-semibold text-[#4a1d04] shadow-md">
-                        <UserCheck className="text-orange-600 shrink-0" size={22} />
-                        <span>
-                            Editando permisos específicos para el usuario:{" "}
-                            <strong className="font-extrabold text-gray-950">{selectedUserObj.userName} {selectedUserObj.userLastname || ""}</strong>{" "}
-                            <span className="font-bold text-orange-800">({selectedUserObj.userEmail})</span>
-                        </span>
-                    </div>
-                )}
+            <div className="bg-background-div/30 backdrop-blur-md rounded-[2.5rem] shadow-md border border-border/40 p-8 md:p-10">
+                <PermissionsFilters
+                    roles={roles}
+                    selectedRole={selectedRole}
+                    onRoleChange={handleRoleChange}
+                    userOptions={userOptions}
+                    selectedUserId={selectedUserId}
+                    onUserChange={handleUserChange}
+                    onClearUser={() => setSelectedUserId("")}
+                    selectedUserObj={selectedUserObj}
+                />
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                    {permissionModules.map((module) => {
-                        const currentModulePerms = activePermissions[module.id] || [];
-                        const allSelected = currentModulePerms.length === module.actions.length;
-
-                        return (
-                            <div key={module.id} className="bg-white/40 rounded-3xl p-6 shadow-sm border border-white/50 flex flex-col gap-4 transition-all hover:bg-white/50">
-                                <div className="flex items-center justify-between border-b border-[var(--color-border-clear)] pb-3">
-                                    <div className="flex items-center gap-3 text-[#4a1d04] font-extrabold text-lg">
-                                        <div className="bg-[var(--color-secondary-500)] p-2 rounded-xl text-white shadow-md">
-                                            {module.icon}
-                                        </div>
-                                        {module.name}
-                                    </div>
-                                </div>
-
-                                <div className="flex justify-end mb-2">
-                                    <button
-                                        type="button"
-                                        onClick={() => handleSelectAllModule(module.id, !allSelected)}
-                                        className="text-xs font-bold text-[#713008] hover:text-orange-950 underline transition-colors"
-                                    >
-                                        {allSelected ? "Desmarcar todos" : "Seleccionar todos"}
-                                    </button>
-                                </div>
-
-                                <div className="flex flex-col gap-3">
-                                    {module.actions.map((action) => (
-                                        <div key={action.key} className="flex items-center justify-between bg-white/75 p-3 rounded-xl border border-white/80">
-                                            <span className="text-sm font-semibold text-gray-900">
-                                                {action.label}
-                                            </span>
-                                            <Checkbox
-                                                id={`${module.id}-${action.key}`}
-                                                name={`${module.id}-${action.key}`}
-                                                label=""
-                                                checked={currentModulePerms.includes(action.key)}
-                                                onChange={() => handlePermissionToggle(module.id, action.key)}
-                                            />
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        );
-                    })}
+                    {permissionModules.map((module) => (
+                        <PermissionModuleCard
+                            key={module.id}
+                            module={module}
+                            currentModulePerms={activePermissions[module.id] || []}
+                            onTogglePermission={handlePermissionToggle}
+                            onSelectAllModule={handleSelectAllModule}
+                        />
+                    ))}
                 </div>
 
-                <div className="flex justify-end gap-4 mt-12 border-t-2 border-[var(--color-border-strong)] pt-8">
-                    <Button 
-                        type="button" 
-                        onClick={() => navigate(-1)} 
-                        variant="secondary" 
-                        size="md" 
-                        className="rounded-xl border-[var(--color-border-strong)] text-[var(--color-text-primary)] hover:bg-white/40 transition-all"
+                <div className="flex justify-end gap-4 mt-12 border-t-2 border-border-strong pt-8">
+                    <Button
+                        type="button"
+                        onClick={() => navigate(-1)}
+                        variant="secondary"
+                        size="md"
+                        className="rounded-xl border-border-strong text-text-primary hover:bg-background-div/40 transition-all"
                     >
                         Cancelar
                     </Button>

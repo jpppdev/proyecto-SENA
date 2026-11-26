@@ -1,5 +1,6 @@
 // src/features/inventory/table/InventoryColumns.jsx
 
+import { StatusBadge } from "@/shared";
 import InventoryRowActions from "../components/InventoryRowActions";
 import { updateInventoryStatus } from "../services/inventoryServices";
 
@@ -46,19 +47,19 @@ export const InventoryColumns = [
         }
       };
 
+      const tone =
+        status === "disponible"
+          ? "success"
+          : status === "agotado" || status === "inactivo"
+            ? "danger"
+            : "warning";
+
       return (
-        <button
-          type="button"
+        <StatusBadge
+          label={String(status || "").toUpperCase()}
+          tone={tone}
           onClick={handleToggle}
-          title="Haz clic para cambiar el estado"
-          className={`px-2 py-1 rounded-full text-xs font-semibold cursor-pointer transition-opacity hover:opacity-80 ${
-            status === 'disponible' ? 'bg-green-100 text-green-700' : 
-            status === 'agotado' || status === 'inactivo' ? 'bg-red-100 text-red-700' : 
-            'bg-yellow-100 text-yellow-700'
-          }`}
-        >
-          {String(status || "").toUpperCase()}
-        </button>
+        />
       );
     }
   },

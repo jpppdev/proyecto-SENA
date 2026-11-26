@@ -1,191 +1,145 @@
-
 import { useState, useEffect } from "react";
-import {    Input, 
-            Button, 
-            Select, 
-            FileInput
-    } from "@/shared";
+import { Input, Button, Select, FileInput } from "@/shared";
 import { getDocumentTypes } from "@/services/selectService";
-import { useNavigate} from "react-router-dom";
-import {userSchema} from "../schemas/userSchema";
+import { useNavigate } from "react-router-dom";
+import { userSchema } from "../schemas/userSchema";
 import { createUser } from "../services/userServices";
 import { UserPlus, ArrowLeft, Check, User } from "lucide-react";
 import { showSuccessAlert, showErrorAlert, showCancelAlert } from "@/shared/services/alertService";
 
-export default function UserRegisterForm (){
+export default function UserRegisterForm() {
+  // Estado
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
-        //Estado
-        const [isSubmitting, setIsSubmitting] = useState(false);
-        const [isSuccess, setIsSuccess] = useState(false);
-        //Navegacion
-        const navigate = useNavigate();
+  // Navegación
+  const navigate = useNavigate();
 
-        //Estado del error
-         const [errors, setErrors] = useState({})
+  // Estado del error
+  const [errors, setErrors] = useState({});
 
-        // Estado del formulario 
-        const [formData, setFormData] =  useState({
-            userName: "",
-            userLastName: "",
-            userEmail: "",
-            businessEmail: "",
-            userPhone: "",
-            userDocumentTypes: "",
-            userDocumentNumber: "",
-            startDate: "",
-            endDate: "",
-            address: "",
-            role: "",
-            userPassword: "",
-            userImage: [],
+  // Estado del formulario
+  const [formData, setFormData] = useState({
+    userName: "",
+    userLastName: "",
+    userEmail: "",
+    businessEmail: "",
+    userPhone: "",
+    userDocumentTypes: "",
+    userDocumentNumber: "",
+    startDate: "",
+    endDate: "",
+    address: "",
+    role: "",
+    userPassword: "",
+    userImage: [],
 
-            //Flags booleanos
-            isStaff: false,
-            isActive: true,
-            isSuperUser: false,
-        });
+    // Flags booleanos
+    isStaff: false,
+    isActive: true,
+    isSuperUser: false,
+  });
 
-        //Estado para los tipos de documento
-        const [documentTypes, setDocumentTypes] = useState([]);
-    
-        // Uso del estado useEffect 
-        useEffect(() => {
-            getDocumentTypes().then(setDocumentTypes);
-        },[])
+  // Estado para los tipos de documento
+  const [documentTypes, setDocumentTypes] = useState([]);
 
-        //========================================
-        //          Handle Generico
-        //========================================
-        const handleChange = (e) => {
-            const { name, value, type, checked } = e.target;
+  useEffect(() => {
+    getDocumentTypes().then(setDocumentTypes);
+  }, []);
 
-            setFormData((prev) => ({
-                ...prev,
-                [name]: type === "checkbox" ? checked : value,
-            }));
-        };
+  // ========================================
+  //          Handle Genérico
+  // ========================================
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
 
-    //===================== HANDLE SUBMIT =============================
-        const handleSubmit = async(e) => {
-        //Evita que el formulario recargue la pagina
-        e.preventDefault();
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
 
-        //Validamos los datos del formulario contra el esquema Zod
-        //saFeParse NO lanza exceptcion, retorna un objeto controlado
-        const dataToValidate = {
-            ...formData,
-            userImage: formData.userImage?.length > 0 ? formData.userImage : undefined,
-        };
-        const result = userSchema.safeParse(dataToValidate);
+  // ===================== HANDLE SUBMIT =============================
+  const handleSubmit = async (e) => {
+    e?.preventDefault();
 
-        //Verificar en consola si el esquema está funcionado correctamente 
-        // console.log(result);
-
-        //Si la validacion falla
-        if(!result.success){
-            //Objeto donde almacenaremos los errores por campo
-            const fieldErrors = {};
-
-            // Recorremos cada error generado por Zod
-            result.error.issues.forEach((issue) => {
-                //issue.path[0] corresponde al nombre del campo
-                // issue.message contiene el mensaje de error definido en el schema
-                fieldErrors[issue.path[0]] = issue.message;
-            });
-
-            // Actualizamos el estado de errores para mostrarlos en el UI 
-            setErrors(fieldErrors);
-            await showErrorAlert({
-                title: "Error de validación",
-                text: "Por favor revisa los campos marcados en rojo.",
-                timer: 3000,
-            });
-
-            // Cortamos la ejecución: NO se envia nada al backend
-
-            return;
-        }
-        // Si la validacion pasa, limpiamos errores previos
-        setErrors({});
-
-        //Activamos eestado de envio (util para desahibilitar el boton)
-        setIsSubmitting(true);
-
-        try {
-            //llamamos al servivio frontend que soncume la API 
-            //result.data contiene los datos ya validamos por Zod
-            const response = await createUser(result.data);
-            //  linea comentada es un servicio 
-
-            //Log informativo para desarrolllo
-            console.log("Usuario creado:", response);
-        //   igual
-
-            setIsSuccess(true);
-
-            await showSuccessAlert({
-                title: "Usuario creado",
-                text: "El usuario fue creado correctamente",
-                timer: 3000,
-            });
-
-            //Navegamos a la vista anterior
-            // navigate (-1) equivale a "volver atras"
-        
-            navigate("/dashboard/userList");
-
-        } catch (error){
-            //Caoturamos errores de red o errores lanzados por el service
-            console.error("Error:" , error.message);
-
-            //Mstramos el mensaje de error al usuario 
-            await showErrorAlert({
-                title: "Error al crear usuario",
-                text: error.message || "Ocurrió un problema al crear el usuario.",
-                timer: 3000,
-            });
-        } finally {
-            //Pase lo que pase, desactivamos el esrado de envio 
-            setIsSubmitting(false);
-        }
+    const dataToValidate = {
+      ...formData,
+      userImage: formData.userImage?.length > 0 ? formData.userImage : undefined,
     };
+    const result = userSchema.safeParse(dataToValidate);
 
-const handleCancel = async () => {
+    if (!result.success) {
+      const fieldErrors = {};
+
+      result.error.issues.forEach((issue) => {
+        fieldErrors[issue.path[0]] = issue.message;
+      });
+
+      setErrors(fieldErrors);
+      await showErrorAlert({
+        title: "Error de validación",
+        text: "Por favor revisa los campos marcados en rojo.",
+        timer: 3000,
+      });
+
+      return;
+    }
+
+    setErrors({});
+    setIsSubmitting(true);
+
+    try {
+      const response = await createUser(result.data);
+      console.log("Usuario creado:", response);
+
+      setIsSuccess(true);
+
+      await showSuccessAlert({
+        title: "Usuario creado",
+        text: "El usuario fue creado correctamente",
+        timer: 3000,
+      });
+
+      navigate("/dashboard/userList");
+    } catch (error) {
+      console.error("Error:", error.message);
+
+      await showErrorAlert({
+        title: "Error al crear usuario",
+        text: error.message || "Ocurrió un problema al crear el usuario.",
+        timer: 3000,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCancel = async () => {
     const result = await showCancelAlert({
-                title: "Cancelado",
-                text: "El usuario no fue creado",
-                timer: 3000,
-        });
+      title: "Cancelado",
+      text: "El usuario no fue creado",
+      timer: 3000,
+    });
 
-        if (result.isConfirmed || result.isDismissed) {
-            navigate(-1);
-        }
-};
+    if (result.isConfirmed || result.isDismissed) {
+      navigate(-1);
+    }
+  };
 
-    //========================================
-    //          Handle NameChange
-    //========================================
-
-    // const handleNameChange = (e) => {
-    //     const value = e.target.value.trim();
-
-    //     if (value === "") {
-    //         console.log("El nombre no puede estar vacio");
-    //     }
-    // };
   return (
-    <div className="relative w-full max-w-[1024px] min-h-[600px] mx-auto mt-12 bg-white/30 rounded-[2.5rem] shadow-md overflow-hidden border border-[var(--color-border-strong)] p-8 md:p-10">
+    <div className="relative w-full max-w-[1024px] min-h-[600px] mx-auto mt-12 bg-background-div/60 backdrop-blur-md rounded-[2.5rem] shadow-md overflow-hidden border border-border/50 p-8 md:p-10 text-text-primary">
       
       {/* --- CAPA DE ÉXITO (OVERLAY) --- */}
       {isSuccess && (
-        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/40 backdrop-blur-md transition-all duration-300">
-          <div className="w-32 h-32 bg-[var(--color-secondary-200)] rounded-[2rem] rotate-3 flex items-center justify-center mb-6 shadow-xl relative">
-            <UserPlus className="w-14 h-14 text-[var(--color-secondary-500)] -rotate-3" />
-            <div className="absolute -bottom-2 -right-2 bg-[var(--color-secondary-500)] rounded-full p-2 border-4 border-[var(--color-secondary-200)] -rotate-3">
-              <Check className="w-6 h-6 text-white" strokeWidth={3} />
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-background-inverse/40 backdrop-blur-md transition-all duration-300">
+          <div className="w-32 h-32 bg-surface-muted rounded-[2rem] rotate-3 flex items-center justify-center mb-6 shadow-xl relative">
+            <UserPlus className="w-14 h-14 text-brand -rotate-3" />
+            <div className="absolute -bottom-2 -right-2 bg-success rounded-full p-2 border-4 border-surface-muted -rotate-3">
+              <Check className="w-6 h-6 text-text-inverse" strokeWidth={3} />
             </div>
           </div>
-          <h2 className="text-white text-2xl font-serif italic tracking-wide drop-shadow-md">
+          <h2 className="text-text-primary text-2xl font-bold tracking-wide drop-shadow-md">
             ¡Usuario Creado!
           </h2>
         </div>
@@ -199,16 +153,15 @@ const handleCancel = async () => {
           
           {/* CONTENEDOR PRINCIPAL DEL AVATAR CON MANEJO DE ERROR */}
           <div className="relative flex flex-col items-center">
-            
-            <div className={`h-24 w-24 rounded-[1.75rem] rotate-3 flex items-center justify-center text-white shadow-lg overflow-hidden [&_.border-dashed]:!border-transparent [&_.text-blue-500]:!hidden transition-all duration-300
+            <div
+              className={`h-24 w-24 rounded-[1.75rem] rotate-3 flex items-center justify-center text-text-success shadow-lg overflow-hidden [&_.border-dashed]:!border-transparent [&_.text-blue-500]:!hidden transition-all duration-300
               ${formData.userImage?.length > 0 ? "[&>div>div:last-child]:!hidden" : ""} 
-              ${errors.userImage ? "bg-red-500 ring-4 ring-red-500/50" : "bg-[var(--color-secondary-500)]"}`}
+              ${errors.userImage ? "bg-error ring-4 ring-error/50" : "bg-brand"}`}
             >
-              
               {(!formData.userImage || formData.userImage.length === 0) && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10 -rotate-3">
-                  <User className="w-8 h-8 text-white/80" />
-                  <span className="text-[10px] font-bold mt-1 text-white/80">Subir Foto</span>
+                  <User className="w-8 h-8 opacity-80" />
+                  <span className="text-[10px] font-bold mt-1 opacity-80">Subir Foto</span>
                 </div>
               )}
               
@@ -221,12 +174,11 @@ const handleCancel = async () => {
                   error={errors.userImage}
                 />
               </div>
-
             </div>
 
             {/* TEXTO DEL ERROR FUERA DE LA ROTACIÓN */}
             {errors.userImage && (
-              <span className="absolute -bottom-6 text-red-500 text-xs font-bold text-center w-max whitespace-nowrap z-10">
+              <span className="absolute -bottom-6 text-error text-xs font-bold text-center w-max whitespace-nowrap z-10">
                 {errors.userImage}
               </span>
             )}
@@ -243,29 +195,29 @@ const handleCancel = async () => {
           
           <div className="flex-1" />
           
-          <button 
+          <Button 
             type="button" 
             onClick={handleCancel}
-            className="hidden sm:flex items-center gap-2 rounded-2xl border-2 border-[var(--color-text-primary)] text-[var(--color-text-primary)] px-5 py-2.5 text-sm font-bold hover:bg-[var(--color-text-primary)] hover:text-[var(--color-background)] transition-all"
+            variant="tertiary"
           >
             <ArrowLeft className="h-4 w-4" />
             Regresar
-          </button>
+          </Button>
         </div>
 
         {/* DIVISOR ONDULADO */}
-        <svg viewBox="0 0 400 12" preserveAspectRatio="none" className="w-full h-3 text-[var(--color-secondary-200)] mb-10">
+        <svg viewBox="0 0 400 12" preserveAspectRatio="none" className="w-full h-3 text-border-clear mb-10">
           <path d="M0 6 Q 10 0, 20 6 T 40 6 T 60 6 T 80 6 T 100 6 T 120 6 T 140 6 T 160 6 T 180 6 T 200 6 T 220 6 T 240 6 T 260 6 T 280 6 T 300 6 T 320 6 T 340 6 T 360 6 T 380 6 T 400 6" fill="none" stroke="currentColor" strokeWidth="3" />
         </svg>
 
-        {/* FORMULARIO Y COLUMNAS */}
-        <form onSubmit={handleSubmit}>
+        {/* CONTENEDOR SIN ETIQUETA FORM */}
+        <div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-12 gap-y-8">
             
             {/* Columna 1: PERSONALES */}
             <div className="space-y-4 [&>div]:!w-full">
-              <h3 className="flex items-center gap-3 text-[var(--color-text-primary)] font-extrabold mb-6 text-lg tracking-wider">
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/40 backdrop-blur-md border border-white/60 text-[var(--color-text-primary)] text-base shadow-sm">1</span>
+              <h3 className="flex items-center gap-3 text-text-primary font-extrabold mb-6 text-lg tracking-wider">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-surface-muted border border-border-clear text-text-primary text-base shadow-sm">1</span>
                 PERSONALES
               </h3>
               <Input variant="primary" size="md" label="Nombres" htmlFor="userName" name="userName" value={formData.userName} onChange={handleChange} error={errors.userName} placeholder="Ej: Juan" />
@@ -277,8 +229,8 @@ const handleCancel = async () => {
 
             {/* Columna 2: EMPRESARIALES */}
             <div className="space-y-4 [&>div]:!w-full">
-              <h3 className="flex items-center gap-3 text-[var(--color-text-primary)] font-extrabold mb-6 text-lg tracking-wider">
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/40 backdrop-blur-md border border-white/60 text-[var(--color-text-primary)] text-base shadow-sm">2</span>
+              <h3 className="flex items-center gap-3 text-text-primary font-extrabold mb-6 text-lg tracking-wider">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-surface-muted border border-border-clear text-text-primary text-base shadow-sm">2</span>
                 EMPRESARIALES
               </h3>
               <Input variant="primary" size="md" label="Correo Empresarial" htmlFor="businessEmail" name="businessEmail" type="email" value={formData.businessEmail} onChange={handleChange} error={errors.businessEmail} placeholder="correo@empresa.com" />
@@ -290,8 +242,8 @@ const handleCancel = async () => {
 
             {/* Columna 3: SENSIBLES */}
             <div className="space-y-4 [&>div]:!w-full">
-              <h3 className="flex items-center gap-3 text-[var(--color-text-primary)] font-extrabold mb-6 text-lg tracking-wider">
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/40 backdrop-blur-md border border-white/60 text-[var(--color-text-primary)] text-base shadow-sm">3</span>
+              <h3 className="flex items-center gap-3 text-text-primary font-extrabold mb-6 text-lg tracking-wider">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-surface-muted border border-border-clear text-text-primary text-base shadow-sm">3</span>
                 SENSIBLES
               </h3>
               <Select variant="create" label="Estado" htmlFor="isActive" name="isActive" value={formData.isActive} onChange={handleChange} error={errors.isActive} options={[{ label: "Activo", value: "true" }, { label: "Inactivo", value: "false" }]} />
@@ -302,16 +254,24 @@ const handleCancel = async () => {
           </div>
 
           {/* FOOTER */}
-          <div className="flex justify-end mt-12 border-t-2 border-[var(--color-border-strong)] pt-8">
+          <div className="flex justify-end gap-4 bg-background-div/60 backdrop-blur-md p-4 rounded-3xl shadow-sm border border-border/50 mt-6">
             <Button 
-              type="submit"
+              type="button" 
+              onClick={() => navigate(-1)} 
+              variant="tertiary"
+                >Cancelar
+            </Button>
+
+            <Button 
+              type="button"
+              onClick={handleSubmit}
               variant="primary"
               disabled={isSubmitting}
             >
               {isSubmitting ? "GUARDANDO..." : "GUARDAR USUARIO"}
             </Button>
           </div>
-        </form>
+        </div>
 
       </div>
     </div>

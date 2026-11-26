@@ -46,7 +46,7 @@ export default function StatusSwitch({
                 relative inline-flex items-center
                 rounded-full transition-colors
                 ${sizes[size]}
-                ${isActive ? "bg-green-500" : "bg-gray-300"}
+                ${isActive ? "bg-green-500" : "bg-surface-muted"}
                 ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
             `}
         >
@@ -54,7 +54,7 @@ export default function StatusSwitch({
             <span
                 className={`
                     absolute left-0.5 flex items-center justify-center
-                    rounded-full bg-white shadow
+                    rounded-full bg-background-div shadow
                     transition-transform
                     ${knobSizes[size]}
                     ${isActive ? "translate-x-full" : "translate-x-0"}
@@ -64,7 +64,7 @@ export default function StatusSwitch({
                 {isActive ? (
                     <Check size={12} className="text-green-600" />
                 ) : (
-                    <X size={12} className="text-gray-500" />
+                    <X size={12} className="text-text-muted" />
                 )}
             </span>
         </button>
