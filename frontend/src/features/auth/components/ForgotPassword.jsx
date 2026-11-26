@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Input, Button } from "@/shared";
 import restaurante from "../../../assets/images/Img-Restaurante.jpeg";
 import savePassword from "../../../assets/images/SavePassword.png";
@@ -64,8 +64,7 @@ function ForgotPassword() {
   };
 
   return (
-    <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
-
+    <section className="relative flex min-h-dvh items-center justify-center overflow-hidden px-4 py-6 sm:px-6 sm:py-8">
       {/* Fondo */}
       <div
         className="absolute inset-0 bg-cover bg-center blur-md scale-110"
@@ -73,34 +72,32 @@ function ForgotPassword() {
       ></div>
 
       {/* Tarjeta */}
-      <div className="relative z-10 w-[1000px] h-[600px] bg-background-div rounded-4xl shadow-2xl flex overflow-hidden">
-
+      <div className="relative z-10 grid w-full max-w-md overflow-hidden rounded-2xl bg-background-div shadow-2xl md:min-h-[600px] md:max-w-[1000px] md:grid-cols-2 md:rounded-4xl">
         {/* Imagen */}
-        <div className="w-1/2 flex items-center justify-center">
+        <div className="relative hidden md:block">
           <img
             src={savePassword}
-            alt="Restaurante"
-            className="w-full h-full object-cover"
+            alt="Restaurante Aurum"
+            className="absolute inset-0 h-full w-full object-cover"
           />
         </div>
 
+        {/* Formulario */}
         <form
           onSubmit={handleSubmit}
-          className="w-1/2 flex flex-col justify-center items-center px-14"
+          className="flex min-w-0 flex-col items-center justify-center px-5 py-8 sm:px-8 sm:py-10 lg:px-14"
         >
-
           <img
             src={title}
-            alt="Title"
-            className="w-48 mx-auto mb-6"
+            alt="Restaurante Aurum"
+            className="mb-4 w-36 sm:mb-6 sm:w-48"
           />
 
-
-          <h1 className="text-main font-heading text-text-negative text-center mb-6">
+          <h1 className="text-main font-title font-heading text-text-negative text-center mb-3 sm:mb-4">
             Recuperar Contraseña
           </h1>
 
-          <p className="text-body text-text-secondary text-center mb-8">
+          <p className="text-body text-text-secondary text-center mb-6 sm:mb-8">
             Ingresa tu correo electrónico y te enviaremos
             un enlace para recuperar tu contraseña.
           </p>
@@ -110,6 +107,8 @@ function ForgotPassword() {
             variant="tertiary"
             name="email"
             type="email"
+            size="lg"
+            autoComplete="email"
             label="Correo electrónico"
             placeholder="Ingresa tu correo"
             value={email}
@@ -117,7 +116,7 @@ function ForgotPassword() {
             error={errors.email}
           />
 
-          <div className="w-full mt-8 flex justify-center">
+          <div className="mt-6 flex w-full justify-center sm:mt-8">
             <Button
               variant="primary"
               type="submit"
@@ -128,17 +127,15 @@ function ForgotPassword() {
             </Button>
           </div>
 
-          <div className="text-center mt-6">
-            <p
-              className="text-medium font-medium-custom cursor-pointer text-brand"
-              onClick={() => navigate("/login")}
+          <div className="mt-6 text-center">
+            <Link
+              className="inline-flex min-h-11 items-center text-medium font-medium-custom text-text-brand hover:underline focus-visible:outline-2 focus-visible:outline-focus-ring"
+              to="/login"
             >
               Volver al inicio de sesión
-            </p>
+            </Link>
           </div>
-
         </form>
-
       </div>
     </section>
   );
