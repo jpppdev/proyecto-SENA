@@ -2,19 +2,23 @@ import { FileDown, Plus, Armchair, LayoutGrid, List } from "lucide-react";
 import { Button, IconButton, SearchField, Select } from "@/shared";
 import { panelClass, secondaryText, tableStatuses } from "./tableStyles";
 
-export function TablesHeader({ onReport, canReport }) {
+export function TablesHeader({ onReport, canReport, onCreate, canCreate }) {
   return (
     <header className="flex flex-wrap items-center justify-between gap-4">
       <div>
         <h1 className="font-title text-title font-heading sm:text-main">Gestión de Mesas</h1>
-        <p className={secondaryText}>Administra el estado y la ocupación de las mesas del restaurante.</p>
+        <p className={secondaryText}>Administra el estado, zonas y ocupación de las mesas del restaurante.</p>
       </div>
       <div className="flex flex-wrap gap-3 [&>button:disabled]:opacity-50">
         <Button variant="tertiary" disabled={!canReport} onClick={onReport}>
           <FileDown className="mr-2 size-5" aria-hidden="true" />
           Reporte de mesas
         </Button>
-        <Button disabled aria-describedby="tables-source-note">
+        <Button
+          onClick={onCreate}
+          disabled={!canCreate}
+          title={canCreate ? "Crear una nueva mesa" : "Solo el administrador puede crear mesas"}
+        >
           <Plus className="mr-2 size-5" aria-hidden="true" />
           Nueva mesa
         </Button>
@@ -25,10 +29,10 @@ export function TablesHeader({ onReport, canReport }) {
 
 export function TablesStats({ tables, ready }) {
   const stats = [
-    { label: "Total de mesas", value: "—", icon: Armchair, style: "bg-background-clear text-text-coffee" },
-    { ...tableStatuses.available, label: "Disponibles", value: "—" },
+    { label: "Total de mesas", value: ready ? tables.length : "—", icon: Armchair, style: "bg-background-clear text-text-coffee" },
+    { ...tableStatuses.available, label: "Disponibles", value: ready ? tables.filter((table) => table.status === "available").length : "—" },
     { ...tableStatuses.occupied, label: "Ocupadas", value: ready ? tables.filter((table) => table.status === "occupied").length : "—" },
-    { ...tableStatuses.reserved, label: "Reservadas", value: "—" },
+    { ...tableStatuses.reserved, label: "Reservadas", value: ready ? tables.filter((table) => table.status === "reserved").length : "—" },
   ];
 
   return (
