@@ -8,37 +8,43 @@ export default function RowActions({ entity, onView, onEdit, onDisable }) {
 
   return (
     <div className="flex gap-2">
-      <IconButton
-        ariaLabel={viewLabel}
-        title={viewLabel}
-        variant="action"
-        hitSize={46}
-        iconSize={20}
-        onClick={onView}
-      >
-        <Eye size={20} aria-hidden="true" />
-      </IconButton>
+      {onView && (
+        <IconButton
+          ariaLabel={viewLabel}
+          title={viewLabel}
+          variant="action"
+          hitSize={46}
+          iconSize={20}
+          onClick={onView}
+        >
+          <Eye size={20} aria-hidden="true" />
+        </IconButton>
+      )}
 
-      <IconButton
-        ariaLabel={editLabel}
-        title={editLabel}
-        variant="action"
-        hitSize={46}
-        iconSize={20}
-        onClick={onEdit}
-      >
-        <Pencil size={20} aria-hidden="true" />
-      </IconButton>
+      {onEdit && (
+        <IconButton
+          ariaLabel={editLabel}
+          title={editLabel}
+          variant="action"
+          hitSize={46}
+          iconSize={20}
+          onClick={onEdit}
+        >
+          <Pencil size={20} aria-hidden="true" />
+        </IconButton>
+      )}
 
-      <button
-        type="button"
-        aria-label={disableLabel}
-        title={disableLabel}
-        onClick={onDisable}
-        className="p-1 rounded hover:bg-brand-light text-red-600 transition-colors"
-      >
-        <Ban size={16} aria-hidden="true" />
-      </button>
+      {onDisable && (
+        <button
+          type="button"
+          aria-label={disableLabel}
+          title={disableLabel}
+          onClick={onDisable}
+          className="p-1 rounded hover:bg-brand-light text-red-600 transition-colors"
+        >
+          <Ban size={16} aria-hidden="true" />
+        </button>
+      )}
     </div>
   );
 }

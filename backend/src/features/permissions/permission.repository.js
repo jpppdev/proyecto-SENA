@@ -98,19 +98,23 @@ export const permissionRepository = {
         // 3. Obtener todos los usuarios registrados en la tabla usuarios
         const usersRes = await pool.query(`
             SELECT 
-                id_usuario AS id,
-                user_name AS "userName",
-                user_email AS "userEmail",
-                user_phone AS "userPhone",
-                is_staff AS "isStaff",
-                is_superuser AS "isSuperUser",
-                CASE 
-                    WHEN is_superuser = TRUE THEN 'administrador'
-                    WHEN is_staff = TRUE THEN 'empleado'
-                    ELSE 'usuario'
-                END AS "roleName"
-            FROM usuarios
-            ORDER BY id_usuario DESC;
+                u.id_usuario AS id,
+                u.user_name AS "userName",
+                u.user_email AS "userEmail",
+                u.user_phone AS "userPhone",
+                u.is_staff AS "isStaff",
+                u.is_superuser AS "isSuperUser",
+                COALESCE(
+                    r.nombre_rol,
+                    CASE 
+                        WHEN u.is_superuser = TRUE THEN 'administrador'
+                        WHEN u.is_staff = TRUE THEN 'empleado'
+                        ELSE 'usuario'
+                    END
+                ) AS "roleName"
+            FROM usuarios u
+            LEFT JOIN roles r ON u.id_rol = r.id_rol
+            ORDER BY u.id_usuario DESC;
         `);
 
         // 4. Obtener permisos especificos asignados directamente a usuarios individuales
@@ -178,10 +182,22 @@ export const permissionRepository = {
         if (roleName) {
             const isAdmin = roleName === "administrador";
             const isStaff = roleName !== "usuario";
-            await pool.query(
-                `UPDATE usuarios SET is_superuser = $1, is_staff = $2 WHERE id_usuario = $3`,
-                [isAdmin, isStaff, Number(userId)]
+            const roleRes = await pool.query(
+                `SELECT id_rol FROM roles WHERE nombre_rol = $1 LIMIT 1`,
+                [roleName]
             );
+            const idRol = roleRes.rows[0]?.id_rol || null;
+            if (idRol) {
+                await pool.query(
+                    `UPDATE usuarios SET id_rol = $1, is_superuser = $2, is_staff = $3 WHERE id_usuario = $4`,
+                    [idRol, isAdmin, isStaff, Number(userId)]
+                );
+            } else {
+                await pool.query(
+                    `UPDATE usuarios SET is_superuser = $1, is_staff = $2 WHERE id_usuario = $3`,
+                    [isAdmin, isStaff, Number(userId)]
+                );
+            }
         }
 
         for (const moduleId of DEFAULT_MODULES) {
@@ -199,5 +215,107 @@ export const permissionRepository = {
         }
 
         return { userId: Number(userId), roleName, permissions: permissionsByModule };
+    },
+
+    // Obtiene el perfil de rol y permisos efectivos del usuario autenticado
+    async getMyPermissions(userId) {
+        await this.ensureTables();
+
+        const userRes = await pool.query(
+            `
+            SELECT
+                u.id_usuario AS id,
+                u.user_name AS "userName",
+                u.user_email AS "userEmail",
+                u.is_staff AS "isStaff",
+                u.is_superuser AS "isSuperUser",
+                u.id_rol AS "idRol",
+                COALESCE(
+                    r.nombre_rol,
+                    CASE
+                        WHEN u.is_superuser = TRUE THEN 'administrador'
+                        WHEN u.is_staff = TRUE THEN 'empleado'
+                        ELSE 'usuario'
+                    END
+                ) AS "roleName"
+            FROM usuarios u
+            LEFT JOIN roles r ON u.id_rol = r.id_rol
+            WHERE u.id_usuario = $1
+            LIMIT 1;
+            `,
+            [Number(userId)]
+        );
+
+        const user = userRes.rows[0];
+        if (!user) return null;
+
+        const isAdmin = Boolean(user.isSuperUser || user.roleName === "administrador");
+
+        if (isAdmin) {
+            return {
+                user: {
+                    id: user.id,
+                    userName: user.userName,
+                    userEmail: user.userEmail,
+                    roleName: "administrador",
+                    isSuperUser: true,
+                },
+                permissions: {
+                    users: ["view", "create", "edit", "delete"],
+                    inventory: ["view", "create", "edit", "delete"],
+                    orders: ["view", "create", "edit", "delete"],
+                    menu: ["view", "create", "edit", "delete"],
+                    providers: ["view", "create", "edit", "delete"],
+                },
+            };
+        }
+
+        const effectivePermissions = {
+            users: [],
+            inventory: [],
+            orders: [],
+            menu: [],
+            providers: [],
+        };
+
+        // 1. Cargar permisos base del rol desde role_permissions
+        const rolePermsRes = await pool.query(
+            `
+            SELECT rp.module_id AS "moduleId", rp.actions
+            FROM role_permissions rp
+            INNER JOIN roles r ON rp.id_rol = r.id_rol
+            WHERE r.nombre_rol = $1;
+            `,
+            [user.roleName]
+        );
+
+        for (const row of rolePermsRes.rows) {
+            effectivePermissions[row.moduleId] = Array.isArray(row.actions) ? row.actions : [];
+        }
+
+        // 2. Sobreescribir con permisos específicos del usuario si existen en user_permissions
+        const userPermsRes = await pool.query(
+            `
+            SELECT module_id AS "moduleId", actions
+            FROM user_permissions
+            WHERE id_usuario = $1;
+            `,
+            [Number(userId)]
+        );
+
+        for (const row of userPermsRes.rows) {
+            effectivePermissions[row.moduleId] = Array.isArray(row.actions) ? row.actions : [];
+        }
+
+        return {
+            user: {
+                id: user.id,
+                userName: user.userName,
+                userEmail: user.userEmail,
+                roleName: user.roleName,
+                isSuperUser: isAdmin,
+            },
+            permissions: effectivePermissions,
+        };
     }
 };

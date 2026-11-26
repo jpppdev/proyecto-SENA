@@ -7,10 +7,25 @@ export const authRepository = {
 
     try {
       const query = `
-        SELECT id_usuario AS id, user_name, user_email, user_password, is_active
-        FROM usuarios
-        WHERE LOWER(TRIM(user_email)) = LOWER(TRIM($1))
-           OR LOWER(TRIM(COALESCE(business_email, ''))) = LOWER(TRIM($1))
+        SELECT
+          u.id_usuario AS id,
+          u.user_name,
+          u.user_email,
+          u.user_password,
+          u.is_active,
+          u.is_superuser AS "isSuperUser",
+          COALESCE(
+            r.nombre_rol,
+            CASE
+              WHEN u.is_superuser = TRUE THEN 'administrador'
+              WHEN u.is_staff = TRUE THEN 'empleado'
+              ELSE 'usuario'
+            END
+          ) AS "roleName"
+        FROM usuarios u
+        LEFT JOIN roles r ON u.id_rol = r.id_rol
+        WHERE LOWER(TRIM(u.user_email)) = LOWER(TRIM($1))
+           OR LOWER(TRIM(COALESCE(u.business_email, ''))) = LOWER(TRIM($1))
         LIMIT 1;
       `;
       const result = await pool.query(query, [cleanEmail]);
@@ -18,10 +33,21 @@ export const authRepository = {
         return result.rows[0];
       }
     } catch (err) {
-      // Si la tabla usuarios no tiene la columna business_email (código 42703)
+      // Si la tabla usuarios no tiene la columna business_email o id_rol (código 42703)
       if (err.code === "42703") {
         const simpleQuery = `
-          SELECT id_usuario AS id, user_name, user_email, user_password, is_active
+          SELECT
+            id_usuario AS id,
+            user_name,
+            user_email,
+            user_password,
+            is_active,
+            is_superuser AS "isSuperUser",
+            CASE
+              WHEN is_superuser = TRUE THEN 'administrador'
+              WHEN is_staff = TRUE THEN 'empleado'
+              ELSE 'usuario'
+            END AS "roleName"
           FROM usuarios
           WHERE LOWER(TRIM(user_email)) = LOWER(TRIM($1))
           LIMIT 1;

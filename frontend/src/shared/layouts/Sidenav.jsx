@@ -6,36 +6,49 @@ import {
   ClipboardList,
   Package,
 } from "lucide-react";
+import { usePermissions } from "@/features/permissions";
 
 export default function Sidebar({ collapsed = false }) {
+  const { can } = usePermissions();
 
   const modules = [
     {
+      id: "users",
       name: "Usuarios",
       path: "/dashboard/userList",
       icon: Users,
     },
     {
+      id: "providers",
       name: "Proveedores",
       path: "/dashboard/providerList",
       icon: Truck,
     },
     {
+      id: "menu",
       name: "Menú",
       path: "/dashboard/menuList",
       icon: Utensils,
     },
     {
+      id: "orders",
       name: "Órdenes",
       path: "/dashboard/orderList",
       icon: ClipboardList,
     },
     {
+      id: "inventory",
       name: "Inventario",
       path: "/dashboard/inventoryList",
       icon: Package,
     },
   ];
+
+  const visibleModules = modules.filter((module) => can(module.id, "view"));
+
+  if (visibleModules.length === 0) {
+    return null;
+  }
 
   return (
     <aside
@@ -45,7 +58,7 @@ export default function Sidebar({ collapsed = false }) {
 
       {/* Navegación */}
       <nav aria-label="Menú lateral" className="flex w-full flex-col gap-1.5">
-        {modules.map((module) => {
+        {visibleModules.map((module) => {
           const Icon = module.icon;
 
           return (

@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 
 import { Breadcrumbs, Button } from "@/shared";
+import { usePermissions } from "@/features/permissions";
 import {
   getInventoryById,
   updateInventoryStatus,
@@ -38,6 +39,7 @@ export default function InventoryViewPage() {
 }
 
 function InventoryDetails({ id }) {
+  const { can } = usePermissions();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [imgError, setImgError] = useState(false);
@@ -605,32 +607,40 @@ function InventoryDetails({ id }) {
           </div>
 
           {/* ACCIONES */}
-          <div className="rounded-xl border border-background-clear bg-background-positive/72 p-5 shadow-[0_4px_18px] shadow-text-coffee/3">
-            <div className="flex flex-col gap-2.5">
-              <Link to={`/dashboard/inventory/${product.id}/edit`}>
-                <Button className="flex min-h-10 w-full items-center rounded-lg border border-background-clear bg-border-clear2/30 px-4 py-2.5 text-left text-medium text-text-coffee transition-colors hover:bg-border-clear2/70 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand">
-                  <span className="flex w-full items-center gap-4 [&>svg]:shrink-0 [&>svg]:text-text-brand">
-                    <Edit size={20} />
-                    Editar producto
-                  </span>
-                </Button>
-              </Link>
+          {(can("inventory", "edit") || can("inventory", "delete")) && (
+            <div className="rounded-xl border border-background-clear bg-background-positive/72 p-5 shadow-[0_4px_18px] shadow-text-coffee/3">
+              <div className="flex flex-col gap-2.5">
+                {can("inventory", "edit") && (
+                  <>
+                    <Link to={`/dashboard/inventory/${product.id}/edit`}>
+                      <Button className="flex min-h-10 w-full items-center rounded-lg border border-background-clear bg-border-clear2/30 px-4 py-2.5 text-left text-medium text-text-coffee transition-colors hover:bg-border-clear2/70 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand">
+                        <span className="flex w-full items-center gap-4 [&>svg]:shrink-0 [&>svg]:text-text-brand">
+                          <Edit size={20} />
+                          Editar producto
+                        </span>
+                      </Button>
+                    </Link>
 
-              <Button onClick={handleToggleStatus}>
-                <span className="flex items-center justify-center gap-2">
-                  <ToggleRight size={20} />
-                  Cambiar estado
-                </span>
-              </Button>
+                    <Button onClick={handleToggleStatus}>
+                      <span className="flex items-center justify-center gap-2">
+                        <ToggleRight size={20} />
+                        Cambiar estado
+                      </span>
+                    </Button>
+                  </>
+                )}
 
-              <Button onClick={handleDisableProduct}>
-                <span className="flex items-center justify-center gap-2">
-                  <Ban size={20} />
-                  Deshabilitar producto
-                </span>
-              </Button>
+                {can("inventory", "delete") && (
+                  <Button onClick={handleDisableProduct}>
+                    <span className="flex items-center justify-center gap-2">
+                      <Ban size={20} />
+                      Deshabilitar producto
+                    </span>
+                  </Button>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

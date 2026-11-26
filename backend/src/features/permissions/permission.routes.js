@@ -10,6 +10,7 @@ import { permissionController } from "./permission.controller.js";
 const router = Router();
 
 // Definicion de endpoints para /api/permissions
+router.get("/me", permissionController.getMyPermissions);
 router.get("/", permissionController.getAll);
 router.put("/role/:roleName", permissionController.updateRolePermissions);
 router.put("/user/:userId", permissionController.updateUserPermissions);

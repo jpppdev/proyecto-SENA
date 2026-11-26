@@ -5,10 +5,12 @@ import { useNavigate } from "react-router-dom";
 import { Button, DataTable } from "@/shared";
 import { MenuColumns } from "../table/MenuColumns";
 import { getMenu } from "../services/menuServices";
+import { usePermissions } from "@/features/permissions";
 import MenuReportConfigModal from "@/features/menu/reports/components/MenuReportConfigModal";
 
 export default function MenuListPage() {
   const navigate = useNavigate();
+  const { can } = usePermissions();
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [menuData, setMenuData] = useState([]);
 
@@ -34,9 +36,11 @@ export default function MenuListPage() {
           <FileDown className="mr-2 size-5 shrink-0" aria-hidden="true" />
           Reportar menú
         </Button>
-        <Button onClick={() => navigate("/dashboard/menuCreate")}>
-          Agregar al menú
-        </Button>
+        {can("menu", "create") && (
+          <Button onClick={() => navigate("/dashboard/menuCreate")}>
+            Agregar al menú
+          </Button>
+        )}
       </ListPageHeader>
 
       <DataTable data={menuData} columns={MenuColumns} />

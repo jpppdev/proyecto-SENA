@@ -7,9 +7,11 @@ import {
   showErrorAlert
 } from "@/shared/services/alertService";
 import { disableInventory } from "../services/inventoryServices";
+import { usePermissions } from "@/features/permissions";
 
 export default function InventoryRowActions({ product }) {
   const navigate = useNavigate();
+  const { can } = usePermissions();
 
   const handleEdit = () => {
     // Redirige a la ruta de edición de inventario
@@ -52,9 +54,9 @@ export default function InventoryRowActions({ product }) {
   return (
     <RowActions
       entity="producto"
-      onView={handleView}
-      onEdit={handleEdit}
-      onDisable={handleDisable}
+      onView={can("inventory", "view") ? handleView : undefined}
+      onEdit={can("inventory", "edit") ? handleEdit : undefined}
+      onDisable={can("inventory", "delete") ? handleDisable : undefined}
     />
   );
 }

@@ -8,12 +8,14 @@ import {
 } from "@/shared/services/alertService";
 import { useNavigate } from "react-router-dom";
 import { disableMenu } from "../services/menuServices";
+import { usePermissions } from "@/features/permissions";
 
 const catalogAction = "flex min-h-8 flex-1 items-center justify-center rounded-lg border transition-colors focus-visible:outline-2 focus-visible:outline-focus-ring";
 const catalogSecondaryAction = `${catalogAction} border-border-clear2 text-text-brand hover:bg-brand-soft [.dark_&]:text-brand-soft [.dark_&]:hover:bg-background-inverse`;
 
 export default function MenuRowActions({ product, catalog = false }) {
   const navigate = useNavigate();
+  const { can } = usePermissions();
 
   const handleView = () => {
     // Apunta a la ruta ViewMenu que ya existe en tu router.jsx
@@ -56,26 +58,32 @@ export default function MenuRowActions({ product, catalog = false }) {
     return (
       <RowActions
         entity="platillo"
-        onView={handleView}
-        onEdit={handleEdit}
-        onDisable={handleDisable}
+        onView={can("menu", "view") ? handleView : undefined}
+        onEdit={can("menu", "edit") ? handleEdit : undefined}
+        onDisable={can("menu", "delete") ? handleDisable : undefined}
       />
     );
   }
 
   return (
     <div className="mt-2 flex gap-2">
-      <button type="button" onClick={handleView} aria-label={`Ver ${product.menuName}`} title="Visualizar platillo" className={`${catalogAction} border-brand bg-brand text-text-success hover:bg-brand-hover`}>
-        <Eye size={16} />
-      </button>
+      {can("menu", "view") && (
+        <button type="button" onClick={handleView} aria-label={`Ver ${product.menuName}`} title="Visualizar platillo" className={`${catalogAction} border-brand bg-brand text-text-success hover:bg-brand-hover`}>
+          <Eye size={16} />
+        </button>
+      )}
       
-      <button type="button" onClick={handleEdit} aria-label={`Editar ${product.menuName}`} title="Editar platillo" className={catalogSecondaryAction}>
-        <Pencil size={16} />
-      </button>
+      {can("menu", "edit") && (
+        <button type="button" onClick={handleEdit} aria-label={`Editar ${product.menuName}`} title="Editar platillo" className={catalogSecondaryAction}>
+          <Pencil size={16} />
+        </button>
+      )}
 
-      <button type="button" onClick={handleDisable} aria-label={`Deshabilitar ${product.menuName}`} title="Deshabilitar platillo" disabled={product.isActive === false} className={`${catalogSecondaryAction} disabled:opacity-50`}>
-        <Ban size={16} />
-      </button>
+      {can("menu", "delete") && (
+        <button type="button" onClick={handleDisable} aria-label={`Deshabilitar ${product.menuName}`} title="Deshabilitar platillo" disabled={product.isActive === false} className={`${catalogSecondaryAction} disabled:opacity-50`}>
+          <Ban size={16} />
+        </button>
+      )}
     </div>
   );
 }

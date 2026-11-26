@@ -7,9 +7,11 @@ import {
 } from "@/shared/services/alertService";
 import { useNavigate } from "react-router-dom";
 import { disableProvider } from "../services/providerServices";
+import { usePermissions } from "@/features/permissions";
 
 export default function ProviderRowActions({ provider }) {
   const navigate = useNavigate();
+  const { can } = usePermissions();
 
   const handleView = () => {
     navigate(`/dashboard/ViewSuppliers/${provider.id}`);
@@ -51,9 +53,9 @@ export default function ProviderRowActions({ provider }) {
   return (
     <RowActions
       entity="proveedor"
-      onView={handleView}
-      onEdit={handleEdit}
-      onDisable={handleDisable}
+      onView={can("providers", "view") ? handleView : undefined}
+      onEdit={can("providers", "edit") ? handleEdit : undefined}
+      onDisable={can("providers", "delete") ? handleDisable : undefined}
     />
   );
 }

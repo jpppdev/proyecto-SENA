@@ -7,10 +7,12 @@ import { DataTable, Button } from "@/shared";
 import { InventoryColumns } from "../table/InventoryColumns";
 import { getInventory } from "../services/inventoryServices";
 import { useNavigate } from "react-router-dom";
+import { usePermissions } from "@/features/permissions";
 import InventoryReportConfigModal from "@/features/inventory/reports/components/InventoryReportConfigModal";
 
 export default function InventoryListPage() {
   const navigate = useNavigate();
+  const { can } = usePermissions();
   const [isReportModalOpen, setIsReportModalOpen] = useState(false)
   const [inventoryData, setInventoryData] = useState([]);
 
@@ -36,9 +38,11 @@ export default function InventoryListPage() {
           <FileDown className="mr-2 size-5 shrink-0" aria-hidden="true" />
           Reportar producto
         </Button>
-        <Button onClick={() => navigate("/dashboard/inventoryCreate")}>
-          Crear producto
-        </Button>
+        {can("inventory", "create") && (
+          <Button onClick={() => navigate("/dashboard/inventoryCreate")}>
+            Crear producto
+          </Button>
+        )}
       </ListPageHeader>
 
       <DataTable data={inventoryData} columns={InventoryColumns} />

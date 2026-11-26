@@ -7,6 +7,7 @@ import { DataTable, Breadcrumbs, Button } from "@/shared";
 import { UserColumns } from "../table/UserColumns";
 import { getUsers } from "../services/userServices";
 import { useNavigate } from "react-router-dom";
+import { usePermissions } from "@/features/permissions";
 import ReportConfigModal from "../reports/components/ReportConfigModal";
 
 const breadcrumbs = [
@@ -16,6 +17,7 @@ const breadcrumbs = [
 
 export default function UserListPage() {
   const navigate = useNavigate();
+  const { can } = usePermissions();
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [usersData, setUsersData] = useState([]);
 
@@ -66,9 +68,11 @@ export default function UserListPage() {
           <FileDown className="mr-2 size-5 shrink-0" aria-hidden="true" />
           Reportar usuario
         </Button>
-        <Button onClick={() => navigate("/dashboard/userCreate")}>
-          Crear usuario
-        </Button>
+        {can("users", "create") && (
+          <Button onClick={() => navigate("/dashboard/userCreate")}>
+            Crear usuario
+          </Button>
+        )}
       </ListPageHeader>
       
       

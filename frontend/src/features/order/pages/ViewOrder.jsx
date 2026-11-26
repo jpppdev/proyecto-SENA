@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 
 import { Breadcrumbs, Button } from "@/shared";
+import { usePermissions } from "@/features/permissions";
 import { getOrderById, updateOrderStatus, disableOrder } from "../services/orderServices";
 import { showSuccessAlert, showErrorAlert, showDisableAlert } from "@/shared/services/alertService";
 
@@ -23,6 +24,7 @@ export default function OrderViewPage() {
 }
 
 function OrderDetails({ id }) {
+  const { can } = usePermissions();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -447,32 +449,40 @@ function OrderDetails({ id }) {
           </div>
 
           {/* ACCIONES */}
-          <div className="rounded-xl border border-background-clear bg-background-positive/72 p-5 shadow-[0_4px_18px] shadow-text-coffee/3">
-            <div className="flex flex-col gap-2.5">
-              <Link to={`/dashboard/orders/${order.id}/edit`}>
-                <Button className="flex min-h-10 w-full items-center rounded-lg border border-background-clear bg-border-clear2/30 px-4 py-2.5 text-left text-medium text-text-coffee transition-colors hover:bg-border-clear2/70 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand">
-                  <span className="flex w-full items-center gap-4 [&>svg]:shrink-0 [&>svg]:text-text-brand">
-                    <Edit size={20} />
-                    Editar orden
-                  </span>
-                </Button>
-              </Link>
+          {(can("orders", "edit") || can("orders", "delete")) && (
+            <div className="rounded-xl border border-background-clear bg-background-positive/72 p-5 shadow-[0_4px_18px] shadow-text-coffee/3">
+              <div className="flex flex-col gap-2.5">
+                {can("orders", "edit") && (
+                  <>
+                    <Link to={`/dashboard/orders/${order.id}/edit`}>
+                      <Button className="flex min-h-10 w-full items-center rounded-lg border border-background-clear bg-border-clear2/30 px-4 py-2.5 text-left text-medium text-text-coffee transition-colors hover:bg-border-clear2/70 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-brand">
+                        <span className="flex w-full items-center gap-4 [&>svg]:shrink-0 [&>svg]:text-text-brand">
+                          <Edit size={20} />
+                          Editar orden
+                        </span>
+                      </Button>
+                    </Link>
 
-              <Button onClick={handleToggleStatus}>
-                <span className="flex items-center justify-center gap-2">
-                  <ToggleRight size={20} />
-                  Cambiar estado
-                </span>
-              </Button>
+                    <Button onClick={handleToggleStatus}>
+                      <span className="flex items-center justify-center gap-2">
+                        <ToggleRight size={20} />
+                        Cambiar estado
+                      </span>
+                    </Button>
+                  </>
+                )}
 
-              <Button onClick={handleDisableOrder}>
-                <span className="flex items-center justify-center gap-2">
-                  <Ban size={20} />
-                  Deshabilitar orden
-                </span>
-              </Button>
+                {can("orders", "delete") && (
+                  <Button onClick={handleDisableOrder}>
+                    <span className="flex items-center justify-center gap-2">
+                      <Ban size={20} />
+                      Deshabilitar orden
+                    </span>
+                  </Button>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

@@ -9,9 +9,11 @@ import {
   showErrorAlert
 } from "@/shared/services/alertService";
 import { disableUser } from "../services/userServices";
+import { usePermissions } from "@/features/permissions";
 
 export default function UserRowActions({ user }) {
   const navigate = useNavigate();
+  const { can } = usePermissions();
 
   // Redirige a la vista de detalle
   const handleView = () => {
@@ -60,9 +62,9 @@ export default function UserRowActions({ user }) {
   return (
     <RowActions
       entity="usuario"
-      onView={handleView}
-      onEdit={handleEdit}
-      onDisable={handleDisable}
+      onView={can("users", "view") ? handleView : undefined}
+      onEdit={can("users", "edit") ? handleEdit : undefined}
+      onDisable={can("users", "delete") ? handleDisable : undefined}
     />
   );
 }
