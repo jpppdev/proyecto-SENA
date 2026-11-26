@@ -30,7 +30,6 @@ const PAYMENT_METHODS = [
   { label: "Transferencia (Nequi/Daviplata)", value: "transferencia" }
 ];
 
-
 const DEFAULT_PRODUCTS = [
   { label: "Café Americano - $5.000", value: "p1", price: 5000, name: "Café Americano" },
   { label: "Capuchino Vainilla - $7.500", value: "p2", price: 7500, name: "Capuchino Vainilla" },
@@ -39,11 +38,10 @@ const DEFAULT_PRODUCTS = [
   { label: "Pizza personal - $25.000", value: "p5", price: 25000, name: "Pizza personal" },
 ];
 
-
 const CardSection = ({ icon, title, children }) => (
-  <div className="bg-white/30 backdrop-blur-md rounded-3xl p-6 shadow-sm border border-white/40 flex flex-col gap-5">
+  <div className="bg-background-div/60 backdrop-blur-md rounded-3xl p-6 shadow-sm border border-border/50 flex flex-col gap-5">
     <div className="flex items-center gap-3 mb-2">
-      <div className="bg-brand p-2 rounded-xl text-white shadow-md">
+      <div className="bg-brand p-2 rounded-xl text-text-success shadow-md">
         {icon}
       </div>
       <h3 className="text-text-primary font-extrabold text-lg tracking-wide">
@@ -160,7 +158,7 @@ export default function OrderEditForm() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e?.preventDefault();
     
     const result = orderSchema.safeParse(formData);
 
@@ -237,33 +235,31 @@ export default function OrderEditForm() {
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 px-4">
         <div>
-          <h1 className="text-3xl font-extrabold text-text-inverse mb-1 drop-shadow-sm">
+          <h1 className="text-3xl font-extrabold text-text-primary mb-1 drop-shadow-sm">
             Editar Orden #{id}
           </h1>
-          <p className="text-sm font-medium text-text-inverse opacity-90">
+          <p className="text-sm font-medium text-text-secondary">
             Modifica los detalles del cliente o los productos facturados
           </p>
         </div>
-        <button 
+        <Button 
           type="button" 
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 rounded-xl border-2 border-text-inverse text-text-inverse px-5 py-2.5 text-sm font-bold hover:bg-white/20 transition-all shadow-sm"
+          variant="tertiary"
         >
           <ArrowLeft className="h-4 w-4" />
           Volver a órdenes
-        </button>
+        </Button>
       </div>
 
-      <form 
-        onSubmit={handleSubmit} 
-        className="space-y-6 [&_input]:!bg-white/60 [&_select]:!bg-white/60 [&_textarea]:!bg-white/60 [&_input]:!text-text-primary [&_select]:!text-text-primary [&_textarea]:!text-text-primary [&_input]:!border-white/50 [&_select]:!border-white/50 [&_textarea]:!border-white/50"
-      >
+      {/* CONTENEDOR SIN ETIQUETA FORM */}
+      <div className="space-y-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           
           {/* TARJETA 1: Info del Cliente */}
           <CardSection icon={<User size={20} />} title="1. Datos del Servicio">
             <div className="grid grid-cols-2 gap-4 [&>div]:!w-full">
-              <Select label="Tipo de Servicio *" htmlFor="orderType" name="orderType" value={formData.orderType} onChange={handleChange} error={errors.orderType} options={ORDER_TYPES} />
+              <Select variant="create" label="Tipo de Servicio *" htmlFor="orderType" name="orderType" value={formData.orderType} onChange={handleChange} error={errors.orderType} options={ORDER_TYPES} />
               <Input variant="primary" size="md" label="Número de Mesa" htmlFor="tableNumber" name="tableNumber" value={formData.tableNumber} onChange={handleChange} error={errors.tableNumber} placeholder="Ej: 04" disabled={formData.orderType !== 'mesa'} />
             </div>
             <div className="[&>div]:!w-full">
@@ -275,25 +271,25 @@ export default function OrderEditForm() {
           <CardSection icon={<Coffee size={20} />} title="2. Agregar Productos">
             <div className="flex flex-col sm:flex-row items-end gap-4 w-full">
               <div className="flex-1 w-full [&>div]:!w-full">
-                <Select label="Seleccionar Producto" htmlFor="currentProduct" name="currentProduct" value={currentProduct} onChange={(e) => setCurrentProduct(e.target.value)} options={availableProducts} />
+                <Select variant="create" label="Seleccionar Producto" htmlFor="currentProduct" name="currentProduct" value={currentProduct} onChange={(e) => setCurrentProduct(e.target.value)} options={availableProducts} />
               </div>
               <div className="w-24 [&>div]:!w-full">
                 <Input type="text" variant="primary" size="md" label="Cant." htmlFor="currentQty" name="currentQty" value={currentQty} onChange={(e) => setCurrentQty(e.target.value.replace(/\D/g, ''))} />
               </div>
-              <button 
+              <Button 
                 type="button"
                 onClick={handleAddItem}
-                className="h-12 px-5 rounded-xl border-2 border-brand text-brand bg-white/50 font-bold text-sm flex items-center justify-center gap-2 hover:bg-brand hover:text-white transition-all shadow-sm"
+                variant="secondary"
               >
                 <Plus size={16} /> Agregar
-              </button>
+              </Button>
             </div>
           </CardSection>
 
           {/* TARJETA 3: Pago y Notas */}
           <CardSection icon={<CreditCard size={20} />} title="3. Pago y Notas">
             <div className="[&>div]:!w-full">
-              <Select label="Método de Pago *" htmlFor="paymentMethod" name="paymentMethod" value={formData.paymentMethod} onChange={handleChange} error={errors.paymentMethod} options={PAYMENT_METHODS} />
+              <Select variant="create" label="Método de Pago *" htmlFor="paymentMethod" name="paymentMethod" value={formData.paymentMethod} onChange={handleChange} error={errors.paymentMethod} options={PAYMENT_METHODS} />
             </div>
             <div className="w-full">
               <label className="block text-caption font-bold text-text-secondary mb-1 uppercase">Observaciones del Pedido</label>
@@ -302,15 +298,15 @@ export default function OrderEditForm() {
                 value={formData.observations} 
                 onChange={handleChange}
                 placeholder="Ej: Sin azúcar, leche deslactosada..."
-                className="w-full rounded-md border border-border-clear px-4 py-3 text-text-primary focus:outline-none focus:ring-2 focus:ring-brand resize-none h-20 transition-all"
+                className="w-full rounded-md border border-border-clear bg-background-div px-4 py-3 text-text-primary focus:outline-none focus:ring-2 focus:ring-brand resize-none h-20 transition-all"
               ></textarea>
-              {errors.observations && <p className="text-xs text-red-500 mt-1">{errors.observations}</p>}
+              {errors.observations && <p className="text-xs text-error mt-1">{errors.observations}</p>}
             </div>
           </CardSection>
 
           {/* TARJETA 4: Resumen de la Orden (Carrito) */}
           <CardSection icon={<ShoppingCart size={20} />} title="Resumen del Pedido">
-            <div className="flex-1 bg-white/40 border border-white/50 rounded-xl p-4 overflow-y-auto max-h-[200px] custom-scrollbar">
+            <div className="flex-1 bg-background-div/50 border border-border/50 rounded-xl p-4 overflow-y-auto max-h-[200px] custom-scrollbar">
               {orderItems.length === 0 ? (
                 <div className="h-full flex items-center justify-center text-text-muted text-sm font-medium">
                   No hay productos en la orden
@@ -318,14 +314,14 @@ export default function OrderEditForm() {
               ) : (
                 <ul className="space-y-3">
                   {orderItems.map((item) => (
-                    <li key={item.id} className="flex justify-between items-center border-b border-white/40 pb-2 last:border-0 last:pb-0">
+                    <li key={item.id} className="flex justify-between items-center border-b border-border/40 pb-2 last:border-0 last:pb-0">
                       <div className="flex flex-col">
                         <span className="font-bold text-text-primary text-sm">{item.name}</span>
                         <span className="text-xs text-text-muted">{item.quantity} x ${item.price.toLocaleString("es-CO")}</span>
                       </div>
                       <div className="flex items-center gap-3">
                         <span className="font-extrabold text-text-primary">${(item.quantity * item.price).toLocaleString("es-CO")}</span>
-                        <button type="button" onClick={() => handleRemoveItem(item.id)} className="text-red-500 hover:text-red-700 hover:bg-white/50 p-1.5 rounded-lg transition-colors">
+                        <button type="button" onClick={() => handleRemoveItem(item.id)} className="text-error hover:opacity-80 hover:bg-background-div/50 p-1.5 rounded-lg transition-colors">
                           <Trash2 size={16} />
                         </button>
                       </div>
@@ -344,15 +340,15 @@ export default function OrderEditForm() {
         </div>
 
         {/* FOOTER GENERAL */}
-        <div className="flex justify-end gap-4 bg-white/30 backdrop-blur-md p-4 rounded-3xl shadow-sm border border-white/40 mt-6">
-          <Button type="button" onClick={() => navigate(-1)} variant="secondary" size="md" className="rounded-xl border-border-strong text-text-primary hover:bg-white/40 transition-all">
+        <div className="flex justify-end gap-4 bg-background-div/60 backdrop-blur-md p-4 rounded-3xl shadow-sm border border-border/50 mt-6">
+          <Button type="button" onClick={() => navigate(-1)} variant="tertiary">
             Cancelar
           </Button>
-          <Button type="submit" disabled={isSubmitting} variant="primary">
+          <Button type="button" onClick={handleSubmit} disabled={isSubmitting} variant="primary">
             {isSubmitting ? "ACTUALIZANDO..." : "Actualizar Orden"}
           </Button>
         </div>
-      </form>
+      </div>
     </div>
   );
 }
