@@ -54,12 +54,14 @@ function TableOrderSummary({ orderId, menuImages }) {
   );
 }
 
-export default function TableDetails({ table, orderPermissions, menuImages }) {
+export default function TableDetails({ table, orderPermissions, menuImages, canManage, onEdit, onRelease }) {
   const navigate = useNavigate();
   const [selectedOrder, setSelectedOrder] = useState("");
-  const currentOrder = table.activeOrders.find(({ id }) => String(id) === selectedOrder) ?? table.activeOrders[0];
+  const activeOrders = table.activeOrders ?? [];
+  const currentOrder = activeOrders.find(({ id }) => String(id) === selectedOrder) ?? activeOrders[0];
   const canView = orderPermissions.includes("view");
   const canEdit = canView && orderPermissions.includes("edit");
+  const canRelease = table.status !== "available";
 
   return (
     <aside aria-label={`Información de ${table.name}`} className={`${panelClass} space-y-4 p-3 sm:p-4`}>
@@ -70,7 +72,7 @@ export default function TableDetails({ table, orderPermissions, menuImages }) {
           <Armchair size={36} aria-hidden="true" />
           <div className="mr-auto">
             <h2 className="text-title font-heading">{table.name}</h2>
-            <p>{table.zone ?? "Zona sin confirmar"}</p>
+            <p>{table.zone ?? "Sin zona asignada"}</p>
           </div>
           <TableStatus status={table.status} />
         </div>
@@ -84,8 +86,8 @@ export default function TableDetails({ table, orderPermissions, menuImages }) {
         </div>
         {currentOrder && canView ? (
           <>
-            {table.activeOrders.length > 1 && (
-              <Select variant="create" label="Pedido activo" htmlFor="tables-current-order" value={String(currentOrder.id)} options={table.activeOrders.map(({ id }) => ({ value: String(id), label: `Pedido #${id}` }))} onChange={(event) => setSelectedOrder(event.target.value)} />
+            {activeOrders.length > 1 && (
+              <Select variant="create" label="Pedido activo" htmlFor="tables-current-order" value={String(currentOrder.id)} options={activeOrders.map(({ id }) => ({ value: String(id), label: `Pedido #${id}` }))} onChange={(event) => setSelectedOrder(event.target.value)} />
             )}
             <TableOrderSummary key={currentOrder.id} orderId={currentOrder.id} menuImages={menuImages} />
           </>
@@ -103,7 +105,12 @@ export default function TableDetails({ table, orderPermissions, menuImages }) {
         <Button variant="tertiary" disabled={!currentOrder || !canView} onClick={() => navigate(`/dashboard/orderView/${currentOrder.id}`)}>
           <FileText className="mr-2 size-4" aria-hidden="true" /> Ver detalle
         </Button>
-        <Button disabled aria-describedby="tables-source-note">
+        {canManage && (
+          <Button variant="tertiary" onClick={() => onEdit(table)}>
+            <Pencil className="mr-2 size-4" aria-hidden="true" /> Editar mesa
+          </Button>
+        )}
+        <Button disabled={!canRelease} onClick={() => onRelease(table)}>
           <Check className="mr-2 size-4" aria-hidden="true" /> Liberar mesa
         </Button>
       </div>

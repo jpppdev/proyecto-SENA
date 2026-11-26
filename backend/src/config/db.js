@@ -173,10 +173,16 @@ async function initDatabaseTables() {
             CREATE TABLE IF NOT EXISTS dining_tables (
                 id_table SERIAL PRIMARY KEY,
                 table_number INT NOT NULL UNIQUE,
+                table_name VARCHAR(100),
+                zone VARCHAR(100),
                 capacity INT NOT NULL,
                 status VARCHAR(50) DEFAULT 'available',
                 is_active BOOLEAN DEFAULT TRUE
             );
+
+            ALTER TABLE dining_tables
+                ADD COLUMN IF NOT EXISTS table_name VARCHAR(100),
+                ADD COLUMN IF NOT EXISTS zone VARCHAR(100);
 
             CREATE TABLE IF NOT EXISTS orders (
                 id_order SERIAL PRIMARY KEY,
