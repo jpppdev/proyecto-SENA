@@ -236,9 +236,20 @@ export default function OrderCreateForm() {
             <p className="mt-1 text-medium text-text-secondary sm:text-body [.dark_&]:text-text-inverse">Registra un pedido, selecciona la mesa y agrega los productos.</p>
           </div>
         </div>
-        <Button onClick={() => navigate(-1)} disabled={locked} className="inline-flex min-h-10 items-center gap-3 rounded-xl border border-brand px-4 py-2 text-medium font-medium-custom enabled:hover:bg-brand-soft/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:opacity-50">
-          <ArrowLeft size={19} aria-hidden="true" className="text-text-brand [.dark_&]:text-brand-soft" />
-          Volver a Órdenes
+        <Button
+           onClick={() => navigate(-1)}
+            disabled={locked}
+            type="button"
+            variant="tertiary"
+        >
+          <span className="inline-flex items-center gap-2">
+            <ArrowLeft
+              size={18}
+              aria-hidden="true"
+              className="shrink-0 text-text-coffee [.dark_&]:text-brand-soft"
+            />
+            Volver a Órdenes
+          </span>
         </Button>
       </header>
 
@@ -315,10 +326,17 @@ export default function OrderCreateForm() {
         </div>
 
         <div className="flex flex-wrap justify-end gap-2 rounded-3xl border border-border-clear/40 bg-background-div/80 p-4 shadow-sm sm:p-5 [.dark_&]:border-border-strong [.dark_&]:bg-background-inverse">
-            <Button onClick={() => navigate(-1)} disabled={locked} className="min-h-10 rounded-xl border border-border-clear px-4 font-medium-custom enabled:hover:bg-brand-soft/20 focus-visible:outline-2 focus-visible:outline-brand disabled:opacity-50">
+        
+            <Button onClick={() => navigate(-1)} disabled={locked} 
+              type="button"
+              variant="tertiary">
               Cancelar
             </Button>
-            <Button type="submit" disabled={locked || (needsTable && !availableTables?.length)} className="min-h-10 rounded-xl bg-brand-hover px-4 font-medium-custom text-text-inverse enabled:hover:bg-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:opacity-50">
+            <Button 
+              type="button"
+              onClick={handleSubmit}
+              variant="primary"
+              >
               {isSubmitting ? "Procesando…" : "Confirmar Orden"}
             </Button>
         </div>
