@@ -6,8 +6,8 @@ import { orderRepository } from "./order.repository.js";
 // Exportamos el servicio de ordenes
 // El service representa la capa de logica de negocio de la aplicacion.
 export const orderService = {
-    async getAvailableTables() {
-        return orderRepository.getAvailableTables();
+    async getAvailableTables(includeUnavailable) {
+        return orderRepository.getAvailableTables(includeUnavailable);
     },
 
     // Metodo encargado de crear una orden.

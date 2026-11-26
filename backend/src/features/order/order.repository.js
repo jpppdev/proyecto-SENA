@@ -3,15 +3,15 @@
 
 import { pool } from "../../config/db.js";
 
-const tableIsFree = `
-    t.is_active IS TRUE
-    AND t.status = 'available'
-    AND NOT EXISTS (
+const hasActiveOrder = `
+    EXISTS (
         SELECT 1 FROM orders o
         WHERE o.id_table = t.id_table
           AND LOWER(TRIM(o.order_status)) IN ('pending', 'pendiente', 'en preparación')
     )
 `;
+
+const tableIsFree = `t.is_active IS TRUE AND t.status = 'available' AND NOT ${hasActiveOrder}`;
 
 async function lockAvailableTable(client, tableNumber) {
     const number = Number(tableNumber);
@@ -118,11 +118,17 @@ async function insertOrder(client, orderData) {
 // Exportamos el repositorio de ordenes
 // El repository encapsula todas las consultas SQL relacionadas con orders.
 export const orderRepository = {
-    async getAvailableTables() {
+    async getAvailableTables(includeUnavailable = false) {
         const result = await pool.query(`
             SELECT t.table_number AS "tableNumber", t.capacity
+            ${includeUnavailable ? `, CASE
+                WHEN t.is_active IS NOT TRUE THEN 'out_of_service'
+                WHEN ${hasActiveOrder} OR t.status = 'occupied' THEN 'occupied'
+                WHEN t.status IN ('available', 'reserved') THEN t.status
+                ELSE 'out_of_service'
+            END AS status` : ""}
             FROM dining_tables t
-            WHERE ${tableIsFree}
+            ${includeUnavailable ? "" : `WHERE ${tableIsFree}`}
             ORDER BY t.table_number
         `);
         return result.rows;
