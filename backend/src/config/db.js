@@ -132,9 +132,13 @@ async function initDatabaseTables() {
                 supplier_email VARCHAR(150),
                 supplier_phone VARCHAR(20),
                 supplier_address VARCHAR(255),
+                supplier_image TEXT,
                 is_active BOOLEAN DEFAULT TRUE,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
+
+            ALTER TABLE suppliers
+                ADD COLUMN IF NOT EXISTS supplier_image TEXT;
 
             CREATE TABLE IF NOT EXISTS menu_categories (
                 id_category SERIAL PRIMARY KEY,

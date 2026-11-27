@@ -1,16 +1,27 @@
 import { API_URL } from "@/features/config";
+import { resolveImageUpload } from "@/shared/services/uploadService";
 
 const PROVIDERS_URL = `${API_URL}/providers`;
 
 export async function createProvider(providerData) {
   const token = sessionStorage.getItem("token");
+  const uploadedImageUrl = await resolveImageUpload(
+    providerData.providerImage ?? providerData.supplierImage,
+    "providers"
+  );
+  const payload = {
+    ...providerData,
+    supplierImage: uploadedImageUrl || providerData.supplierImage || null,
+  };
+  delete payload.providerImage;
+
   const response = await fetch(PROVIDERS_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(providerData),
+    body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
@@ -55,13 +66,23 @@ export async function getProviderById(id) {
 
 export async function updateProvider(id, providerData) {
   const token = sessionStorage.getItem("token");
+  const uploadedImageUrl = await resolveImageUpload(
+    providerData.providerImage ?? providerData.supplierImage,
+    "providers"
+  );
+  const payload = {
+    ...providerData,
+    supplierImage: uploadedImageUrl || providerData.supplierImage || null,
+  };
+  delete payload.providerImage;
+
   const response = await fetch(`${PROVIDERS_URL}/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(providerData),
+    body: JSON.stringify(payload),
   });
 
   if (!response.ok) {

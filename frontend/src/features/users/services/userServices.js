@@ -2,6 +2,7 @@
 // En desarrollo apunta al servidor Express local
 // En produccion deberia provenir de variables de entrono
 import { API_URL } from "@/features/config"
+import { resolveImageUpload } from "@/shared/services/uploadService";
 
 const USERS_URL = `${API_URL}/users`;
 
@@ -10,7 +11,17 @@ const USERS_URL = `${API_URL}/users`;
 // retorna la respuesta JSON del servidor
 
 export async function createUser(userData){
-const token = sessionStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
+  const uploadedAvatarUrl = await resolveImageUpload(
+    userData.userImage ?? userData.userAvatarUrl,
+    "users"
+  );
+  const payload = {
+    ...userData,
+    userAvatarUrl: uploadedAvatarUrl || userData.userAvatarUrl || null,
+  };
+  delete payload.userImage;
+
   const headers = {
     "Content-Type": "application/json",
   };
@@ -21,7 +32,7 @@ const token = sessionStorage.getItem("token");
   const response = await fetch(USERS_URL, {
       method: "POST",
       headers,
-      body: JSON.stringify(userData),
+      body: JSON.stringify(payload),
     });
 
   if (!response.ok) {
@@ -65,13 +76,23 @@ export async function getUserById(id) {
 
 export async function updateUser(id, userData) {
   const token = sessionStorage.getItem("token");
+  const uploadedAvatarUrl = await resolveImageUpload(
+    userData.userImage ?? userData.userAvatarUrl,
+    "users"
+  );
+  const payload = {
+    ...userData,
+    userAvatarUrl: uploadedAvatarUrl || userData.userAvatarUrl || null,
+  };
+  delete payload.userImage;
+
   const response = await fetch(`${USERS_URL}/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(userData),
+    body: JSON.stringify(payload),
   });
 
   if (!response.ok) {

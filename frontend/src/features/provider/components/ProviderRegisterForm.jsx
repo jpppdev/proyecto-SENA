@@ -4,6 +4,7 @@ import { providerSchema } from "../schemas/providerSchemas";
 import { Input, Button, Select, FileInput } from "@/shared";
 import { Store, ArrowLeft, Check, Truck } from "lucide-react";
 import { showErrorAlert } from "@/shared/services/alertService";
+import { createProvider } from "../services/providerServices";
 
 export default function ProviderRegisterForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -82,7 +83,7 @@ export default function ProviderRegisterForm() {
     setIsSubmitting(true);
 
     try {
-      // Aquí iría tu llamado a la API: await createProvider(result.data);
+      await createProvider(result.data);
       setIsSuccess(true);
       setTimeout(() => navigate(-1), 2500);
     } catch (error) {
