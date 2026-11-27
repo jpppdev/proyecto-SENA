@@ -33,9 +33,11 @@ export async function getAvailableTables(signal, { includeUnavailable = false } 
   return response.json();
 }
 
-export async function getOrders() {
+export async function getOrders(signal, { includeDetails = false } = {}) {
   const token = sessionStorage.getItem("token");
-  const response = await fetch(ORDERS_URL, {
+  const query = includeDetails ? "?includeDetails=true" : "";
+  const response = await fetch(`${ORDERS_URL}${query}`, {
+    signal,
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -49,9 +51,10 @@ export async function getOrders() {
   return response.json();
 }
 
-export async function getOrderById(id) {
+export async function getOrderById(id, signal) {
   const token = sessionStorage.getItem("token");
   const response = await fetch(`${ORDERS_URL}/${id}`, {
+    signal,
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -78,7 +81,7 @@ export async function updateOrder(id, orderData) {
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.message || error.error || "Error al actualizar la orden");
+    throw Object.assign(new Error(error.message || error.error || "Error al actualizar la orden"), { status: response.status });
   }
 
   return response.json();

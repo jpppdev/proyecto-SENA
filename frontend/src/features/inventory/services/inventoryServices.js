@@ -21,9 +21,10 @@ export async function createInventory(inventoryData) {
   return response.json();
 }
 
-export async function getInventories() {
+export async function getInventories(signal) {
   const token = sessionStorage.getItem("token");
   const response = await fetch(INVENTORY_URL, {
+    signal,
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
