@@ -1,5 +1,10 @@
 // Importamos Express, el frameWoek base para construir el servidor HTTP
 import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Importamos el middleware CORS
 // Permite controlar que origines pueden comunicarse con el backend
@@ -16,7 +21,9 @@ import menuRoutes from "./features/menu/menu.routes.js";
 import productRoutes from "./features/products/product.routes.js";
 import permissionRoutes from "./features/permissions/permission.routes.js";
 import tableRoutes from "./features/tables/table.routes.js";
+import uploadRoutes from "./features/uploads/upload.routes.js";
 import { authenticateToken } from "./middlewares/auth.middleware.js";
+import { sqlInjectionGuard } from "./middlewares/security.middleware.js";
 
 // Creamos la instancia de la aplicacion Express
 const app = express();
@@ -32,7 +39,13 @@ app.use(cors({ origin: [
 
 // Middleware para parsear el cuerpo de las peticiones como JSON
 //Sin este middleware, req, body, seria undefined
-app.use(express.json());
+app.use(express.json({ limit: "15mb" }));
+
+// Servir archivos de imágenes guardados en backend/uploads
+app.use("/uploads", express.static(path.resolve(__dirname, "../uploads")));
+
+// Protección global contra inyecciones SQL en query, params y body
+app.use(sqlInjectionGuard);
 
 // Registro del router de usuarios
 //Todas las rutas del feature users quedaran bajo el prefijo/api/users
@@ -46,6 +59,7 @@ app.use("/api/menu", menuRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/permissions", authenticateToken, permissionRoutes);
 app.use("/api/tables", authenticateToken, tableRoutes);
+app.use("/api/uploads", authenticateToken, uploadRoutes);
 
 // Exportamos la aplicacion configurada
 // EL arranque del servidor se hace en server.js

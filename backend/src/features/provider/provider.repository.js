@@ -20,8 +20,14 @@ export const providerRepository = {
             email,
             phone,
             address,
+            supplierImage = null,
+            providerImage = null,
             isActive = true,
         } = providerData;
+
+        const imageToSave = supplierImage || providerImage || null;
+
+        await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS supplier_image TEXT;`);
 
         // Definimos la consulta SQL parametrizada
         // Usar placeholders ($1, $2, ...) previene inyecciones SQL
@@ -33,9 +39,10 @@ export const providerRepository = {
             supplier_email,
             supplier_phone,
             supplier_address,
+            supplier_image,
             is_active
         ) VALUES (
-            $1, $2, $3, $4, $5, $6
+            $1, $2, $3, $4, $5, $6, $7
         ) RETURNING id_supplier AS id;
         `;
 
@@ -47,6 +54,7 @@ export const providerRepository = {
             email,
             phone,
             address,
+            imageToSave,
             isActive,
         ];
 
@@ -60,6 +68,7 @@ export const providerRepository = {
     },
 
     async getAll() {
+        await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS supplier_image TEXT;`);
         const query = `
           SELECT 
             id_supplier AS id,
@@ -75,6 +84,7 @@ export const providerRepository = {
             supplier_email AS email,
             supplier_phone AS phone,
             supplier_address AS address,
+            COALESCE(supplier_image, '') AS "supplierImage",
             COALESCE(contact_name, 'General') AS products,
             is_active AS "isActive"
           FROM suppliers 
@@ -85,6 +95,7 @@ export const providerRepository = {
     },
 
     async getById(id) {
+        await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS supplier_image TEXT;`);
         const query = `
           SELECT 
             id_supplier AS id,
@@ -100,6 +111,7 @@ export const providerRepository = {
             supplier_email AS email,
             supplier_phone AS phone,
             supplier_address AS address,
+            COALESCE(supplier_image, '') AS "supplierImage",
             COALESCE(contact_name, 'General') AS products,
             is_active AS "isActive"
           FROM suppliers 
@@ -110,6 +122,7 @@ export const providerRepository = {
     },
 
     async update(id, providerData) {
+        await pool.query(`ALTER TABLE suppliers ADD COLUMN IF NOT EXISTS supplier_image TEXT;`);
         const {
             providerName,
             documentType,
@@ -117,9 +130,12 @@ export const providerRepository = {
             email,
             phone,
             address,
+            supplierImage = null,
+            providerImage = null,
             isActive = true,
         } = providerData;
 
+        const imageToSave = supplierImage || providerImage || null;
         const activeBool = isActive === "true" ? true : isActive === "false" ? false : Boolean(isActive);
 
         const query = `
@@ -129,8 +145,9 @@ export const providerRepository = {
             supplier_email = $3,
             supplier_phone = $4,
             supplier_address = $5,
-            is_active = $6
-          WHERE id_supplier = $7
+            supplier_image = COALESCE($6, supplier_image),
+            is_active = $7
+          WHERE id_supplier = $8
           RETURNING id_supplier AS id;
         `;
 
@@ -140,6 +157,7 @@ export const providerRepository = {
             email,
             phone,
             address || null,
+            imageToSave,
             activeBool,
             id,
         ];

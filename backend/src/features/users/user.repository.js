@@ -263,6 +263,7 @@ export const userRepository = {
             startDate = null,
             endDate = null,
             userPassword,
+            userAvatarUrl = null,
             isActive = true,
         } = userData;
 
@@ -300,8 +301,9 @@ export const userRepository = {
                     is_staff = $10,
                     is_active = $11,
                     is_superuser = $12,
-                    user_password = $13
-                  WHERE id_usuario = $14
+                    user_avatar_url = COALESCE($13, user_avatar_url),
+                    user_password = $14
+                  WHERE id_usuario = $15
                   RETURNING id_usuario AS id;
                 `
                 : `
@@ -317,8 +319,9 @@ export const userRepository = {
                     address = $9,
                     is_staff = $10,
                     is_active = $11,
-                    is_superuser = $12
-                  WHERE id_usuario = $13
+                    is_superuser = $12,
+                    user_avatar_url = COALESCE($13, user_avatar_url)
+                  WHERE id_usuario = $14
                   RETURNING id_usuario AS id;
                 `;
 
@@ -336,6 +339,7 @@ export const userRepository = {
                     staffFlag,
                     activeBool,
                     isAdmin,
+                    userAvatarUrl || null,
                     userPassword,
                     id,
                 ]
@@ -352,6 +356,7 @@ export const userRepository = {
                     staffFlag,
                     activeBool,
                     isAdmin,
+                    userAvatarUrl || null,
                     id,
                 ];
 

@@ -1,7 +1,19 @@
 // importamos el repositorio de usuarios
 // El service depende del repository para acceder a la persistencia,
 // pero el repository NO debe conocer el service.
+import bcrypt from "bcrypt";
 import { userRepository } from "./user.repository.js";
+
+const SALT_ROUNDS = 12;
+
+async function hashPasswordIfNeeded(rawPassword) {
+    const password = String(rawPassword || "");
+    if (!password.trim()) return null;
+    if (password.startsWith("$2a$") || password.startsWith("$2b$") || password.startsWith("$2y$")) {
+        return password;
+    }
+    return await bcrypt.hash(password, SALT_ROUNDS);
+}
 
 // Exportamos el servicio de usuarios
 // EL service representa  la capa de logica de negocio de la aplicacion.
@@ -11,16 +23,17 @@ export const userService = {
     // Recibe datos provenientes del controller,
     // idealmente ya validados a nivel estructural (schema)
     async create(data) {
+        const rawPassword = data?.userPassword ?? data?.password;
+        const hashedPassword = await hashPasswordIfNeeded(rawPassword);
 
-        // En este punto, en una arquitectura real, deberia ocurrir:
-        //-Validaciones de reglas de negocio
-        //-Transformaciones (ej: hash de contraseñas)
-        //-Vereficaciones unicidad( email, documento, etc.)
-        //-Decisiones de negocio (roles, flags, estados inicales)
+        if (!hashedPassword) {
+            throw new Error("La contraseña es requerida");
+        }
 
-        //Actualmente, el metodo solo delega directamente al repository
-        // sin agregar ninguna logica adicional.
-        return await userRepository.create(data);
+        return await userRepository.create({
+            ...data,
+            userPassword: hashedPassword,
+        });
     },
 
     async getAll(){
@@ -30,7 +43,13 @@ export const userService = {
         return await userRepository.getById(id);
     },
     async update(id, data) {
-        return await userRepository.update(id, data);
+        const rawPassword = data?.userPassword ?? data?.password;
+        const hashedPassword = await hashPasswordIfNeeded(rawPassword);
+
+        return await userRepository.update(id, {
+            ...data,
+            userPassword: hashedPassword || undefined,
+        });
     },
     async updateStatus(id, isActive) {
         return await userRepository.updateStatus(id, isActive);

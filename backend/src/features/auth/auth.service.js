@@ -142,7 +142,7 @@ export const authService = {
         }
 
         const targetEmail = email || tokenRecord.user_email;
-        const hashedPassword = await bcrypt.hash(cleanPassword, 10);
+        const hashedPassword = await bcrypt.hash(cleanPassword, 12);
 
         const updatedUser = await authRepository.updatePasswordByEmail(targetEmail, hashedPassword);
         if (!updatedUser) {

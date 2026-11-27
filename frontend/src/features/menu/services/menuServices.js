@@ -1,16 +1,27 @@
 import { API_URL } from "@/features/config";
+import { resolveImageUpload } from "@/shared/services/uploadService";
 
 const MENU_URL = `${API_URL}/menu`;
 
 export async function createMenu(menuData) {
   const token = sessionStorage.getItem("token");
+  const uploadedImageUrl = await resolveImageUpload(
+    menuData.menuImage ?? menuData.imageUrl,
+    "menu"
+  );
+  const payload = {
+    ...menuData,
+    imageUrl: uploadedImageUrl || menuData.imageUrl || null,
+  };
+  delete payload.menuImage;
+
   const response = await fetch(MENU_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(menuData),
+    body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
@@ -60,13 +71,23 @@ export async function getMenuById(id) {
 
 export async function updateMenu(id, menuData) {
   const token = sessionStorage.getItem("token");
+  const uploadedImageUrl = await resolveImageUpload(
+    menuData.menuImage ?? menuData.imageUrl,
+    "menu"
+  );
+  const payload = {
+    ...menuData,
+    imageUrl: uploadedImageUrl || menuData.imageUrl || null,
+  };
+  delete payload.menuImage;
+
   const response = await fetch(`${MENU_URL}/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(menuData),
+    body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
