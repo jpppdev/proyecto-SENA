@@ -24,7 +24,7 @@ export default function OrderSummary({ items, total, formatPrice, disabled, onQu
             </thead>
             <tbody>
               {items.map((item) => (
-                <tr key={item.productId} className="border-t border-border-clear/30">
+                <tr key={item.id} className="border-t border-border-clear/30">
                   <th scope="row" className="px-2 py-2 font-medium-custom sm:px-3">
                     <div className="flex items-center gap-2">
                       <OrderProductImage src={item.image} className="hidden h-8 w-10 rounded-md sm:grid" />
@@ -36,11 +36,11 @@ export default function OrderSummary({ items, total, formatPrice, disabled, onQu
                   </th>
                   <td className="px-1">
                     <div className="mx-auto flex w-fit items-center rounded-xl border border-border-clear/60">
-                      <Button aria-label={`Reducir cantidad de ${item.name}`} disabled={disabled || item.quantity <= 1} onClick={() => onQuantityChange(item.productId, -1)} className={actionClass}>
+                      <Button aria-label={`Reducir cantidad de ${item.name}`} disabled={disabled || item.quantity <= 1} onClick={() => onQuantityChange(item.id, -1)} className={actionClass}>
                         <Minus size={16} aria-hidden="true" />
                       </Button>
                       <span className="min-w-4 text-center font-medium-custom tabular-nums">{item.quantity}</span>
-                      <Button aria-label={`Aumentar cantidad de ${item.name}`} disabled={disabled || item.quantity >= MAX_ORDER_QUANTITY} onClick={() => onQuantityChange(item.productId, 1)} className={actionClass}>
+                      <Button aria-label={`Aumentar cantidad de ${item.name}`} disabled={disabled || item.quantity >= MAX_ORDER_QUANTITY} onClick={() => onQuantityChange(item.id, 1)} className={actionClass}>
                         <Plus size={16} aria-hidden="true" />
                       </Button>
                     </div>
@@ -48,7 +48,7 @@ export default function OrderSummary({ items, total, formatPrice, disabled, onQu
                   <td className="hidden whitespace-nowrap px-2 text-right sm:table-cell">{formatPrice(item.price)}</td>
                   <td className="whitespace-nowrap px-2 text-right font-heading">{formatPrice(item.price * item.quantity)}</td>
                   <td className="pr-1">
-                    <Button aria-label={`Eliminar ${item.name}`} disabled={disabled} onClick={() => onRemove(item.productId)} className={actionClass}>
+                    <Button aria-label={`Eliminar ${item.name}`} disabled={disabled} onClick={() => onRemove(item.id)} className={actionClass}>
                       <Trash2 size={17} aria-hidden="true" />
                     </Button>
                   </td>

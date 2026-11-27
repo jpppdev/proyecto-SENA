@@ -1,11 +1,17 @@
 import { CalendarDays } from "lucide-react";
-import { indicators, recentOrders, alerts, quickActions } from "../data/dashboard";
+import { Button } from "@/shared";
+import { quickActions } from "../data/dashboard";
+import { buildDashboardSummary } from "../data/dashboardSummary";
+import useDashboardData from "../hooks/useDashboardData";
 import DashboardIndicators from "./DashboardIndicators";
 import RecentOrders from "./RecentOrders";
 import DashboardAlerts from "./DashboardAlerts";
 import QuickActions from "./QuickActions";
 
 export default function AdminHomePage() {
+  const { orders, inventory, retry } = useDashboardData();
+  const { indicators, recentOrders, alerts } = buildDashboardSummary(orders.data, inventory.data);
+  const loadError = orders.error || inventory.error;
   const today = new Date();
   const dateLabel = new Intl.DateTimeFormat("es", { dateStyle: "long" }).format(today);
 
@@ -17,8 +23,19 @@ export default function AdminHomePage() {
           <div className="flex w-fit items-center gap-2 rounded-xl border border-border-clear2 bg-border-clear2/60 px-4 py-3 text-xs text-text-coffee"><CalendarDays size={17} aria-hidden="true" /><time dateTime={`${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`}>Hoy, {dateLabel}</time></div>
         </header>
       
+        {loadError && (
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border-clear2 bg-background-div p-3">
+            <p role="alert" className="text-sm text-error">
+              No se pudo actualizar {orders.error && inventory.error ? "órdenes e inventario" : orders.error ? "órdenes" : "inventario"}.
+            </p>
+            <Button variant="tertiary" onClick={retry}>Reintentar</Button>
+          </div>
+        )}
         <DashboardIndicators items={indicators} />
-        <div className="grid min-w-0 gap-5 xl:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]"><RecentOrders orders={recentOrders} /><DashboardAlerts items={alerts} /></div>
+        <div className="grid min-w-0 gap-5 xl:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
+          <RecentOrders orders={recentOrders} error={orders.error} />
+          <DashboardAlerts items={alerts} loading={!orders.data || !inventory.data} error={loadError} />
+        </div>
         <QuickActions items={quickActions} />
       </div>
     </div>

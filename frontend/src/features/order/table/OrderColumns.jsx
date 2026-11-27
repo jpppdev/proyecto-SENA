@@ -45,11 +45,15 @@ export const OrderColumns = [
     header: "Estado",
     cell: ({ row }) => {
       const order = row.original;
-      const status = order.status || "Pendiente";
+      const storedStatus = String(order.status ?? "").trim();
+      const normalizedStatus = storedStatus.toLowerCase();
+      const status = ["", "pending", "pendiente"].includes(normalizedStatus)
+        ? "En preparación"
+        : storedStatus;
       const isDisabled =
-        status.toLowerCase() === "deshabilitada" ||
-        status.toLowerCase() === "cancelada" ||
-        status.toLowerCase() === "inactivo";
+        normalizedStatus === "deshabilitada" ||
+        normalizedStatus === "cancelada" ||
+        normalizedStatus === "inactivo";
 
       const handleToggle = async () => {
         try {
@@ -64,7 +68,7 @@ export const OrderColumns = [
       return (
         <StatusBadge
           label={String(status).toUpperCase()}
-          tone={isDisabled ? "danger" : "success"}
+          tone={isDisabled ? "danger" : status.toLowerCase() === "en preparación" ? "warning" : "success"}
           onClick={handleToggle}
           className="px-2.5 py-1 font-semibold"
         />

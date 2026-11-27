@@ -60,7 +60,7 @@ export const orderController = {
 
     async getAll(req, res) {
         try {
-            const orders = await orderService.getAll();
+            const orders = await orderService.getAll(req.query.includeDetails === "true");
             res.status(200).json(orders);
         } catch (err) {
             console.error("ERROR BACKEND:", err);
@@ -90,7 +90,7 @@ export const orderController = {
             res.status(200).json({ message: "Orden actualizada correctamente", orderId: updated.id });
         } catch (err) {
             console.error("ERROR BACKEND:", err);
-            res.status(500).json({ error: err.message });
+            res.status(err.status || 500).json({ error: err.message });
         }
     },
 

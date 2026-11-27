@@ -28,7 +28,8 @@ const navLinkClass = "text-sm font-semibold text-[#713008] transition-colors hov
 export default function Navbar() {
   const navigate = useNavigate();
   const userId = Number(readSessionPayload()?.id);
-  const { user, isAdmin } = usePermissions();
+  const { user, isAdmin, can } = usePermissions();
+  const canViewOrders = can("orders", "view");
   const displayName = user?.userName || (isAdmin ? "Admin" : "Usuario");
   const [darkMode, setDarkMode] = useState(
     document.documentElement.classList.contains("dark")
@@ -102,6 +103,14 @@ export default function Navbar() {
               </li>
             )}
 
+            {canViewOrders && (
+              <li>
+                <Link to="/dashboard/orders" className={navLinkClass}>
+                  Órdenes
+                </Link>
+              </li>
+            )}
+
             <li>
               <Link
                 to="/dashboard/Dishes"
@@ -171,6 +180,12 @@ export default function Navbar() {
               </DropdownTrigger>
 
               <DropdownContent className="right-0 border-orange-100 bg-[#fff8f1]! text-[#713008]! [&_button:hover]:bg-orange-100">
+
+                {canViewOrders && (
+                  <DropdownItem asChild className="xl:hidden!">
+                    <Link to="/dashboard/orders">Órdenes</Link>
+                  </DropdownItem>
+                )}
 
                 <DropdownItem asChild className="xl:hidden!">
                   <Link to="/dashboard/Dishes">Platillos</Link>

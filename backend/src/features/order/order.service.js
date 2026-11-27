@@ -19,8 +19,8 @@ export const orderService = {
         return await orderRepository.create(data);
     },
 
-    async getAll() {
-        return await orderRepository.getAll();
+    async getAll(includeDetails) {
+        return orderRepository.getAll(includeDetails);
     },
 
     async getById(id) {

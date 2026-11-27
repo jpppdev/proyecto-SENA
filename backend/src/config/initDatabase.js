@@ -88,6 +88,7 @@ export async function initDatabaseTables(databasePool = pool) {
             "0006_create_auditoria_sistema.sql",
             "0014_create_inventor_entries_table.sql",
             "0016_create_menu_recipes_table.sql",
+            "0027_add_order_type.sql",
         ]) {
             await client.query(await readFile(new URL(`../../database/migrations/${filename}`, import.meta.url), "utf8"));
         }

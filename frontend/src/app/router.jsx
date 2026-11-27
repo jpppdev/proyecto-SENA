@@ -12,7 +12,7 @@ import { InventoryCreateForm, InventoryEditForm } from "../features/inventory";
 import { ProviderRegisterForm } from "../features/provider";
 
 // CORRECCIÓN: Importamos todo desde el archivo index de 'orders' en plural, manteniendo el estándar de barril
-import { OrderListPage, ViewOrder, OrderCreateForm } from "@/features/order";
+import { OrderBoardPage, OrderListPage, ViewOrder, OrderCreateForm } from "@/features/order";
 
 import { InventoryListPage } from "@/features/inventory";
 import { ViewInventory } from "@/features/inventory";
@@ -123,6 +123,7 @@ const  router = createBrowserRouter([
                 element: <PermissionGuard module="orders" action="view" />,
                 children: [
                     { path: "orderList", element: <OrderListPage /> },
+                    { path: "orders", element: <OrderBoardPage /> },
                     { path: "orderView/:id", element: <ViewOrder /> },
                 ],
             },

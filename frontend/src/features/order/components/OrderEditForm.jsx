@@ -1,354 +1,44 @@
-import { useState, useEffect } from "react";
+﻿import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { 
-  ArrowLeft, 
-  Check, 
-  ShoppingCart, 
-  User, 
-  Coffee, 
-  CreditCard, 
-  Plus, 
-  Trash2, 
-  PencilLine 
-} from "lucide-react";
-
-import { Input, Button, Select } from "@/shared";
-import { orderSchema } from "../schema/orderSchema"; 
-import { getOrderById, updateOrder } from "../services/orderServices";
-import { getMenu } from "@/features/menu/services/menuServices";
-import { showSuccessAlert, showErrorAlert } from "@/shared/services/alertService";
-
-const ORDER_TYPES = [
-  { label: "Consumo en Mesa", value: "mesa" },
-  { label: "Para Llevar", value: "llevar" },
-  { label: "Domicilio", value: "domicilio" }
-];
-
-const PAYMENT_METHODS = [
-  { label: "Efectivo", value: "efectivo" },
-  { label: "Tarjeta de Crédito/Débito", value: "tarjeta" },
-  { label: "Transferencia (Nequi/Daviplata)", value: "transferencia" }
-];
-
-const DEFAULT_PRODUCTS = [
-  { label: "Café Americano - $5.000", value: "p1", price: 5000, name: "Café Americano" },
-  { label: "Capuchino Vainilla - $7.500", value: "p2", price: 7500, name: "Capuchino Vainilla" },
-  { label: "Croissant de Mantequilla - $4.500", value: "p3", price: 4500, name: "Croissant de Mantequilla" },
-  { label: "Hamburguesa especial - $20.000", value: "p4", price: 20000, name: "Hamburguesa especial" },
-  { label: "Pizza personal - $25.000", value: "p5", price: 25000, name: "Pizza personal" },
-];
-
-const CardSection = ({ icon, title, children }) => (
-  <div className="bg-background-div/60 backdrop-blur-md rounded-3xl p-6 shadow-sm border border-border/50 flex flex-col gap-5">
-    <div className="flex items-center gap-3 mb-2">
-      <div className="bg-brand p-2 rounded-xl text-text-success shadow-md">
-        {icon}
-      </div>
-      <h3 className="text-text-primary font-extrabold text-lg tracking-wide">
-        {title}
-      </h3>
-    </div>
-    {children}
-  </div>
-);
+import { Button } from "@/shared";
+import { getOrderById } from "../services/orderServices";
+import OrderForm from "./OrderForm";
 
 export default function OrderEditForm() {
   const { id } = useParams();
   const navigate = useNavigate();
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [errors, setErrors] = useState({});
-  const [availableProducts, setAvailableProducts] = useState(DEFAULT_PRODUCTS);
-
-  const [formData, setFormData] = useState({
-    customerName: "",
-    orderType: "mesa",
-    tableNumber: "",
-    paymentMethod: "efectivo",
-    observations: "",
-    orderStatus: "En preparación",
-  });
-
-  const [orderItems, setOrderItems] = useState([]);
-  const [currentProduct, setCurrentProduct] = useState("");
-  const [currentQty, setCurrentQty] = useState("1");
-
-  const totalOrder = orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const [request, setRequest] = useState(0);
+  const [result, setResult] = useState(null);
 
   useEffect(() => {
-    getMenu()
-      .then((dishes) => {
-        if (Array.isArray(dishes) && dishes.length > 0) {
-          setAvailableProducts(
-            dishes.map((d) => ({
-              label: `${d.menuName} - $${Number(d.price || 0).toLocaleString("es-CO")}`,
-              value: String(d.id),
-              price: Number(d.price) || 0,
-              name: d.menuName,
-            }))
-          );
-        }
+    const controller = new AbortController();
+    getOrderById(id, controller.signal)
+      .then((order) => {
+        if (!controller.signal.aborted) setResult({ id, request, order });
       })
-      .catch(() => {});
-
-    getOrderById(id)
-      .then((orderToEdit) => {
-        if (orderToEdit) {
-          setFormData({
-            customerName: orderToEdit.customerName || "",
-            orderType: orderToEdit.table && Number(orderToEdit.table) > 0 ? "mesa" : "domicilio",
-            tableNumber: orderToEdit.table ? String(orderToEdit.table) : "",
-            paymentMethod: "efectivo",
-            observations: orderToEdit.observations || "",
-            orderStatus: orderToEdit.status || "En preparación",
-          });
-
-          if (orderToEdit.dishes && orderToEdit.dishes.length > 0) {
-            const loadedDishes = orderToEdit.dishes.map((dish, index) => ({
-              id: `loaded-${index}`,
-              productId: String(dish.productId || `item-${index}`),
-              name: dish.name,
-              price: Number(dish.price) || 0,
-              quantity: Number(dish.quantity) || 1,
-            }));
-            setOrderItems(loadedDishes);
-          } else if (orderToEdit.total) {
-            setOrderItems([
-              {
-                id: "loaded-0",
-                productId: "1",
-                name: "Consumo general",
-                price: Number(orderToEdit.total) || 0,
-                quantity: 1,
-              },
-            ]);
-          }
-        }
-      })
-      .catch((err) => console.error("Error cargando orden:", err));
-  }, [id]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleAddItem = () => {
-    if (!currentProduct || !currentQty || parseInt(currentQty) <= 0) return;
-    
-    const productDef = availableProducts.find(p => p.value === currentProduct);
-    
-    if (productDef) {
-      const newItem = {
-        id: Date.now().toString(),
-        productId: productDef.value,
-        name: productDef.name,
-        price: productDef.price,
-        quantity: parseInt(currentQty)
-      };
-      setOrderItems([...orderItems, newItem]);
-      setCurrentProduct("");
-      setCurrentQty("1");
-    }
-  };
-
-  const handleRemoveItem = (idToRemove) => {
-    setOrderItems(orderItems.filter(item => item.id !== idToRemove));
-  };
-
-  const handleSubmit = async (e) => {
-    e?.preventDefault();
-    
-    const result = orderSchema.safeParse(formData);
-
-    if (!result.success) {
-      const fieldErrors = {};
-      result.error.issues.forEach((issue) => {
-        fieldErrors[issue.path[0]] = issue.message;
+      .catch((error) => {
+        if (!controller.signal.aborted) setResult({ id, request, error: error.message });
       });
-      setErrors(fieldErrors);
-      await showErrorAlert({
-        title: "Error de validación",
-        text: "Por favor revisa los datos de la orden.",
-        timer: 2500,
-      });
-      return;
-    }
+    return () => controller.abort();
+  }, [id, request]);
 
-    if (orderItems.length === 0) {
-      await showErrorAlert({
-        title: "Orden vacía",
-        text: "Debes mantener al menos un producto en la orden.",
-        timer: 2500,
-      });
-      return;
-    }
-
-    setErrors({});
-    setIsSubmitting(true);
-
-    try {
-      await updateOrder(id, {
-        ...result.data,
-        orderStatus: formData.orderStatus,
-        items: orderItems,
-        total: totalOrder,
-      });
-      setIsSuccess(true);
-      await showSuccessAlert({
-        title: "Orden actualizada",
-        text: "La orden fue actualizada correctamente.",
-        timer: 2000,
-      });
-      navigate("/dashboard/orderList");
-    } catch (error) {
-      console.error("Error:", error.message);
-      await showErrorAlert({
-        title: "Error al actualizar orden",
-        text: error.message || "Ocurrió un error al actualizar la orden.",
-        timer: 3000,
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const current = result?.id === id && result.request === request ? result : null;
+  if (current?.order) return <OrderForm key={id} order={current.order} />;
 
   return (
-    <div className="relative w-full max-w-[1200px] min-h-[600px] mx-auto mt-10 text-text-primary">
-      
-      {/* CAPA DE ÉXITO */}
-      {isSuccess && (
-        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-background-inverse/40 backdrop-blur-md transition-all duration-300 rounded-[2.5rem]">
-          <div className="w-32 h-32 bg-surface-muted rounded-[2rem] rotate-3 flex items-center justify-center mb-6 shadow-xl relative">
-            <PencilLine className="w-14 h-14 text-brand -rotate-3" />
-            <div className="absolute -bottom-2 -right-2 bg-success rounded-full p-2 border-4 border-surface-muted -rotate-3">
-              <Check className="w-6 h-6 text-text-inverse" strokeWidth={3} />
-            </div>
+    <section className="mx-auto w-full max-w-[1680px] space-y-4 p-6 text-text-primary [.dark_&]:text-text-inverse">
+      <h1 className="text-title font-heading sm:text-main">Editar Orden #{id}</h1>
+      {current?.error ? (
+        <>
+          <p role="alert">{current.error}</p>
+          <div className="flex flex-wrap gap-3">
+            <Button onClick={() => setRequest((previous) => previous + 1)}>Reintentar</Button>
+            <Button variant="tertiary" onClick={() => navigate(-1)}>Volver a Órdenes</Button>
           </div>
-          <h2 className="text-text-primary text-2xl font-bold tracking-wide drop-shadow-md">
-            ¡Orden Actualizada!
-          </h2>
-        </div>
+        </>
+      ) : (
+        <p role="status">Cargando orden…</p>
       )}
-
-      {/* HEADER */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 px-4">
-        <div>
-          <h1 className="text-3xl font-extrabold text-text-primary mb-1 drop-shadow-sm">
-            Editar Orden #{id}
-          </h1>
-          <p className="text-sm font-medium text-text-secondary">
-            Modifica los detalles del cliente o los productos facturados
-          </p>
-        </div>
-        <Button 
-          type="button" 
-          onClick={() => navigate(-1)}
-          variant="tertiary"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Volver a órdenes
-        </Button>
-      </div>
-
-      {/* CONTENEDOR SIN ETIQUETA FORM */}
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          
-          {/* TARJETA 1: Info del Cliente */}
-          <CardSection icon={<User size={20} />} title="1. Datos del Servicio">
-            <div className="grid grid-cols-2 gap-4 [&>div]:!w-full">
-              <Select variant="create" label="Tipo de Servicio *" htmlFor="orderType" name="orderType" value={formData.orderType} onChange={handleChange} error={errors.orderType} options={ORDER_TYPES} />
-              <Input variant="primary" size="md" label="Número de Mesa" htmlFor="tableNumber" name="tableNumber" value={formData.tableNumber} onChange={handleChange} error={errors.tableNumber} placeholder="Ej: 04" disabled={formData.orderType !== 'mesa'} />
-            </div>
-            <div className="[&>div]:!w-full">
-              <Input variant="primary" size="md" label="Nombre del Cliente (Opcional)" htmlFor="customerName" name="customerName" value={formData.customerName} onChange={handleChange} error={errors.customerName} placeholder="Para llamar el pedido" />
-            </div>
-          </CardSection>
-
-          {/* TARJETA 2: Selección de Productos */}
-          <CardSection icon={<Coffee size={20} />} title="2. Agregar Productos">
-            <div className="flex flex-col sm:flex-row items-end gap-4 w-full">
-              <div className="flex-1 w-full [&>div]:!w-full">
-                <Select variant="create" label="Seleccionar Producto" htmlFor="currentProduct" name="currentProduct" value={currentProduct} onChange={(e) => setCurrentProduct(e.target.value)} options={availableProducts} />
-              </div>
-              <div className="w-24 [&>div]:!w-full">
-                <Input type="text" variant="primary" size="md" label="Cant." htmlFor="currentQty" name="currentQty" value={currentQty} onChange={(e) => setCurrentQty(e.target.value.replace(/\D/g, ''))} />
-              </div>
-              <Button 
-                type="button"
-                onClick={handleAddItem}
-                variant="secondary"
-              >
-                <Plus size={16} /> Agregar
-              </Button>
-            </div>
-          </CardSection>
-
-          {/* TARJETA 3: Pago y Notas */}
-          <CardSection icon={<CreditCard size={20} />} title="3. Pago y Notas">
-            <div className="[&>div]:!w-full">
-              <Select variant="create" label="Método de Pago *" htmlFor="paymentMethod" name="paymentMethod" value={formData.paymentMethod} onChange={handleChange} error={errors.paymentMethod} options={PAYMENT_METHODS} />
-            </div>
-            <div className="w-full">
-              <label className="block text-caption font-bold text-text-secondary mb-1 uppercase">Observaciones del Pedido</label>
-              <textarea 
-                name="observations" 
-                value={formData.observations} 
-                onChange={handleChange}
-                placeholder="Ej: Sin azúcar, leche deslactosada..."
-                className="w-full rounded-md border border-border-clear bg-background-div px-4 py-3 text-text-primary focus:outline-none focus:ring-2 focus:ring-brand resize-none h-20 transition-all"
-              ></textarea>
-              {errors.observations && <p className="text-xs text-error mt-1">{errors.observations}</p>}
-            </div>
-          </CardSection>
-
-          {/* TARJETA 4: Resumen de la Orden (Carrito) */}
-          <CardSection icon={<ShoppingCart size={20} />} title="Resumen del Pedido">
-            <div className="flex-1 bg-background-div/50 border border-border/50 rounded-xl p-4 overflow-y-auto max-h-[200px] custom-scrollbar">
-              {orderItems.length === 0 ? (
-                <div className="h-full flex items-center justify-center text-text-muted text-sm font-medium">
-                  No hay productos en la orden
-                </div>
-              ) : (
-                <ul className="space-y-3">
-                  {orderItems.map((item) => (
-                    <li key={item.id} className="flex justify-between items-center border-b border-border/40 pb-2 last:border-0 last:pb-0">
-                      <div className="flex flex-col">
-                        <span className="font-bold text-text-primary text-sm">{item.name}</span>
-                        <span className="text-xs text-text-muted">{item.quantity} x ${item.price.toLocaleString("es-CO")}</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className="font-extrabold text-text-primary">${(item.quantity * item.price).toLocaleString("es-CO")}</span>
-                        <button type="button" onClick={() => handleRemoveItem(item.id)} className="text-error hover:opacity-80 hover:bg-background-div/50 p-1.5 rounded-lg transition-colors">
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-            
-            <div className="flex justify-between items-center bg-background-inverse text-text-inverse p-4 rounded-xl shadow-inner mt-2">
-              <span className="font-bold text-lg">TOTAL:</span>
-              <span className="font-extrabold text-2xl">${totalOrder.toLocaleString("es-CO")}</span>
-            </div>
-          </CardSection>
-
-        </div>
-
-        {/* FOOTER GENERAL */}
-        <div className="flex justify-end gap-4 bg-background-div/60 backdrop-blur-md p-4 rounded-3xl shadow-sm border border-border/50 mt-6">
-          <Button type="button" onClick={() => navigate(-1)} variant="tertiary">
-            Cancelar
-          </Button>
-          <Button type="button" onClick={handleSubmit} disabled={isSubmitting} variant="primary">
-            {isSubmitting ? "ACTUALIZANDO..." : "Actualizar Orden"}
-          </Button>
-        </div>
-      </div>
-    </div>
+    </section>
   );
 }
